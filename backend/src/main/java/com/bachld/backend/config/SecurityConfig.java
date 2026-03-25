@@ -56,7 +56,10 @@ public class SecurityConfig {
                                 "/api/auth/**",
                                 "/assets/**",
                                 "/error",
-                                "/api/zoom/**"
+                                "/api/zoom/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**"
                         ).permitAll()
 
                         // Role-based endpoints
