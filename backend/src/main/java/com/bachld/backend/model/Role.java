@@ -16,5 +16,7 @@ public class Role extends BaseEntity {
 
     String name;
 
-    String vietnameseName;
+    Integer type;
+
+    String color;
 }

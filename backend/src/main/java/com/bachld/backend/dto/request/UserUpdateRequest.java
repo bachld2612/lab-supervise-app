@@ -1,5 +1,6 @@
-package com.bachld.backend.dto.response;
+package com.bachld.backend.dto.request;
 
+import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,13 +11,14 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RoleResponse {
+public class UserUpdateRequest {
 
-    Integer id;
+    @Email(message = "Email không hợp lệ")
+    String email;
 
-    String name;
+    String fullName;
 
-    String color;
+    String phone;
 
-    Integer roleType;
+    Integer roleId;
 }
