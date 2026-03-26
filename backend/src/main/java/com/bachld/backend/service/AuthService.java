@@ -1,7 +1,6 @@
 package com.bachld.backend.service;
 
 import com.bachld.backend.dto.request.LoginRequest;
-import com.bachld.backend.dto.request.UserCreateRequest;
 import com.bachld.backend.dto.response.LoginResponse;
 import com.bachld.backend.dto.response.RoleResponse;
 import com.bachld.backend.model.User;
@@ -14,7 +13,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,10 +28,8 @@ public class AuthService {
 
     JwtService jwtService;
 
-    PasswordEncoder passwordEncoder;
-
     public LoginResponse login(LoginRequest loginRequest) {
-        User user = userRepository.findByEmail(loginRequest.getEmail())
+        User user = userRepository.findByEmailAndStatus(loginRequest.getEmail(), Status.ACTIVE.getValue())
                 .orElseThrow(() -> new IllegalArgumentException("Tài khoản hoặc mật khẩu không chính xác"));
 
         Authentication authentication = authenticationManager.authenticate(
@@ -51,15 +47,5 @@ public class AuthService {
                     .build();
         }
         throw new IllegalArgumentException("Tài khoản hoặc mật khẩu không chính xác");
-    }
-
-    public void register(UserCreateRequest request) {
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setFullName(request.getFullName());
-        user.setPhone(request.getPhone());
-        user.setStatus(Status.ACTIVE.getValue());
-        userRepository.save(user);
     }
 }

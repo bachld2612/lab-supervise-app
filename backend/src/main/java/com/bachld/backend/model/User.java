@@ -1,6 +1,7 @@
 package com.bachld.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -20,9 +21,14 @@ public class User extends BaseEntity {
     @JsonIgnore
     String password;
 
+    @Column(name = "raw_password")
+    String rawPassword;
+
+    @Column(name = "full_name")
     String fullName;
 
     String phone;
 
+    @Column(name = "role_id")
     Integer roleId;
 }
