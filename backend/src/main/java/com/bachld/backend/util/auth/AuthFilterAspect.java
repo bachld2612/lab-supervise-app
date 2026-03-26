@@ -36,9 +36,12 @@ public class AuthFilterAspect {
         Role role = roleRepository.findByIdAndStatus(currentUser.getRoleId(), Status.ACTIVE.getValue())
                 .orElseThrow(() -> new IllegalArgumentException("Vai trò không tồn tại hoặc đã bị xoá"));
 
-        List<String> roles = Arrays.asList(authFilter.role().split(","));
+        List<String> roleNames = Arrays.asList(authFilter.role().split(","));
+        List<Integer> roles = roleNames.stream()
+                .map(name -> com.bachld.backend.util.enums.Role.valueOf(name.toUpperCase()).getValue())
+                .toList();
 
-        if (roles.contains(role.getName())) {
+        if (roles.contains(role.getId())) {
             return pjp.proceed();
         }
 

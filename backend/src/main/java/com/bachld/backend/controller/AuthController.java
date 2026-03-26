@@ -1,7 +1,6 @@
 package com.bachld.backend.controller;
 
 import com.bachld.backend.dto.request.LoginRequest;
-import com.bachld.backend.dto.request.UserCreateRequest;
 import com.bachld.backend.dto.response.BaseResponse;
 import com.bachld.backend.service.AuthService;
 import jakarta.validation.Valid;
@@ -26,11 +25,5 @@ public class AuthController {
     @PostMapping("v1/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest) {
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), authService.login(loginRequest)));
-    }
-
-    @PostMapping("v1/register")
-    public ResponseEntity<?> login(@RequestBody @Valid UserCreateRequest request) {
-        authService.register(request);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
     }
 }
