@@ -2,6 +2,7 @@ package com.bachld.backend.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,10 +19,10 @@ public class UserCreateRequest {
     @Email(message = "Email không hợp lệ")
     String email;
 
-    @NotEmpty(message = "Mật khẩu không được phép bỏ trống")
-    String password;
-
     String fullName;
 
     String phone;
+
+    @NotNull(message = "Role không được phép bỏ trống")
+    Integer roleId;
 }

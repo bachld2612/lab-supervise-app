@@ -11,9 +11,12 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoleResponse {
+
     Integer id;
 
     String name;
 
-    String vietnameseName;
+    String color;
+
+    Integer roleType;
 }

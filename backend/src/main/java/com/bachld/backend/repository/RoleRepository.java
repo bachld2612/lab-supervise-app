@@ -18,7 +18,7 @@ public interface RoleRepository extends JpaRepository<Role, Integer> {
     Optional<Role> findByIdAndStatus(int id, int status);
 
     @Query("""
-        SELECT new com.bachld.backend.dto.response.RoleResponse(r.id, r.name, r.vietnameseName)
+        SELECT new com.bachld.backend.dto.response.RoleResponse(r.id, r.name, r.color, r.type)
         FROM Role r
         WHERE r.id = :id
     """)
