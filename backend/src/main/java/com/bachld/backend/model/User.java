@@ -7,6 +7,8 @@ import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+
 @AllArgsConstructor
 @Getter
 @Setter
@@ -28,6 +30,12 @@ public class User extends BaseEntity {
     String fullName;
 
     String phone;
+
+    @Column(name = "hometown")
+    String hometown;
+
+    @Column(name = "birthday")
+    LocalDate birthday;
 
     @Column(name = "role_id")
     Integer roleId;

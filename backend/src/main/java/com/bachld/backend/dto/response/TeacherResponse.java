@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserResponse {
+public class TeacherResponse {
 
     String email;
 
@@ -20,17 +20,13 @@ public class UserResponse {
 
     String fullName;
 
+    String code;
+
     String hometown;
 
     LocalDate birthDay;
 
     String rawPassword;
-
-    Integer roleId;
-
-    String roleName;
-
-    String roleColor;
 
     Integer status;
 }
