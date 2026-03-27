@@ -1,11 +1,14 @@
 package com.bachld.backend.service;
 
-import com.bachld.backend.dto.request.UserCreateRequest;
-import com.bachld.backend.dto.request.UserUpdateRequest;
-import com.bachld.backend.dto.response.UserResponse;
+import com.bachld.backend.dto.request.TeacherCreateRequest;
+import com.bachld.backend.dto.request.TeacherUpdateRequest;
+import com.bachld.backend.dto.response.TeacherResponse;
+import com.bachld.backend.model.Teacher;
 import com.bachld.backend.model.User;
+import com.bachld.backend.repository.TeacherRepository;
 import com.bachld.backend.repository.UserRepository;
 import com.bachld.backend.util.Util;
+import com.bachld.backend.util.enums.Role;
 import com.bachld.backend.util.enums.Status;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,19 +24,36 @@ import java.time.LocalDate;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class UserService {
+public class TeacherService {
 
-    PasswordEncoder passwordEncoder;
+    TeacherRepository teacherRepository;
 
     UserRepository userRepository;
 
+    PasswordEncoder passwordEncoder;
+
     Util util;
 
+    public Page<TeacherResponse> getList(Pageable pageable, String keyword, Integer status) {
+        if (keyword != null) {
+            keyword = "%" + keyword.trim().toLowerCase() + "%";
+        }
+        else {
+            keyword = "%%";
+        }
+
+        return teacherRepository.findByKeyword(pageable, keyword, status);
+    }
+
+    public TeacherResponse getById(Integer id) {
+        return teacherRepository.findTeacherByIdAndStatus(id, Status.ACTIVE.getValue());
+    }
+
     @Transactional
-    public void create(UserCreateRequest request) {
+    public void create(TeacherCreateRequest request) {
         util.validatePhone(request.getPhone(), null);
         util.validateEmail(request.getEmail(), null);
-        util.validateRole(request.getRoleId());
+        util.validateTeacherCode(request.getCode(), null);
 
         User user = new User();
         user.setEmail(request.getEmail());
@@ -44,23 +64,35 @@ public class UserService {
         user.setHometown(request.getHometown());
         user.setBirthday(LocalDate.parse(request.getBirthday()));
         user.setPhone(request.getPhone());
-        user.setRoleId(request.getRoleId());
+        user.setRoleId(Role.TEACHER.getValue());
         user.setStatus(Status.ACTIVE.getValue());
 
         userRepository.save(user);
+
+        Teacher teacher = new Teacher();
+        teacher.setCode(request.getCode());
+        teacher.setUserId(user.getId());
+        teacherRepository.save(teacher);
     }
 
     @Transactional
-    public void update(UserUpdateRequest request, int userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng có id: " + userId));
+    public void update(TeacherUpdateRequest request, int id) {
+        Teacher teacher = teacherRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy giáo viên có id: " + id));
 
-        util.validateEmail(request.getEmail(), user.getId());
+        User user = userRepository.findByIdAndStatus(teacher.getUserId(), Status.ACTIVE.getValue())
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng có id: " + teacher.getUserId()));
+
         util.validatePhone(request.getPhone(), user.getId());
-        util.validateRole(request.getRoleId());
+        util.validateEmail(request.getEmail(), user.getId());
+        util.validateTeacherCode(request.getCode(), teacher.getId());
 
         if (request.getEmail() != null && !request.getEmail().isEmpty()) {
             user.setEmail(request.getEmail());
+        }
+
+        if (request.getCode() != null && !request.getCode().isEmpty()) {
+            teacher.setCode(request.getCode());
         }
 
         if (request.getFullName() != null && !request.getFullName().isEmpty()) {
@@ -79,25 +111,7 @@ public class UserService {
             user.setPhone(request.getPhone());
         }
 
-        if (request.getRoleId() != null) {
-            user.setRoleId(request.getRoleId());
-        }
-
         userRepository.save(user);
-    }
-
-    public Page<UserResponse> getList(Pageable pageable, String keyword, Integer status, Integer roleType) {
-        if (keyword != null) {
-            keyword = "%" + keyword.trim().toLowerCase() + "%";
-        }
-        else {
-            keyword = "%%";
-        }
-
-        return userRepository.findAllByKeyword(pageable, keyword, status, roleType);
-    }
-
-    public UserResponse getById(int id) {
-        return userRepository.findUserByIdAndStatus(id, Status.ACTIVE.getValue());
+        teacherRepository.save(teacher);
     }
 }

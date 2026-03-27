@@ -1,8 +1,6 @@
 package com.bachld.backend.dto.request;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,28 +12,22 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserCreateRequest {
+public class TeacherUpdateRequest {
 
-    @NotEmpty(message = "Email không được phép bỏ trống")
     @Email(message = "Email không hợp lệ")
     String email;
 
-    @NotEmpty(message = "Tên không được phép bỏ trống")
+    String code;
+
     String fullName;
 
-    @NotEmpty(message = "Quê nhà không được phép bỏ trống")
     String hometown;
 
-    @NotEmpty(message = "Số điện thoại không được phép bỏ trống")
-    String phone;
-
-    @NotEmpty(message = "Ngày sinh không được phép bỏ trống")
     @Pattern(
             regexp = "^$|^\\d{4}-\\d{2}-\\d{2}$",
             message = "Birthday format must be yyyy-MM-dd"
     )
     String birthday;
 
-    @NotNull(message = "Role không được phép bỏ trống")
-    Integer roleId;
+    String phone;
 }

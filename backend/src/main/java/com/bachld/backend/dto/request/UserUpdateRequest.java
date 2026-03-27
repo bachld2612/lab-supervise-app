@@ -1,6 +1,7 @@
 package com.bachld.backend.dto.request;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +18,14 @@ public class UserUpdateRequest {
     String email;
 
     String fullName;
+
+    String hometown;
+
+    @Pattern(
+            regexp = "^$|^\\d{4}-\\d{2}-\\d{2}$",
+            message = "Birthday format must be yyyy-MM-dd"
+    )
+    String birthday;
 
     String phone;
 
