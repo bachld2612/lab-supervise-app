@@ -1,5 +1,6 @@
 package com.bachld.backend.controller;
 
+import com.bachld.backend.dto.request.ChangePasswordRequest;
 import com.bachld.backend.dto.request.UserCreateRequest;
 import com.bachld.backend.dto.request.UserUpdateRequest;
 import com.bachld.backend.dto.response.BaseResponse;
@@ -51,6 +52,12 @@ public class UserController {
     @AuthFilter(role = "ADMIN")
     public ResponseEntity<?> update(@PathVariable int id, @RequestBody @Valid UserUpdateRequest request) {
         userService.update(request, id);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+    }
+
+    @PutMapping("/v1/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
+        userService.changePassword(request);
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
     }
 }

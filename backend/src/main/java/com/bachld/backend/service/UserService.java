@@ -1,5 +1,6 @@
 package com.bachld.backend.service;
 
+import com.bachld.backend.dto.request.ChangePasswordRequest;
 import com.bachld.backend.dto.request.UserCreateRequest;
 import com.bachld.backend.dto.request.UserUpdateRequest;
 import com.bachld.backend.dto.response.UserResponse;
@@ -99,5 +100,17 @@ public class UserService {
 
     public UserResponse getById(int id) {
         return userRepository.findUserByIdAndStatus(id, Status.ACTIVE.getValue());
+    }
+
+    public void changePassword(ChangePasswordRequest request) {
+        User currentUser = util.getCurrentUser();
+
+        if (!passwordEncoder.matches(request.getOldPassword(), currentUser.getPassword())) {
+            throw new IllegalArgumentException("Mật khẩu cũ không chính xác");
+        }
+
+        currentUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        currentUser.setRawPassword(null);
+        userRepository.save(currentUser);
     }
 }
