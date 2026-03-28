@@ -17,6 +17,8 @@ public class StudentUpdateRequest {
     @Email(message = "Email không hợp lệ")
     String email;
 
+    Integer manageClassId;
+
     String code;
 
     String fullName;

@@ -22,7 +22,7 @@ public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.TeacherResponse(
-            u.email, u.phone, u.fullName, t.code, u.hometown, u.birthday, u.rawPassword, u.status
+            t.id, u.email, u.phone, u.fullName, t.code, u.hometown, u.birthday, u.rawPassword, u.status
         )
         FROM Teacher t JOIN User u ON t.userId = u.id
         WHERE (LOWER(u.fullName) LIKE :keyword
@@ -36,7 +36,7 @@ public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.TeacherResponse(
-            u.email, u.phone, u.fullName, t.code, u.hometown, u.birthday, u.rawPassword, u.status
+            t.id, u.email, u.phone, u.fullName, t.code, u.hometown, u.birthday, u.rawPassword, u.status
         )
         FROM Teacher t JOIN User u ON t.userId = u.id
         WHERE t.id = :id

@@ -22,9 +22,10 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.StudentResponse(
-            u.email, u.phone, u.fullName, s.code, u.hometown, u.birthday, u.rawPassword, u.status
+            s.id, u.email, u.phone, u.fullName, s.code, mc.name, u.hometown, u.birthday, u.rawPassword, u.status
         )
         FROM Student s JOIN User u ON s.userId = u.id
+            JOIN ManageClass mc ON mc.id = s.manageClassId
         WHERE (LOWER(u.fullName) LIKE :keyword
                 OR LOWER(u.email) LIKE :keyword
                 OR LOWER(u.phone) LIKE :keyword
@@ -36,11 +37,12 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.StudentResponse(
-            u.email, u.phone, u.fullName, s.code, u.hometown, u.birthday, u.rawPassword, u.status
+            s.id, u.email, u.phone, u.fullName, s.code, mc.name, u.hometown, u.birthday, u.rawPassword, u.status
         )
         FROM Student s JOIN User u ON s.userId = u.id
+            JOIN ManageClass mc ON mc.id = s.manageClassId
         WHERE s.id = :id
             AND u.status = :status
     """)
-    StudentResponse findTeacherByIdAndStatus(int id, int status);
+    StudentResponse findStudentByIdAndStatus(int id, int status);
 }
