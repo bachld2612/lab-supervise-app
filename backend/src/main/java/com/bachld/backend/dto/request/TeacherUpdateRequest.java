@@ -25,7 +25,7 @@ public class TeacherUpdateRequest {
 
     @Pattern(
             regexp = "^$|^\\d{4}-\\d{2}-\\d{2}$",
-            message = "Birthday format must be yyyy-MM-dd"
+            message = "Ngày sinh phải có định dạng yyyy-MM-dd"
     )
     String birthday;
 
