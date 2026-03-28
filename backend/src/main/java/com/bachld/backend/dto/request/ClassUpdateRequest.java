@@ -7,22 +7,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalTime;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ScheduleUpdateRequest {
+public class ClassUpdateRequest {
 
     String name;
 
-    @Min(value = 1, message = "Số tiết phải lớn hơn 0")
-    Integer sessionCount;
+    @Min(value = 1, message = "Sĩ số tối đa phải lớn hơn 0")
+    Integer maxStudent;
 
-    String daysOfWeek;
+    Integer subjectId;
 
-    LocalTime startTime;
+    Integer teacherId;
 
-    LocalTime endTime;
+    Integer scheduleId;
 }

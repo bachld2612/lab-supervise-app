@@ -45,6 +45,7 @@ public class ScheduleService {
 
         Schedule schedule = new Schedule();
         schedule.setName(request.getName());
+        schedule.setSessionCount(request.getSessionCount());
         schedule.setDaysOfWeek(request.getDaysOfWeek());
         schedule.setStartTime(request.getStartTime());
         schedule.setEndTime(request.getEndTime());
@@ -60,6 +61,10 @@ public class ScheduleService {
 
         if (request.getName() != null && !request.getName().isEmpty()) {
             schedule.setName(request.getName());
+        }
+
+        if (request.getSessionCount() != null) {
+            schedule.setSessionCount(request.getSessionCount());
         }
 
         if (request.getDaysOfWeek() != null && !request.getDaysOfWeek().isEmpty()) {
