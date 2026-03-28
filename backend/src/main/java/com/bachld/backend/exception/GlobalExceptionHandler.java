@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleBadCredentialsException(BadCredentialsException ex) {
         Map<String, Object> errors = new HashMap<>();
         errors.put("statusCode", HttpStatus.UNPROCESSABLE_ENTITY.value());
-        errors.put("message", ex.getMessage().equals("Bad credentials") ? "Tên tài khoản hoặc mật khẩu không khớp" : ex.getMessage());
+        errors.put("message", ex.getMessage().equals("Bad credentials") ? "Tài khoản hoặc mật khẩu không chính xác" : ex.getMessage());
         return new ResponseEntity<>(errors, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
