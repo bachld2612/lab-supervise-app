@@ -22,6 +22,9 @@ public class Schedule extends BaseEntity {
     @Column(name = "days_of_week")
     String daysOfWeek;
 
+    @Column(name = "session_count")
+    Integer sessionCount;
+
     @Column(name = "start_time")
     LocalTime startTime;
 
