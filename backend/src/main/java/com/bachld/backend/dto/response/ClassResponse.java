@@ -3,26 +3,26 @@ package com.bachld.backend.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalTime;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ScheduleResponse {
+public class ClassResponse {
 
     Integer id;
 
     String name;
 
-    Integer sessionCount;
+    Integer maxStudent;
 
-    String daysOfWeek;
-
-    LocalTime startTime;
-
-    LocalTime endTime;
+    Integer sessionNumber;
 
     Integer status;
+
+    String subjectName;
+
+    String teacherName;
+
+    String scheduleName;
 }
