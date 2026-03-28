@@ -1,13 +1,7 @@
 package com.bachld.backend.util;
 
-import com.bachld.backend.model.Role;
-import com.bachld.backend.model.Student;
-import com.bachld.backend.model.Teacher;
-import com.bachld.backend.model.User;
-import com.bachld.backend.repository.RoleRepository;
-import com.bachld.backend.repository.StudentRepository;
-import com.bachld.backend.repository.TeacherRepository;
-import com.bachld.backend.repository.UserRepository;
+import com.bachld.backend.model.*;
+import com.bachld.backend.repository.*;
 import com.bachld.backend.util.enums.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,6 +23,9 @@ public class Util {
 
     @Autowired
     private StudentRepository studentRepository;
+
+    @Autowired
+    private SubjectRepository subjectRepository;
 
     public User getCurrentUser() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -74,6 +71,15 @@ public class Util {
         if (student.isPresent()) {
             if (studentId == null || student.get().getId() != studentId) {
                 throw new IllegalArgumentException("Mã sinh viên đã tồn tại");
+            }
+        }
+    }
+
+    public void validateSubjectCode(String code, Integer id) {
+        Optional<Subject> subject = subjectRepository.findByCodeAndStatus(code, Status.ACTIVE.getValue());
+        if (subject.isPresent()) {
+            if (id == null || subject.get().getId() != id) {
+                throw new IllegalArgumentException("Mã môn học đã tồn tại");
             }
         }
     }
