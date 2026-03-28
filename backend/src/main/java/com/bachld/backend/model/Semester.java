@@ -6,20 +6,25 @@ import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+
 @AllArgsConstructor
 @Getter
 @Setter
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
-@Table(name = "students")
-public class Student extends BaseEntity {
+@Table(name = "semesters")
+public class Semester extends BaseEntity {
 
-    String code;
+    String name;
 
-    @Column(name = "manage_class_id")
-    Integer manageClassId;
+    @Column(name = "study_year")
+    String studyYear;
 
-    @Column(name = "user_id")
-    Integer userId;
+    @Column(name = "start_date")
+    LocalDate startDate;
+
+    @Column(name = "end_date")
+    LocalDate endDate;
 }
