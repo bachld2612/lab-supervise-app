@@ -14,6 +14,8 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StudentResponse {
 
+    Integer id;
+
     String email;
 
     String phone;
@@ -21,6 +23,8 @@ public class StudentResponse {
     String fullName;
 
     String code;
+
+    String classManageName;
 
     String hometown;
 

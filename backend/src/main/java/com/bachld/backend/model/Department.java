@@ -1,6 +1,5 @@
 package com.bachld.backend.model;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -12,14 +11,8 @@ import lombok.experimental.FieldDefaults;
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
-@Table(name = "students")
-public class Student extends BaseEntity{
+@Table(name = "departments")
+public class Department extends BaseEntity{
 
-    String code;
-
-    @Column(name = "manage_class_id")
-    Integer manageClassId;
-
-    @Column(name = "user_id")
-    Integer userId;
+    String name;
 }
