@@ -1,0 +1,4 @@
+INSERT INTO `datn`.`roles`(`id`, `created_at`, `created_user`, `status`, `updated_at`, `updated_user`, `name`, `type`, `color`) VALUES (1,'2025-01-01 00:00:00.000000','1',1,'2025-01-01 00:00:00.000000','1','Nhân viên văn phòng khoa',1,'warning');
+INSERT INTO `datn`.`roles`(`id`, `created_at`, `created_user`, `status`, `updated_at`, `updated_user`, `name`, `type`, `color`) VALUES (2,'2025-01-01 00:00:00.000000','1',1,'2025-01-01 00:00:00.000000','1','Giảng viên',2,'primary');
+INSERT INTO `datn`.`roles`(`id`, `created_at`, `created_user`, `status`, `updated_at`, `updated_user`, `name`, `type`, `color`) VALUES (3,'2025-01-01 00:00:00.000000','1',1,'2025-01-01 00:00:00.000000','1','Sinh viên',3,'success');
+INSERT INTO `datn`.`roles`(`id`, `created_at`, `created_user`, `status`, `updated_at`, `updated_user`, `name`, `type`, `color`) VALUES (4,'2025-01-01 00:00:00.000000','1',1,'2025-01-01 00:00:00.000000','1','Nhân viên trung tâm tin học',1,'secondary');
