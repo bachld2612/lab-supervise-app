@@ -17,7 +17,10 @@ public interface SubjectRepository extends JpaRepository<Subject, Integer> {
         )
         FROM Subject s
             JOIN Section sec ON s.sectionId = sec.id
-        WHERE (LOWER(s.name) LIKE :keyword OR LOWER(s.code) LIKE :keyword)
+        WHERE (
+                LOWER(s.name) LIKE :keyword
+                OR LOWER(s.code) LIKE :keyword
+            )
             AND (:status IS NULL OR s.status = :status)
     """)
     Page<SubjectResponse> findByKeyword(Pageable pageable, String keyword, Integer status);
