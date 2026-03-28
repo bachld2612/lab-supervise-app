@@ -60,4 +60,11 @@ public class UserController {
         userService.changePassword(request);
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
     }
+
+    @PostMapping("/v1/reset-password/{id}")
+    @AuthFilter(role = "ADMIN")
+    public ResponseEntity<?> resetPassword(@PathVariable int id) {
+        userService.resetPassword(id);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+    }
 }
