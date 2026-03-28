@@ -5,6 +5,7 @@ import com.bachld.backend.dto.request.StudentUpdateRequest;
 import com.bachld.backend.dto.response.StudentResponse;
 import com.bachld.backend.model.Student;
 import com.bachld.backend.model.User;
+import com.bachld.backend.repository.ManageClassRepository;
 import com.bachld.backend.repository.StudentRepository;
 import com.bachld.backend.repository.UserRepository;
 import com.bachld.backend.util.Util;
@@ -34,6 +35,8 @@ public class StudentService {
 
     Util util;
 
+    ManageClassRepository manageClassRepository;
+
     public Page<StudentResponse> getList(Pageable pageable, String keyword, Integer status) {
         if (keyword != null) {
             keyword = "%" + keyword.trim().toLowerCase() + "%";
@@ -46,7 +49,7 @@ public class StudentService {
     }
 
     public StudentResponse getById(Integer id) {
-        return studentRepository.findTeacherByIdAndStatus(id, Status.ACTIVE.getValue());
+        return studentRepository.findStudentByIdAndStatus(id, Status.ACTIVE.getValue());
     }
 
     @Transactional
@@ -54,6 +57,8 @@ public class StudentService {
         util.validatePhone(request.getPhone(), null);
         util.validateEmail(request.getEmail(), null);
         util.validateStudentCode(request.getCode(), null);
+        manageClassRepository.findClassByIdAndStatus(request.getManageClassId(), Status.ACTIVE.getValue())
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp quản lý có id: " + request.getManageClassId()));
 
         User user = new User();
         user.setEmail(request.getEmail());
@@ -71,6 +76,7 @@ public class StudentService {
 
         Student student = new Student();
         student.setCode(request.getCode());
+        student.setManageClassId(request.getManageClassId());
         student.setUserId(user.getId());
         studentRepository.save(student);
     }
@@ -93,6 +99,12 @@ public class StudentService {
 
         if (request.getCode() != null && !request.getCode().isEmpty()) {
             student.setCode(request.getCode());
+        }
+
+        if (request.getManageClassId() != null) {
+            manageClassRepository.findClassByIdAndStatus(request.getManageClassId(), Status.ACTIVE.getValue())
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp quản lý có id: " + request.getManageClassId()));
+            student.setManageClassId(request.getManageClassId());
         }
 
         if (request.getFullName() != null && !request.getFullName().isEmpty()) {

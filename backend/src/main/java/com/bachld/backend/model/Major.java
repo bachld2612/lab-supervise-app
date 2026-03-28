@@ -12,14 +12,11 @@ import lombok.experimental.FieldDefaults;
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
-@Table(name = "students")
-public class Student extends BaseEntity{
+@Table(name = "majors")
+public class Major extends BaseEntity{
 
-    String code;
+    String name;
 
-    @Column(name = "manage_class_id")
-    Integer manageClassId;
-
-    @Column(name = "user_id")
-    Integer userId;
+    @Column(name = "department_id")
+    Integer departmentId;
 }
