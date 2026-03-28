@@ -11,7 +11,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.ScheduleResponse(
-            s.id, s.name, s.daysOfWeek, s.startTime, s.endTime, s.status
+            s.id, s.name, s.sessionCount, s.daysOfWeek, s.startTime, s.endTime, s.status
         )
         FROM Schedule s
         WHERE (LOWER(s.name) LIKE :keyword)
@@ -21,7 +21,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.ScheduleResponse(
-            s.id, s.name, s.daysOfWeek, s.startTime, s.endTime, s.status
+            s.id, s.name, s.sessionCount, s.daysOfWeek, s.startTime, s.endTime, s.status
         )
         FROM Schedule s
         WHERE s.id = :id
