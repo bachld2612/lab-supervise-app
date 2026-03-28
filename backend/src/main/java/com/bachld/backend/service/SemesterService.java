@@ -34,7 +34,7 @@ public class SemesterService {
     }
 
     public SemesterResponse getById(Integer id) {
-        return semesterRepository.findByIdAndStatusExtended(id, Status.ACTIVE.getValue());
+        return semesterRepository.findByIdAndStatus(id, Status.ACTIVE.getValue());
     }
 
     @Transactional

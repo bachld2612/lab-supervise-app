@@ -39,7 +39,7 @@ public class SubjectService {
     }
 
     public SubjectResponse getById(Integer id) {
-        return subjectRepository.findByIdAndStatusExtended(id, Status.ACTIVE.getValue());
+        return subjectRepository.findByIdAndStatus(id, Status.ACTIVE.getValue());
     }
 
     @Transactional

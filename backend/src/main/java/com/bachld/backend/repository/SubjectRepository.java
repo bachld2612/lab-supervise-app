@@ -34,7 +34,7 @@ public interface SubjectRepository extends JpaRepository<Subject, Integer> {
         WHERE s.id = :id
             AND s.status = :status
     """)
-    SubjectResponse findByIdAndStatusExtended(Integer id, Integer status);
+    SubjectResponse findByIdAndStatus(Integer id, Integer status);
 
     @Query("""
         SELECT s
