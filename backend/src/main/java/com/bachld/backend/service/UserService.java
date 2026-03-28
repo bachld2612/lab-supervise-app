@@ -113,4 +113,15 @@ public class UserService {
         currentUser.setRawPassword(null);
         userRepository.save(currentUser);
     }
+
+    public void resetPassword(Integer userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng có id: " + userId));
+
+        String rawPassword = "tlu" + user.getPhone().substring(user.getPhone().length() - 3);
+        user.setPassword(passwordEncoder.encode(rawPassword));
+        user.setRawPassword(rawPassword);
+
+        userRepository.save(user);
+    }
 }
