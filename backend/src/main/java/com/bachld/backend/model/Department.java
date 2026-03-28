@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @Table(name = "departments")
-public class Department extends BaseEntity{
+public class Department extends BaseEntity {
 
     String name;
 }
