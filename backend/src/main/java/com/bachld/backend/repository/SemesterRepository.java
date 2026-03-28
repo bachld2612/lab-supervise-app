@@ -27,5 +27,5 @@ public interface SemesterRepository extends JpaRepository<Semester, Integer> {
         WHERE s.id = :id
             AND s.status = :status
     """)
-    SemesterResponse findByIdAndStatusExtended(Integer id, Integer status);
+    SemesterResponse findByIdAndStatus(Integer id, Integer status);
 }
