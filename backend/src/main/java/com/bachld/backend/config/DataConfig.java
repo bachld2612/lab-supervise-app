@@ -11,6 +11,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -31,6 +33,8 @@ public class DataConfig {
             user.setPassword(passwordEncoder.encode("123456"));
             user.setRoleId(Role.ADMIN.getValue());
             user.setPhone("0123456789");
+            user.setBirthday(LocalDate.of(2000, 1, 1));
+            user.setHometown("Hà Nội");
             user.setStatus(Status.ACTIVE.getValue());
             userRepository.save(user);
         }

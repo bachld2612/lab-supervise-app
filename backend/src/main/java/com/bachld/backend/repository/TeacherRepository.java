@@ -22,9 +22,10 @@ public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.TeacherResponse(
-            t.id, u.email, u.phone, u.fullName, t.code, u.hometown, u.birthday, u.rawPassword, u.status
+            t.id, u.email, u.phone, u.fullName, t.code, u.hometown, s.name, u.birthday, u.rawPassword, u.status
         )
         FROM Teacher t JOIN User u ON t.userId = u.id
+            JOIN Section s ON t.sectionId = s.id
         WHERE (LOWER(u.fullName) LIKE :keyword
                 OR LOWER(u.email) LIKE :keyword
                 OR LOWER(u.phone) LIKE :keyword
@@ -36,9 +37,10 @@ public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.TeacherResponse(
-            t.id, u.email, u.phone, u.fullName, t.code, u.hometown, u.birthday, u.rawPassword, u.status
+            t.id, u.email, u.phone, u.fullName, t.code, u.hometown, s.name, u.birthday, u.rawPassword, u.status
         )
         FROM Teacher t JOIN User u ON t.userId = u.id
+            JOIN Section s ON t.sectionId = s.id
         WHERE t.id = :id
             AND u.status = :status
     """)

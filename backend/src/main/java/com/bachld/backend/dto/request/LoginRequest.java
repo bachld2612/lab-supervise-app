@@ -14,10 +14,13 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LoginRequest {
 
-    @NotEmpty(message = "Email is required")
-    @Email(message = "This field must be email format")
+    @NotEmpty(message = "Email không được phép bỏ trống")
+    @Email(message = "Email phải đúng định dạng")
     String email;
 
-    @NotEmpty(message = "Password is required")
+    @NotEmpty(message = "Mật khẩu không được phép bỏ trống")
     String password;
+
+    @NotEmpty(message = "Nền tảng không được phép bỏ trống")
+    String device;
 }

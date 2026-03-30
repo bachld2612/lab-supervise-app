@@ -60,8 +60,8 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
         const token = window.localStorage.getItem('token');
         if (token && verifyToken(token)) {
           setSession(token);
-          const response = await axios.get('/api/account/me');
-          const user = response.data.data?.user || response.data.user;
+          const response = await axios.get('/api/user/v1/profile');
+          const user = response.data.data || response.data;
           dispatch({
             type: LOGIN,
             payload: {
@@ -86,7 +86,7 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const response = await axios.post('/api/auth/v1/login', { email, password });
+    const response = await axios.post('/api/auth/v1/login', { email, password, device: 'web' });
     const { statusCode, data, message } = response.data;
 
     if (statusCode === 200) {

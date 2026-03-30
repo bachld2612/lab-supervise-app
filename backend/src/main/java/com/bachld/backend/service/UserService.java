@@ -13,11 +13,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +31,11 @@ public class UserService {
     UserRepository userRepository;
 
     Util util;
+
+    public UserResponse getProfile() {
+        var userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findUserByIdAndStatus(Integer.parseInt(userId), Status.ACTIVE.getValue());
+    }
 
     @Transactional
     public void create(UserCreateRequest request) {
@@ -87,7 +94,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public Page<UserResponse> getList(Pageable pageable, String keyword, Integer status, Integer roleType) {
+    public Page<UserResponse> getList(Pageable pageable, String keyword, Integer status, Integer roleType, Integer roleId) {
         if (keyword != null) {
             keyword = "%" + keyword.trim().toLowerCase() + "%";
         }
@@ -95,11 +102,18 @@ public class UserService {
             keyword = "%%";
         }
 
-        return userRepository.findAllByKeyword(pageable, keyword, status, roleType);
+        return userRepository.findAllByKeyword(pageable, keyword, status, roleType, roleId);
     }
 
     public UserResponse getById(int id) {
         return userRepository.findUserByIdAndStatus(id, Status.ACTIVE.getValue());
+    }
+
+    public void deleteById(int id) {
+        User user = userRepository.findByIdAndStatus(id, Status.ACTIVE.getValue())
+                .orElseThrow(() -> new IllegalArgumentException("Người dùng đã bị xoá hoặc không tồn tại"));
+        user.setStatus(Status.INACTIVE.getValue());
+        userRepository.save(user);
     }
 
     public void changePassword(ChangePasswordRequest request) {
