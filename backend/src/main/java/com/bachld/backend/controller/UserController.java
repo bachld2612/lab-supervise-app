@@ -4,7 +4,6 @@ import com.bachld.backend.dto.request.ChangePasswordRequest;
 import com.bachld.backend.dto.request.UserCreateRequest;
 import com.bachld.backend.dto.request.UserUpdateRequest;
 import com.bachld.backend.dto.response.BaseResponse;
-import com.bachld.backend.dto.response.UserResponse;
 import com.bachld.backend.service.UserService;
 import com.bachld.backend.util.auth.AuthFilter;
 import jakarta.validation.Valid;
