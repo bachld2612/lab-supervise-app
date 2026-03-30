@@ -45,7 +45,7 @@ const adminMenu: NavItemType = {
       id: 'manage-users',
       title: 'Quản lý giảng viên',
       type: 'item',
-      url: '/admin/teachers',
+      url: '/teacher',
       icon: icons.profile
     },
     {
