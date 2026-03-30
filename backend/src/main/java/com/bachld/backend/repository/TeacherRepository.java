@@ -22,7 +22,7 @@ public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.TeacherResponse(
-            t.id, u.email, u.phone, u.fullName, t.code, u.hometown, s.name, u.birthday, u.rawPassword, u.status
+            t.id, u.email, u.phone, u.fullName, t.code, u.hometown, s.id, s.name, u.birthday, u.id, u.rawPassword, u.status
         )
         FROM Teacher t JOIN User u ON t.userId = u.id
             JOIN Section s ON t.sectionId = s.id
@@ -32,12 +32,13 @@ public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
                 OR LOWER(t.code) LIKE :keyword
             )
             AND (:status IS NULL OR :status = u.status)
+        ORDER BY t.updatedAt DESC
     """)
     Page<TeacherResponse> findByKeyword(Pageable pageable, String keyword, Integer status);
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.TeacherResponse(
-            t.id, u.email, u.phone, u.fullName, t.code, u.hometown, s.name, u.birthday, u.rawPassword, u.status
+            t.id, u.email, u.phone, u.fullName, t.code, u.hometown, s.id, s.name, u.birthday, u.id, u.rawPassword, u.status
         )
         FROM Teacher t JOIN User u ON t.userId = u.id
             JOIN Section s ON t.sectionId = s.id

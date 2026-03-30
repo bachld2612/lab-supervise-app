@@ -81,12 +81,11 @@ import {
 import { useIntl } from 'react-intl';
 import { HttpStatusCode } from 'axios';
 import useAuth from 'hooks/useAuth';
-import { type User } from 'types/user';
-import { deleteById, getList, resetPassword } from 'api/user';
-import formatDate from 'utils/formatDate';
+import { type Teacher } from 'types/teacher';
+import teacherApi from 'api/teacher';
 import { DEFAULT_PAGE_SIZE, PageRequest } from 'types/paging';
 
-const fuzzyFilter: FilterFn<User> = (row, columnId, value, addMeta) => {
+const fuzzyFilter: FilterFn<Teacher> = (row, columnId, value, addMeta) => {
   // rank the item
   const itemRank = rankItem(row.getValue(columnId), value);
 
@@ -105,7 +104,7 @@ function EditAction({
   setReload,
   setAlert
 }: {
-  row: Row<User>;
+  row: Row<Teacher>;
   reload: boolean;
   setReload: (e: boolean) => void;
   setAlert: React.Dispatch<
@@ -128,26 +127,17 @@ function EditAction({
   useEffect(() => {
     if ([1].includes(user?.roleId ?? 0)) {
       setHasDetailPermission(true);
-    }
-
-    if ([1].includes(user?.roleId ?? 0)) {
       setHasEditPermission(true);
-    }
-
-    if ([1].includes(user?.roleId ?? 0)) {
       setHasDeletePermission(true);
-    }
-
-    if ([1].includes(user?.roleId ?? 0)) {
       setHasResetPasswordPermission(true);
     }
   }, [user?.roleId]);
 
   const handleDelete = async () => {
-    const response = await deleteById(row.original.id);
+    const response = await teacherApi.deleteById(row.original.id);
 
     if (response.statusCode == HttpStatusCode.Ok) {
-      setAlert({ open: true, message: 'Xóa nhân viên thành công', severity: 'success' });
+      setAlert({ open: true, message: 'Xóa giảng viên thành công', severity: 'success' });
       setReload(!reload);
     } else if (response.statusCode == HttpStatusCode.Unauthorized) {
       logout();
@@ -161,7 +151,7 @@ function EditAction({
   };
 
   const handleResetPassword = async () => {
-    const response = await resetPassword(row.original.id);
+    const response = await teacherApi.resetPassword(Number(row.original.userId));
 
     if (response.statusCode == HttpStatusCode.Ok) {
       setAlert({ open: true, message: 'Đặt lại mật khẩu thành công', severity: 'success' });
@@ -181,7 +171,7 @@ function EditAction({
     <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
       {hasDetailPermission && (
         <Tooltip title="Xem chi tiết">
-          <IconButton color="primary" onClick={() => navigate(`/user/detail/${row.id}`)} disabled={row.original.status == 0}>
+          <IconButton color="primary" onClick={() => navigate(`/teacher/detail/${row.id}`)} disabled={row.original.status == 0}>
             <Eye variant="Outline" />
           </IconButton>
         </Tooltip>
@@ -189,7 +179,7 @@ function EditAction({
 
       {hasEditPermission && (
         <Tooltip title="Chỉnh sửa">
-          <IconButton color="primary" onClick={() => navigate(`/user/edit/${row.id}`)} disabled={row.original.status == 0}>
+          <IconButton color="primary" onClick={() => navigate(`/teacher/edit/${row.id}`)} disabled={row.original.status == 0}>
             <Edit2 variant="Outline" />
           </IconButton>
         </Tooltip>
@@ -197,11 +187,7 @@ function EditAction({
 
       {hasDeletePermission && (
         <Tooltip title="Xóa">
-          <IconButton
-            disabled={row.original.id == Number(user?.id) || row.original.status == 0}
-            color="primary"
-            onClick={() => setOpenDelete(true)}
-          >
+          <IconButton disabled={row.original.status == 0} color="primary" onClick={() => setOpenDelete(true)}>
             <Trash variant="Outline" />
           </IconButton>
         </Tooltip>
@@ -221,10 +207,10 @@ function EditAction({
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Bạn có muốn xóa nhân viên này không?</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Bạn có muốn xóa giảng viên này không?</DialogTitle>
 
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">Khi xóa nhân viên, tất cả thông tin đi kèm cũng sẽ bị xóa.</DialogContentText>
+          <DialogContentText id="alert-dialog-description">Khi xóa giảng viên, tất cả thông tin đi kèm cũng sẽ bị xóa.</DialogContentText>
         </DialogContent>
 
         <DialogActions>
@@ -368,11 +354,11 @@ function DraggableRow({ row }: { row: Row<any> }) {
 
 // ==============================|| REACT TABLE - MAIN ||============================== //
 
-export default function User() {
+export default function TeacherPage() {
   const { logout, user } = useAuth();
   const intl = useIntl();
   const [reload, setReload] = useState(false);
-  const columns = useMemo<ColumnDef<User>[]>(
+  const columns = useMemo<ColumnDef<Teacher>[]>(
     () => [
       {
         id: 'id',
@@ -385,20 +371,18 @@ export default function User() {
         meta: { className: 'cell-center' }
       },
       {
+        id: 'code',
+        header: 'Mã giảng viên',
+        accessorKey: 'code',
+        dataType: 'text',
+        enableGrouping: false,
+      },
+      {
         id: 'fullName',
-        header: 'Tên nhân viên',
+        header: 'Tên giảng viên',
         accessorKey: 'fullName',
         dataType: 'text',
         enableGrouping: false,
-        meta: { width: '35%' }
-      },
-      {
-        id: 'phone',
-        header: 'Số điện thoại',
-        accessorKey: 'phone',
-        dataType: 'text',
-        enableGrouping: false,
-        meta: { width: '35%' }
       },
       {
         id: 'email',
@@ -406,37 +390,20 @@ export default function User() {
         accessorKey: 'email',
         dataType: 'text',
         enableGrouping: false,
-        meta: { width: '35%' }
       },
       {
-        id: 'birthday',
-        header: 'Ngày sinh',
-        accessorKey: 'birthday',
+        id: 'phone',
+        header: 'Số điện thoại',
+        accessorKey: 'phone',
         dataType: 'text',
         enableGrouping: false,
-        meta: { width: '35%' },
-        cell: ({ cell }) => formatDate(cell.getValue<string>())
       },
       {
-        id: 'hometown',
-        header: 'Quê quán',
-        accessorKey: 'hometown',
+        id: 'sectionName',
+        header: 'Bộ môn',
+        accessorKey: 'sectionName',
         dataType: 'text',
         enableGrouping: false,
-        meta: { width: '35%' }
-      },
-      {
-        id: 'role',
-        header: 'Vai trò',
-        accessorKey: 'role',
-        cell: (cell) => {
-          const { roleColor, roleName } = cell.row.original;
-
-          return <Chip label={roleName} color={(roleColor as any) ?? 'primary'} />;
-        },
-        dataType: 'text',
-        enableGrouping: false,
-        meta: { width: '35%' }
       },
       {
         id: 'status',
@@ -454,7 +421,6 @@ export default function User() {
         },
         dataType: 'select',
         enableGrouping: false,
-        meta: { width: '20%' }
       },
       {
         id: 'edit',
@@ -467,7 +433,7 @@ export default function User() {
     [reload]
   );
   let options: number[] = [10, 25, 50, 100];
-  const [data, setData] = useState<User[]>([]);
+  const [data, setData] = useState<Teacher[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [pageNumber, setPageNumber] = useState(0);
@@ -477,8 +443,6 @@ export default function User() {
     sort: '',
     keyword: '',
     status: '',
-    roleId: '',
-    roleType: '1'
   });
   const [hasAddPermission, setHasAddPermission] = useState(false);
   const [alert, setAlert] = useState({
@@ -508,8 +472,8 @@ export default function User() {
   };
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      const response = await getList(pageRequest);
+    const fetchTeachers = async () => {
+      const response = await teacherApi.getList(pageRequest);
 
       if (response.statusCode === HttpStatusCode.Ok) {
         const data = response.data;
@@ -524,7 +488,7 @@ export default function User() {
       }
     };
 
-    fetchUsers();
+    fetchTeachers();
   }, [pageRequest, intl, logout, reload]);
 
   useEffect(() => {
@@ -539,7 +503,7 @@ export default function User() {
     columns,
     manualPagination: true,
     defaultColumn: { cell: RowEditable },
-    getRowId: (row: User) => (row.id ?? '').toString(),
+    getRowId: (row: Teacher) => (row.id ?? '').toString(),
     state: { rowSelection, columnFilters, sorting, grouping, columnOrder, columnVisibility },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
@@ -568,13 +532,13 @@ export default function User() {
       setSelectedRow,
       revertData: (rowIndex: number, revert: unknown) => {
         if (revert) {
-          setData((old: User[]) => old.map((row, index) => (index === rowIndex ? originalData[rowIndex] : row)));
+          setData((old: Teacher[]) => old.map((row, index) => (index === rowIndex ? originalData[rowIndex] : row)));
         } else {
           setOriginalData((old) => old.map((row, index) => (index === rowIndex ? data[rowIndex] : row)));
         }
       },
       updateData: (rowIndex, columnId, value) => {
-        setData((old: User[]) =>
+        setData((old: Teacher[]) =>
           old.map((row, index) => {
             if (index === rowIndex) {
               return { ...old[rowIndex]!, [columnId]: value };
@@ -614,7 +578,7 @@ export default function User() {
   const columnSensors = useSensors(useSensor(MouseSensor, {}), useSensor(TouchSensor, {}), useSensor(KeyboardSensor, {}));
   const rowSensors = useSensors(useSensor(MouseSensor, {}), useSensor(TouchSensor, {}), useSensor(KeyboardSensor, {}));
 
-  useEffect(() => setColumnVisibility({ id: false, role: true, contact: false, country: false, progress: false }), []);
+  useEffect(() => setColumnVisibility({ id: false }), []);
 
   useEffect(() => {
     if ([1].includes(user?.roleId ?? 0)) {
@@ -638,7 +602,7 @@ export default function User() {
         })}
       >
         <Typography variant="h3" gutterBottom>
-          Danh sách nhân viên
+          Danh sách giảng viên
         </Typography>
 
         {hasAddPermission && (
@@ -649,10 +613,10 @@ export default function User() {
               justifyContent: 'center'
             }}
             variant="contained"
-            onClick={() => navigate('/user/add')}
+            onClick={() => navigate('/teacher/add')}
             startIcon={<Add />}
           >
-            Thêm nhân viên
+            Thêm giảng viên
           </Button>
         )}
       </Stack>
@@ -698,7 +662,7 @@ export default function User() {
                   setPageRequest({ ...pageRequest, page: 0, keyword: globalFilter });
                 }
               }}
-              placeholder={'Tìm kiếm tên, SĐT, email'}
+              placeholder={'Tìm kiếm mã, tên, email'}
               sx={{ minWidth: 100 }}
               inputProps={{
                 sx: {
@@ -711,18 +675,6 @@ export default function User() {
                 }
               }}
             />
-
-            <Select
-              value={pageRequest.roleId}
-              onChange={(event) => setPageRequest({ ...pageRequest, page: 0, roleId: event.target.value })}
-              displayEmpty
-              input={<OutlinedInput />}
-              slotProps={{ input: { 'aria-label': 'Role Filter' } }}
-            >
-              <MenuItem value="">Vai trò</MenuItem>
-              <MenuItem value="1">Nhân viên văn phòng khoa</MenuItem>
-              <MenuItem value="4">Nhân viên trung tâm tin học</MenuItem>
-            </Select>
 
             <Select
               value={pageRequest.status}
