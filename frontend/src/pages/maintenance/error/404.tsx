@@ -8,15 +8,15 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-// project-imports
-import { APP_DEFAULT_PATH } from 'config';
-
 // assets
 import error404 from 'assets/images/maintenance/img-error-404.svg';
+import useAuth from 'hooks/useAuth';
 
 // ==============================|| ERROR 404 ||============================== //
 
 export default function Error404() {
+  const { user } = useAuth();
+  const roleName = user?.roleId === 1 ? 'admin' : user?.roleId == 2 ? 'teacher' : user?.roleId == 4 ? 'it-center' : '';
   return (
     <Grid
       container
@@ -39,7 +39,7 @@ export default function Error404() {
           <Typography align="center" sx={{ color: 'text.secondary', width: { xs: '73%', sm: '61%' } }}>
             The page you are looking was moved, removed, renamed, or might never exist!
           </Typography>
-          <Button component={Link} to={APP_DEFAULT_PATH} variant="contained">
+          <Button component={Link} to={'/dashboard/' + roleName} variant="contained">
             Back To Home
           </Button>
         </Stack>

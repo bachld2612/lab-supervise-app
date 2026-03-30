@@ -15,6 +15,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -37,6 +39,14 @@ public class AuthService {
         );
 
         if (authentication.isAuthenticated()) {
+            if (Objects.equals(loginRequest.getDevice(), "web") && user.getRoleId() == 3) {
+                throw new IllegalArgumentException("Tài khoản hoặc mật khẩu không chính xác");
+            }
+
+            if (Objects.equals(loginRequest.getDevice(), "desktop") && user.getRoleId() != 3) {
+                throw new IllegalArgumentException("Tài khoản hoặc mật khẩu không chính xác");
+            }
+
             RoleResponse roleResponse = roleRepository.findRoleById(user.getRoleId());
             String token = jwtService.generateToken(String.valueOf(user.getId()));
 

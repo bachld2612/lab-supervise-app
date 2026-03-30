@@ -2,6 +2,7 @@ package com.bachld.backend.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,9 @@ public class TeacherCreateRequest {
 
     @NotEmpty(message = "Số điện thoại không được phép bỏ trống")
     String phone;
+
+    @NotNull(message = "Bộ môn không được phép bỏ trống")
+    Integer sectionId;
 
     @NotEmpty(message = "Ngày sinh không được phép bỏ trống")
     @Pattern(

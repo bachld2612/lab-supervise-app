@@ -89,39 +89,47 @@ export default function Breadcrumbs({
   }
 
   useEffect(() => {
-    navigation?.items?.map((menu: NavItemType) => {
-      if (menu.type && menu.type === 'group') {
-        if (menu?.url && menu.url === customLocation) {
+    let isMatched = false;
+
+    const getCollapse = (menu: NavItemType) => {
+      if (!custom && menu.children) {
+        menu.children.forEach((collapse: NavItemType) => {
+          if (collapse.type === 'collapse') {
+            getCollapse(collapse);
+            if (collapse.url && customLocation.startsWith(collapse.url)) {
+              setMain(collapse);
+              setItem(collapse);
+              isMatched = true;
+            }
+          } else if (collapse.type === 'item') {
+            if (collapse.url && customLocation.startsWith(collapse.url)) {
+              setMain(menu);
+              setItem(collapse);
+              isMatched = true;
+            }
+          }
+        });
+      }
+    };
+
+    navigation?.items?.forEach((menu: NavItemType) => {
+      if (menu.type === 'group') {
+        if (menu.url && customLocation.startsWith(menu.url)) {
           setMain(menu);
           setItem(menu);
+          isMatched = true;
         } else {
-          getCollapse(menu as { children: NavItemType[]; type?: string });
+          getCollapse(menu);
         }
       }
-      return false;
     });
-  });
 
-  // set active item state
-  const getCollapse = (menu: NavItemType) => {
-    if (!custom && menu.children) {
-      menu.children.filter((collapse: NavItemType) => {
-        if (collapse.type && collapse.type === 'collapse') {
-          getCollapse(collapse as { children: NavItemType[]; type?: string });
-          if (collapse.url === customLocation) {
-            setMain(collapse);
-            setItem(collapse);
-          }
-        } else if (collapse.type && collapse.type === 'item') {
-          if (customLocation === collapse.url) {
-            setMain(menu);
-            setItem(collapse);
-          }
-        }
-        return false;
-      });
+    if (!isMatched) {
+      setMain(undefined);
+      setItem(undefined);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [customLocation, custom]);
 
   // item separator
   const SeparatorIcon = separator!;
@@ -181,7 +189,7 @@ export default function Breadcrumbs({
                 {mainContent}
               </MuiBreadcrumbs>
             </Grid>
-            {title && titleBottom && (
+            {title && titleBottom && customLocation === main.url && (
               <Grid sx={{ mt: card === false ? 0 : 1 }}>
                 <Typography variant="h2" sx={{ fontWeight: 700 }}>
                   <FormattedMessage id={main.title} />
@@ -265,7 +273,7 @@ export default function Breadcrumbs({
             alignItems={rightAlign ? 'center' : 'flex-start'}
             spacing={0.5}
           >
-            {title && !titleBottom && (
+            {title && !titleBottom && customLocation === item?.url && (
               <Grid>
                 <Typography variant="h2" sx={{ fontWeight: 700 }}>
                   <FormattedMessage id={custom ? heading : item?.title} />
@@ -273,7 +281,7 @@ export default function Breadcrumbs({
               </Grid>
             )}
             <Grid>{tempContent}</Grid>
-            {title && titleBottom && (
+            {title && titleBottom && customLocation === item?.url && (
               <Grid sx={{ mt: card === false ? 0 : 1 }}>
                 <Typography variant="h2" sx={{ fontWeight: 700 }}>
                   <FormattedMessage id={custom ? heading : item?.title} />

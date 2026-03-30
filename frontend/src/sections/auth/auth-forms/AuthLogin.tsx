@@ -4,8 +4,6 @@ import { preload } from 'swr';
 
 // material-ui
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -13,7 +11,6 @@ import InputLabel from '@mui/material/InputLabel';
 import Link from '@mui/material/Link';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 
 // third-party
 import * as Yup from 'yup';
@@ -32,8 +29,6 @@ import { Eye, EyeSlash } from 'iconsax-reactjs';
 // ============================|| JWT - LOGIN ||============================ //
 
 export default function AuthLogin({ forgot }: { forgot?: string }) {
-  const [checked, setChecked] = useState(false);
-
   const { isLoggedIn, login } = useAuth();
   const scriptedRef = useScriptRef();
 
@@ -139,20 +134,7 @@ export default function AuthLogin({ forgot }: { forgot?: string }) {
               </Grid>
 
               <Grid sx={{ mt: -1 }} size={12}>
-                <Stack direction="row" sx={{ gap: 2, justifyContent: 'space-between', alignItems: 'center' }}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={checked}
-                        onChange={(event) => setChecked(event.target.checked)}
-                        name="checked"
-                        color="primary"
-                        size="small"
-                      />
-                    }
-                    label={<Typography variant="h6">Ghi nhớ đăng nhập</Typography>}
-                  />
-
+                <Stack direction="row" sx={{ gap: 2, justifyContent: 'flex-end', alignItems: 'center' }}>
                   <Link variant="h6" component={RouterLink} to={isLoggedIn && forgot ? forgot : '/forgot-password'} color="text.primary">
                     Quên mật khẩu?
                   </Link>

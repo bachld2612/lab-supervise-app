@@ -29,5 +29,7 @@ public class TeacherUpdateRequest {
     )
     String birthday;
 
+    Integer sectionId;
+
     String phone;
 }

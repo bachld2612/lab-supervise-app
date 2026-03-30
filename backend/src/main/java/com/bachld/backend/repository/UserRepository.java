@@ -37,7 +37,7 @@ public interface UserRepository extends JpaRepository<User,Integer> {
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.UserResponse(
-            u.id, u.email, u.phone, u.fullName, u.hometown, u.birthday, u.rawPassword, r.id, r.name, r.color, r.status
+            u.id, u.email, u.phone, u.fullName, u.hometown, u.birthday, u.rawPassword, r.id, r.name, r.color, u.status
         )
         FROM User u JOIN Role r ON u.roleId = r.id
         WHERE (LOWER(u.fullName) LIKE :keyword
@@ -46,9 +46,10 @@ public interface UserRepository extends JpaRepository<User,Integer> {
             )
             AND (:status IS NULL OR :status = u.status)
             AND (:roleType IS NULL OR :roleType = r.type)
-        ORDER BY u.updatedAt
+            AND (:roleId IS NULL OR :roleId = r.id)
+        ORDER BY u.updatedAt DESC
     """)
-    Page<UserResponse> findAllByKeyword(Pageable pageable, String keyword, Integer status, Integer roleType);
+    Page<UserResponse> findAllByKeyword(Pageable pageable, String keyword, Integer status, Integer roleType, Integer roleId);
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.UserResponse(

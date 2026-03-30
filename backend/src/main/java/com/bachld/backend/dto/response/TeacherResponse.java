@@ -26,6 +26,8 @@ public class TeacherResponse {
 
     String hometown;
 
+    String sectionName;
+
     LocalDate birthDay;
 
     String rawPassword;
