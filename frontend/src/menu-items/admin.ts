@@ -22,17 +22,17 @@ const adminMenu: NavItemType = {
   children: [
     {
       id: 'admin-dashboard',
-      title: 'Tổng quan',
+      title: 'Trang chủ',
       type: 'item',
-      url: '/admin/dashboard',
+      url: '/dashboard/admin',
       icon: icons.monitor
     },
     {
-      id: 'manage-labs',
-      title: 'Quản lý phòng TN',
+      id: 'user-management',
+      title: 'Quản lý nhân viên',
       type: 'item',
-      url: '/admin/labs',
-      icon: icons.box
+      url: '/user',
+      icon: icons.profile
     },
     {
       id: 'manage-schedules',

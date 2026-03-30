@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 // project-imports
-import { APP_DEFAULT_PATH } from 'config';
 import useAuth from 'hooks/useAuth';
+import Loader from 'components/Loader';
 
 // types
 import { GuardProps } from 'types/auth';
@@ -11,18 +11,26 @@ import { GuardProps } from 'types/auth';
 // ==============================|| GUEST GUARD ||============================== //
 
 export default function GuestGuard({ children }: GuardProps) {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    if (isLoggedIn) {
-      navigate(location?.state?.from ? location?.state?.from : APP_DEFAULT_PATH, {
+    const roleId = user?.roleId;
+    const roleName: string = roleId === 1 ? 'admin' : roleId === 2 ? 'teacher' : roleId === 4 ? 'it-center' : '';
+
+    if (isLoggedIn && user) {
+      const rolePath = `/dashboard/${roleName}`;
+      navigate(location?.state?.from ? location?.state?.from : rolePath, {
         state: { from: '' },
         replace: true
       });
     }
-  }, [isLoggedIn, navigate, location]);
+  }, [isLoggedIn, user, navigate, location]);
+
+  if (isLoggedIn) {
+    return <Loader />;
+  }
 
   return children;
 }

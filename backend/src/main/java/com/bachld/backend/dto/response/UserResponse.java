@@ -24,7 +24,7 @@ public class UserResponse {
 
     String hometown;
 
-    LocalDate birthDay;
+    LocalDate birthday;
 
     String rawPassword;
 
