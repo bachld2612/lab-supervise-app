@@ -52,4 +52,11 @@ public class TeacherController {
         teacherService.update(request, id);
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
     }
+
+    @DeleteMapping("/v1/{id}")
+    @AuthFilter(role = "ADMIN")
+    public ResponseEntity<?> deleteById(@PathVariable int id) {
+        teacherService.deleteById(id);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+    }
 }

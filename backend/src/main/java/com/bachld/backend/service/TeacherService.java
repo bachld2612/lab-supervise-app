@@ -122,4 +122,15 @@ public class TeacherService {
         userRepository.save(user);
         teacherRepository.save(teacher);
     }
+
+    public void deleteById(Integer id) {
+        Teacher teacher = teacherRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy giảng viên có id: " + id));
+
+        User user = userRepository.findByIdAndStatus(teacher.getUserId(), Status.ACTIVE.getValue())
+                .orElseThrow(() -> new IllegalArgumentException("Người dùng có id: " +  teacher.getUserId() + "không tồn tại hoặc đã bị xoá"));
+        user.setStatus(Status.INACTIVE.getValue());
+
+        userRepository.save(user);
+    }
 }

@@ -62,6 +62,7 @@ public class UserController {
     }
 
     @DeleteMapping("v1/{id}")
+    @AuthFilter(role = "ADMIN")
     public ResponseEntity<?> deleteById(@PathVariable int id) {
         userService.deleteById(id);
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
