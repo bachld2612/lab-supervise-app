@@ -54,6 +54,7 @@ public class TeacherService {
         util.validatePhone(request.getPhone(), null);
         util.validateEmail(request.getEmail(), null);
         util.validateTeacherCode(request.getCode(), null);
+        util.validateSection(request.getSectionId());
 
         User user = new User();
         user.setEmail(request.getEmail());
@@ -72,6 +73,8 @@ public class TeacherService {
         Teacher teacher = new Teacher();
         teacher.setCode(request.getCode());
         teacher.setUserId(user.getId());
+        teacher.setSectionId(request.getSectionId());
+        teacher.setStatus(Status.ACTIVE.getValue());
         teacherRepository.save(teacher);
     }
 
@@ -101,6 +104,11 @@ public class TeacherService {
 
         if (request.getHometown() != null && !request.getHometown().isEmpty()) {
             user.setHometown(request.getHometown());
+        }
+
+        if (request.getSectionId() != null) {
+            util.validateSection(request.getSectionId());
+            teacher.setSectionId(request.getSectionId());
         }
 
         if (request.getBirthday() != null && !request.getBirthday().isEmpty()) {

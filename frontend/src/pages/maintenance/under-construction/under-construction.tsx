@@ -9,17 +9,17 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-// project-imports
-import { APP_DEFAULT_PATH } from 'config';
-
 // assets
 import construction from 'assets/images/maintenance/img-cunstruct-1.svg';
 import constructionBg from 'assets/images/maintenance/img-cunstruct-1-bg.png';
 import constructionbottom from 'assets/images/maintenance/img-cunstruct-1-bottom.svg';
+import useAuth from 'hooks/useAuth';
 
 // ==============================|| UNDER CONSTRUCTION ||============================== //
 
 export default function UnderConstruction() {
+  const { user } = useAuth();
+  const roleName = user?.roleId === 1 ? 'admin' : user?.roleId == 2 ? 'teacher' : user?.roleId == 4 ? 'it-center' : '';
   return (
     <Box sx={{ minHeight: '100vh', backgroundImage: `url(${constructionBg})`, backgroundSize: '100%', backgroundRepeat: 'no-repeat' }}>
       <Container fixed sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center' }}>
@@ -44,7 +44,7 @@ export default function UnderConstruction() {
               <Typography align="center" sx={{ color: 'text.secondary', width: '85%' }}>
                 Hey! Please check out this site later. We are doing some maintenance on it right now.
               </Typography>
-              <Button component={Link} to={APP_DEFAULT_PATH} variant="contained">
+              <Button component={Link} to={'/dashboard/' + roleName} variant="contained">
                 Back To Home
               </Button>
             </Stack>

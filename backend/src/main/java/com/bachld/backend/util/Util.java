@@ -1,5 +1,7 @@
 package com.bachld.backend.util;
 
+import com.bachld.backend.dto.response.SectionResponse;
+import com.bachld.backend.dto.response.SubjectResponse;
 import com.bachld.backend.model.*;
 import com.bachld.backend.repository.*;
 import com.bachld.backend.util.enums.Status;
@@ -26,6 +28,8 @@ public class Util {
 
     @Autowired
     private SubjectRepository subjectRepository;
+    @Autowired
+    private SectionRepository sectionRepository;
 
     public User getCurrentUser() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -52,8 +56,15 @@ public class Util {
 
     public void validateRole(Integer roleId) {
         Optional<Role> role = roleRepository.findById(roleId);
-        if (role.isEmpty()) {
+        if (role.isEmpty() || role.get().getStatus() == Status.INACTIVE.getValue()) {
             throw new IllegalArgumentException("Role không hợp lệ");
+        }
+    }
+
+    public void validateSection(Integer sectionId) {
+        SectionResponse section = sectionRepository.findByIdAndStatus(sectionId, Status.ACTIVE.getValue());
+        if (section == null) {
+            throw new IllegalArgumentException("Bộ môn không hợp lệ");
         }
     }
 

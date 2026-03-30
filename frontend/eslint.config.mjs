@@ -32,7 +32,7 @@ export default [
       sourceType: 'module',
 
       parserOptions: {
-        project: './tsconfig.json',
+        project: true,
         tsconfigRootDir: __dirname,
         warnOnUnsupportedTypeScriptVersion: false
       }
@@ -94,7 +94,7 @@ export default [
           trailingComma: 'none',
           tabWidth: 2,
           useTabs: false,
-          endOfLine: "lf"
+          endOfLine: 'auto'
         }
       ]
     }

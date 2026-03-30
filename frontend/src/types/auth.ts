@@ -14,6 +14,10 @@ type UserProfile = {
   name?: string;
   role?: string;
   roleId?: number;
+  roleName?: string;
+  roleColor?: string;
+  hometown?: string;
+  birthday?: string;
   tier?: string;
 };
 

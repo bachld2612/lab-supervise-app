@@ -9,17 +9,16 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-// project-imports
-import { APP_DEFAULT_PATH } from 'config';
-
 // assets
 import error500 from 'assets/images/maintenance/img-error-500.svg';
+import useAuth from 'hooks/useAuth';
 
 // ==============================|| ERROR 500 ||============================== //
 
 export default function Error500() {
   const downSM = useMediaQuery((theme) => theme.breakpoints.down('sm'));
-
+  const { user } = useAuth();
+  const roleName = user?.roleId === 1 ? 'admin' : user?.roleId == 2 ? 'teacher' : user?.roleId == 4 ? 'it-center' : '';
   return (
     <Grid container direction="column" spacing={3} sx={{ alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
       <Grid size={12}>
@@ -37,7 +36,7 @@ export default function Error500() {
           <Typography variant="body2" align="center" sx={{ color: 'text.secondary', width: { xs: '73%', sm: '70%' }, mt: 1 }}>
             Server error 500. we fixing the problem. please try again at a later stage.
           </Typography>
-          <Button component={Link} to={APP_DEFAULT_PATH} variant="contained" sx={{ textTransform: 'none', mt: 4 }}>
+          <Button component={Link} to={'/dashboard/' + roleName} variant="contained" sx={{ textTransform: 'none', mt: 4 }}>
             Back To Home
           </Button>
         </Stack>
