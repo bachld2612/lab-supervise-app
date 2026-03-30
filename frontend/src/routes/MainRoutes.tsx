@@ -17,6 +17,12 @@ const UserPage = Loadable(lazy(() => import('pages/user/user-page')));
 const AddUser = Loadable(lazy(() => import('sections/extra-pages/user/add')));
 const EditUser = Loadable(lazy(() => import('sections/extra-pages/user/edit')));
 const DetailUser = Loadable(lazy(() => import('sections/extra-pages/user/detail')));
+
+const TeacherPage = Loadable(lazy(() => import('pages/teacher/teacher-page')));
+const AddTeacher = Loadable(lazy(() => import('sections/extra-pages/teacher/add')));
+const EditTeacher = Loadable(lazy(() => import('sections/extra-pages/teacher/edit')));
+const DetailTeacher = Loadable(lazy(() => import('sections/extra-pages/teacher/detail')));
+
 const AdminDashboardPage = Loadable(lazy(() => import('pages/dashboard/admin-dashboard-page')));
 const TeacherDashboardPage = Loadable(lazy(() => import('pages/dashboard/teacher-dashboard-page')));
 const ItCenterDashboardPage = Loadable(lazy(() => import('pages/dashboard/it-center-dashboard-page')));
@@ -57,6 +63,22 @@ const MainRoutes = {
         {
           path: 'user/detail/:id',
           element: <DetailUser />
+        },
+        {
+          path: 'teacher',
+          element: <TeacherPage />
+        },
+        {
+          path: 'teacher/add',
+          element: <AddTeacher />
+        },
+        {
+          path: 'teacher/edit/:id',
+          element: <EditTeacher />
+        },
+        {
+          path: 'teacher/detail/:id',
+          element: <DetailTeacher />
         }
       ]
     },
