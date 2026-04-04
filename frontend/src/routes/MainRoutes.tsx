@@ -23,6 +23,8 @@ const AddTeacher = Loadable(lazy(() => import('sections/extra-pages/teacher/add'
 const EditTeacher = Loadable(lazy(() => import('sections/extra-pages/teacher/edit')));
 const DetailTeacher = Loadable(lazy(() => import('sections/extra-pages/teacher/detail')));
 
+const DepartmentPage = Loadable(lazy(() => import('pages/tlu-information/department-page')));
+
 const AdminDashboardPage = Loadable(lazy(() => import('pages/dashboard/admin-dashboard-page')));
 const TeacherDashboardPage = Loadable(lazy(() => import('pages/dashboard/teacher-dashboard-page')));
 const ItCenterDashboardPage = Loadable(lazy(() => import('pages/dashboard/it-center-dashboard-page')));
@@ -79,6 +81,10 @@ const MainRoutes = {
         {
           path: 'teacher/detail/:id',
           element: <DetailTeacher />
+        },
+        {
+          path: 'department',
+          element: <DepartmentPage />
         }
       ]
     },

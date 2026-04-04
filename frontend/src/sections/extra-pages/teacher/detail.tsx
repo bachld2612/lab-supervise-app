@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import useAuth from 'hooks/useAuth';
 import { useNavigate, useParams } from 'react-router';
 import { useIntl } from 'react-intl';
-import teacherApi from 'api/teacher';
+import { getById } from 'api/teacher';
 import { Teacher } from 'types/teacher';
 import AnimateButton from 'components/@extended/AnimateButton';
 
@@ -41,7 +41,7 @@ export default function DetailTeacher() {
   useEffect(() => {
     const fetchTeacher = async () => {
       if (id) {
-        const response = await teacherApi.getById(Number(id));
+        const response = await getById(Number(id));
 
         if (response.statusCode === HttpStatusCode.Ok) {
           setTeacher(response.data);

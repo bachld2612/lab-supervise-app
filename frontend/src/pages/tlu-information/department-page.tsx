@@ -1,5 +1,5 @@
 import { CSSProperties, Fragment, useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 // material-ui
 import Divider from '@mui/material/Divider';
@@ -18,6 +18,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
 
 // third-party
 import {
@@ -64,7 +65,7 @@ import IconButton from 'components/@extended/IconButton';
 import { EmptyTable, HeaderSort, RowEditable } from 'components/third-party/react-table';
 
 // assets
-import { Add, ArrowDown2, ArrowRight2, Command, Edit2, Eye, Lock, TableDocument, Trash } from 'iconsax-reactjs';
+import { Add, ArrowDown2, ArrowRight2, Command, Edit2, TableDocument, Trash } from 'iconsax-reactjs';
 import {
   Alert,
   Button,
@@ -81,11 +82,11 @@ import {
 import { useIntl } from 'react-intl';
 import { HttpStatusCode } from 'axios';
 import useAuth from 'hooks/useAuth';
-import { type Teacher } from 'types/teacher';
-import { getList, deleteById, resetPassword } from 'api/teacher';
+import { type Department } from 'types/department';
+import { getList, deleteById, create, update } from 'api/department';
 import { DEFAULT_PAGE_SIZE, PageRequest } from 'types/paging';
 
-const fuzzyFilter: FilterFn<Teacher> = (row, columnId, value, addMeta) => {
+const fuzzyFilter: FilterFn<Department> = (row, columnId, value, addMeta) => {
   // rank the item
   const itemRank = rankItem(row.getValue(columnId), value);
 
@@ -96,15 +97,19 @@ const fuzzyFilter: FilterFn<Teacher> = (row, columnId, value, addMeta) => {
   return itemRank.passed;
 };
 
-// ==============================|| REACT TABLE - EDIT ACTION ||============================== //
+// ==============================|| DEPARTMENT FORM DIALOG ||============================== //
 
-function EditAction({
-  row,
+function DepartmentFormDialog({
+  open,
+  onClose,
+  department,
   reload,
   setReload,
   setAlert
 }: {
-  row: Row<Teacher>;
+  open: boolean;
+  onClose: () => void;
+  department: Department | null;
   reload: boolean;
   setReload: (e: boolean) => void;
   setAlert: React.Dispatch<
@@ -115,21 +120,139 @@ function EditAction({
     }>
   >;
 }) {
-  const navigate = useNavigate();
+  const { logout } = useAuth();
+  const [name, setName] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const isEdit = department !== null;
+
+  useEffect(() => {
+    if (open) {
+      if (department) {
+        setName(department.name);
+      } else {
+        setName('');
+      }
+      setNameError('');
+    }
+  }, [open, department]);
+
+  const validate = (): boolean => {
+    if (!name.trim()) {
+      setNameError('Tên khoa không được phép bỏ trống');
+      return false;
+    }
+    setNameError('');
+    return true;
+  };
+
+  const handleSubmit = async () => {
+    if (!validate()) return;
+
+    setSubmitting(true);
+
+    try {
+      if (isEdit) {
+        const response = await update({ name } as Department, department.id);
+
+        if (response.statusCode == HttpStatusCode.Ok) {
+          setAlert({ open: true, message: 'Cập nhật khoa thành công', severity: 'success' });
+          setReload(!reload);
+          onClose();
+        } else if (response.statusCode == HttpStatusCode.Unauthorized) {
+          logout();
+        } else if (response.statusCode == HttpStatusCode.UnprocessableEntity) {
+          setAlert({ open: true, message: response.data, severity: 'error' });
+        } else {
+          setAlert({ open: true, message: 'Lỗi không xác định', severity: 'error' });
+        }
+      } else {
+        const response = await create({ name } as Department);
+
+        if (response.statusCode == HttpStatusCode.Ok) {
+          setAlert({ open: true, message: 'Thêm khoa thành công', severity: 'success' });
+          setReload(!reload);
+          onClose();
+        } else if (response.statusCode == HttpStatusCode.Unauthorized) {
+          logout();
+        } else if (response.statusCode == HttpStatusCode.UnprocessableEntity) {
+          setAlert({ open: true, message: response.data, severity: 'error' });
+        } else {
+          setAlert({ open: true, message: 'Lỗi không xác định', severity: 'error' });
+        }
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} aria-labelledby="department-form-dialog-title" maxWidth="sm" fullWidth>
+      <DialogTitle id="department-form-dialog-title">{isEdit ? 'Cập nhật khoa' : 'Thêm khoa mới'}</DialogTitle>
+
+      <DialogContent>
+        <TextField
+          autoFocus
+          margin="dense"
+          label="Tên khoa"
+          type="text"
+          fullWidth
+          variant="outlined"
+          value={name}
+          onChange={(e) => {
+            setName(e.target.value);
+            if (nameError) setNameError('');
+          }}
+          error={!!nameError}
+          helperText={nameError}
+          sx={{ mt: 1 }}
+        />
+      </DialogContent>
+
+      <DialogActions>
+        <Button variant="contained" color="primary" onClick={onClose}>
+          Huỷ
+        </Button>
+
+        <Button variant="contained" color="success" onClick={handleSubmit} disabled={submitting}>
+          {isEdit ? 'Cập nhật' : 'Thêm mới'}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
+// ==============================|| REACT TABLE - EDIT ACTION ||============================== //
+
+function EditAction({
+  row,
+  reload,
+  setReload,
+  setAlert,
+  onEdit
+}: {
+  row: Row<Department>;
+  reload: boolean;
+  setReload: (e: boolean) => void;
+  setAlert: React.Dispatch<
+    React.SetStateAction<{
+      open: boolean;
+      message: string;
+      severity: 'success' | 'error' | 'info' | 'warning';
+    }>
+  >;
+  onEdit: (department: Department) => void;
+}) {
   const { user, logout } = useAuth();
-  const [hasDetailPermission, setHasDetailPermission] = useState(false);
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
-  const [hasResetPasswordPermission, setHasResetPasswordPermission] = useState(false);
-  const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
 
   useEffect(() => {
     if ([1].includes(user?.roleId ?? 0)) {
-      setHasDetailPermission(true);
       setHasEditPermission(true);
       setHasDeletePermission(true);
-      setHasResetPasswordPermission(true);
     }
   }, [user?.roleId]);
 
@@ -137,7 +260,7 @@ function EditAction({
     const response = await deleteById(row.original.id);
 
     if (response.statusCode == HttpStatusCode.Ok) {
-      setAlert({ open: true, message: 'Xóa giảng viên thành công', severity: 'success' });
+      setAlert({ open: true, message: 'Xóa khoa thành công', severity: 'success' });
       setReload(!reload);
     } else if (response.statusCode == HttpStatusCode.Unauthorized) {
       logout();
@@ -150,36 +273,11 @@ function EditAction({
     setOpenDelete(false);
   };
 
-  const handleResetPassword = async () => {
-    const response = await resetPassword(Number(row.original.userId));
-
-    if (response.statusCode == HttpStatusCode.Ok) {
-      setAlert({ open: true, message: 'Đặt lại mật khẩu thành công', severity: 'success' });
-      setReload(!reload);
-    } else if (response.statusCode == HttpStatusCode.Unauthorized) {
-      logout();
-    } else if (response.statusCode == HttpStatusCode.UnprocessableEntity) {
-      setAlert({ open: true, message: response.data, severity: 'error' });
-    } else {
-      setAlert({ open: true, message: 'Lỗi không xác định', severity: 'error' });
-    }
-
-    setOpen(false);
-  };
-
   return (
     <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
-      {hasDetailPermission && (
-        <Tooltip title="Xem chi tiết">
-          <IconButton color="primary" onClick={() => navigate(`/teacher/detail/${row.id}`)} disabled={row.original.status == 0}>
-            <Eye variant="Outline" />
-          </IconButton>
-        </Tooltip>
-      )}
-
       {hasEditPermission && (
         <Tooltip title="Chỉnh sửa">
-          <IconButton color="primary" onClick={() => navigate(`/teacher/edit/${row.id}`)} disabled={row.original.status == 0}>
+          <IconButton color="primary" onClick={() => onEdit(row.original)} disabled={row.original.status == 0}>
             <Edit2 variant="Outline" />
           </IconButton>
         </Tooltip>
@@ -193,24 +291,16 @@ function EditAction({
         </Tooltip>
       )}
 
-      {hasResetPasswordPermission && (
-        <Tooltip title="Đặt lại mật khẩu">
-          <IconButton color="primary" onClick={() => setOpen(true)} disabled={row.original.status == 0}>
-            <Lock variant="Outline" />
-          </IconButton>
-        </Tooltip>
-      )}
-
       <Dialog
         open={openDelete}
         onClose={() => setOpenDelete(false)}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Bạn có muốn xóa giảng viên này không?</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Bạn có muốn xóa khoa này không?</DialogTitle>
 
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">Khi xóa giảng viên, tất cả thông tin đi kèm cũng sẽ bị xóa.</DialogContentText>
+          <DialogContentText id="alert-dialog-description">Khi xóa khoa, tất cả thông tin đi kèm cũng sẽ bị xóa.</DialogContentText>
         </DialogContent>
 
         <DialogActions>
@@ -219,26 +309,6 @@ function EditAction({
           </Button>
 
           <Button variant="contained" color="error" onClick={() => handleDelete()} autoFocus>
-            Xác nhận
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog open={open} onClose={() => setOpen(false)} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">Bạn có muốn đặt lại mật khẩu không?</DialogTitle>
-
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Hành động sẽ gây ra thay đổi dữ liệu, bạn có chắc chắn muốn đặt lại mật khẩu không?
-          </DialogContentText>
-        </DialogContent>
-
-        <DialogActions>
-          <Button variant="contained" color="primary" onClick={() => setOpen(false)}>
-            Huỷ
-          </Button>
-
-          <Button variant="contained" color="error" onClick={() => handleResetPassword()} autoFocus>
             Xác nhận
           </Button>
         </DialogActions>
@@ -354,11 +424,35 @@ function DraggableRow({ row }: { row: Row<any> }) {
 
 // ==============================|| REACT TABLE - MAIN ||============================== //
 
-export default function TeacherPage() {
+export default function DepartmentPage() {
   const { logout, user } = useAuth();
   const intl = useIntl();
   const [reload, setReload] = useState(false);
-  const columns = useMemo<ColumnDef<Teacher>[]>(
+  const [formOpen, setFormOpen] = useState(false);
+  const [editingDepartment, setEditingDepartment] = useState<Department | null>(null);
+
+  const handleOpenAdd = () => {
+    setEditingDepartment(null);
+    setFormOpen(true);
+  };
+
+  const handleOpenEdit = (department: Department) => {
+    setEditingDepartment(department);
+    setFormOpen(true);
+  };
+
+  const handleCloseForm = () => {
+    setFormOpen(false);
+    setEditingDepartment(null);
+  };
+
+  const [alert, setAlert] = useState({
+    open: false,
+    message: '',
+    severity: 'success' as 'success' | 'error' | 'info' | 'warning'
+  });
+
+  const columns = useMemo<ColumnDef<Department>[]>(
     () => [
       {
         id: 'id',
@@ -371,37 +465,9 @@ export default function TeacherPage() {
         meta: { className: 'cell-center' }
       },
       {
-        id: 'code',
-        header: 'Mã giảng viên',
-        accessorKey: 'code',
-        dataType: 'text',
-        enableGrouping: false
-      },
-      {
-        id: 'fullName',
-        header: 'Tên giảng viên',
-        accessorKey: 'fullName',
-        dataType: 'text',
-        enableGrouping: false
-      },
-      {
-        id: 'email',
-        header: 'Email',
-        accessorKey: 'email',
-        dataType: 'text',
-        enableGrouping: false
-      },
-      {
-        id: 'phone',
-        header: 'Số điện thoại',
-        accessorKey: 'phone',
-        dataType: 'text',
-        enableGrouping: false
-      },
-      {
-        id: 'sectionName',
-        header: 'Bộ môn',
-        accessorKey: 'sectionName',
+        id: 'name',
+        header: 'Tên khoa',
+        accessorKey: 'name',
         dataType: 'text',
         enableGrouping: false
       },
@@ -425,7 +491,7 @@ export default function TeacherPage() {
       {
         id: 'edit',
         header: 'Hành động',
-        cell: ({ row }) => <EditAction row={row} reload={reload} setReload={setReload} setAlert={setAlert} />,
+        cell: ({ row }) => <EditAction row={row} reload={reload} setReload={setReload} setAlert={setAlert} onEdit={handleOpenEdit} />,
         enableGrouping: false,
         meta: { className: 'cell-center', width: '10%' }
       }
@@ -433,7 +499,7 @@ export default function TeacherPage() {
     [reload]
   );
   let options: number[] = [10, 25, 50, 100];
-  const [data, setData] = useState<Teacher[]>([]);
+  const [data, setData] = useState<Department[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [pageNumber, setPageNumber] = useState(0);
@@ -445,12 +511,6 @@ export default function TeacherPage() {
     status: ''
   });
   const [hasAddPermission, setHasAddPermission] = useState(false);
-  const [alert, setAlert] = useState({
-    open: false,
-    message: '',
-    severity: 'success' as 'success' | 'error' | 'info' | 'warning'
-  });
-  const navigate = useNavigate();
   const location = useLocation();
   const [columnOrder, setColumnOrder] = useState<string[]>(() => columns.map((c) => c.id!));
 
@@ -472,7 +532,7 @@ export default function TeacherPage() {
   };
 
   useEffect(() => {
-    const fetchTeachers = async () => {
+    const fetchDepartments = async () => {
       const response = await getList(pageRequest);
 
       if (response.statusCode === HttpStatusCode.Ok) {
@@ -488,7 +548,7 @@ export default function TeacherPage() {
       }
     };
 
-    fetchTeachers();
+    fetchDepartments();
   }, [pageRequest, intl, logout, reload]);
 
   useEffect(() => {
@@ -503,7 +563,7 @@ export default function TeacherPage() {
     columns,
     manualPagination: true,
     defaultColumn: { cell: RowEditable },
-    getRowId: (row: Teacher) => (row.id ?? '').toString(),
+    getRowId: (row: Department) => (row.id ?? '').toString(),
     state: { rowSelection, columnFilters, sorting, grouping, columnOrder, columnVisibility },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
@@ -532,13 +592,13 @@ export default function TeacherPage() {
       setSelectedRow,
       revertData: (rowIndex: number, revert: unknown) => {
         if (revert) {
-          setData((old: Teacher[]) => old.map((row, index) => (index === rowIndex ? originalData[rowIndex] : row)));
+          setData((old: Department[]) => old.map((row, index) => (index === rowIndex ? originalData[rowIndex] : row)));
         } else {
           setOriginalData((old) => old.map((row, index) => (index === rowIndex ? data[rowIndex] : row)));
         }
       },
       updateData: (rowIndex, columnId, value) => {
-        setData((old: Teacher[]) =>
+        setData((old: Department[]) =>
           old.map((row, index) => {
             if (index === rowIndex) {
               return { ...old[rowIndex]!, [columnId]: value };
@@ -602,7 +662,7 @@ export default function TeacherPage() {
         })}
       >
         <Typography variant="h3" gutterBottom>
-          Danh sách giảng viên
+          Quản lý khoa
         </Typography>
 
         {hasAddPermission && (
@@ -613,10 +673,10 @@ export default function TeacherPage() {
               justifyContent: 'center'
             }}
             variant="contained"
-            onClick={() => navigate('/teacher/add')}
+            onClick={handleOpenAdd}
             startIcon={<Add />}
           >
-            Thêm giảng viên
+            Thêm khoa
           </Button>
         )}
       </Stack>
@@ -662,7 +722,7 @@ export default function TeacherPage() {
                   setPageRequest({ ...pageRequest, page: 0, keyword: globalFilter });
                 }
               }}
-              placeholder={'Tìm kiếm mã, tên, email'}
+              placeholder={'Tìm kiếm tên khoa'}
               sx={{ minWidth: 100 }}
               inputProps={{
                 sx: {
@@ -786,6 +846,16 @@ export default function TeacherPage() {
           </Grid>
         </Grid>
       </MainCard>
+
+      {/* Department Form Dialog */}
+      <DepartmentFormDialog
+        open={formOpen}
+        onClose={handleCloseForm}
+        department={editingDepartment}
+        reload={reload}
+        setReload={setReload}
+        setAlert={setAlert}
+      />
     </Stack>
   );
 }
