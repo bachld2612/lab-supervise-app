@@ -1,6 +1,5 @@
 import { useState, MouseEvent } from 'react';
 import { useNavigate } from 'react-router';
-import { Link } from 'react-router-dom';
 
 // material-ui
 import { styled } from '@mui/material/styles';
@@ -17,6 +16,7 @@ import Box from '@mui/material/Box';
 import { useGetMenuMaster } from 'api/menu';
 import Avatar from 'components/@extended/Avatar';
 import useAuth from 'hooks/useAuth';
+import ChangePasswordDialog from 'components/ChangePasswordDialog';
 
 // assets
 import { ArrowRight2 } from 'iconsax-reactjs';
@@ -63,12 +63,18 @@ export default function UserList() {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleOpenChangePassword = () => {
+    handleClose();
+    setChangePasswordOpen(true);
   };
 
   return (
@@ -110,11 +116,13 @@ export default function UserList() {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <MenuItem component={Link} to="#!" onClick={handleClose}>
+        <MenuItem onClick={handleOpenChangePassword}>
           Đổi mật khẩu
         </MenuItem>
         <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
       </Menu>
+
+      <ChangePasswordDialog open={changePasswordOpen} onClose={() => setChangePasswordOpen(false)} />
     </Box>
   );
 }
