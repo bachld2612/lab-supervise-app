@@ -54,4 +54,12 @@ public class DepartmentService {
 
         departmentRepository.save(department);
     }
+
+    public void deleteById(Integer id) {
+        Department department = departmentRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy khoá có id: " + id));
+
+        department.setStatus(Status.INACTIVE.getValue());
+        departmentRepository.save(department);
+    }
 }
