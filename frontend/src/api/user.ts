@@ -40,7 +40,7 @@ const update = async (id: number, user: User) => {
 
 const changePassword = async (changePassword: ChangePassword) => {
   try {
-    const response = await axiosServices.post('/api/user/v1/change-password', changePassword);
+    const response = await axiosServices.put('/api/user/v1/change-password', changePassword);
     return response.data;
   } catch (error: Error | any) {
     return error;
