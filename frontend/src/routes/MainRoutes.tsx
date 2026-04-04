@@ -31,6 +31,11 @@ const AddSemester = Loadable(lazy(() => import('sections/extra-pages/semester/ad
 const EditSemester = Loadable(lazy(() => import('sections/extra-pages/semester/edit')));
 const DetailSemester = Loadable(lazy(() => import('sections/extra-pages/semester/detail')));
 
+const SubjectPage = Loadable(lazy(() => import('pages/subject/subject-page')));
+const AddSubject = Loadable(lazy(() => import('sections/extra-pages/subject/add')));
+const EditSubject = Loadable(lazy(() => import('sections/extra-pages/subject/edit')));
+const DetailSubject = Loadable(lazy(() => import('sections/extra-pages/subject/detail')));
+
 const AdminDashboardPage = Loadable(lazy(() => import('pages/dashboard/admin-dashboard-page')));
 const TeacherDashboardPage = Loadable(lazy(() => import('pages/dashboard/teacher-dashboard-page')));
 const ItCenterDashboardPage = Loadable(lazy(() => import('pages/dashboard/it-center-dashboard-page')));
@@ -115,6 +120,22 @@ const MainRoutes = {
         {
           path: 'semester/detail/:id',
           element: <DetailSemester />
+        },
+        {
+          path: 'subject',
+          element: <SubjectPage />
+        },
+        {
+          path: 'subject/add',
+          element: <AddSubject />
+        },
+        {
+          path: 'subject/edit/:id',
+          element: <EditSubject />
+        },
+        {
+          path: 'subject/detail/:id',
+          element: <DetailSubject />
         }
       ]
     },

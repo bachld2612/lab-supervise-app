@@ -91,4 +91,12 @@ public class SubjectService {
 
         subjectRepository.save(subject);
     }
+
+    public void deleteById(Integer id) {
+        Subject subject = subjectRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy môn học có id: " + id));
+
+        subject.setStatus(Status.INACTIVE.getValue());
+        subjectRepository.save(subject);
+    }
 }
