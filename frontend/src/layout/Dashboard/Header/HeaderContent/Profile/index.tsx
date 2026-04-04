@@ -22,6 +22,7 @@ import Avatar from 'components/@extended/Avatar';
 import IconButton from 'components/@extended/IconButton';
 import Transitions from 'components/@extended/Transitions';
 import MainCard from 'components/MainCard';
+import ChangePasswordDialog from 'components/ChangePasswordDialog';
 
 import useAuth from 'hooks/useAuth';
 
@@ -49,6 +50,8 @@ export default function ProfilePage() {
 
   const anchorRef = useRef<any>(null);
   const [open, setOpen] = useState(false);
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
   };
@@ -58,6 +61,11 @@ export default function ProfilePage() {
       return;
     }
     setOpen(false);
+  };
+
+  const handleOpenChangePassword = () => {
+    setOpen(false);
+    setChangePasswordOpen(true);
   };
 
   return (
@@ -125,7 +133,7 @@ export default function ProfilePage() {
 
                   <Box sx={{ p: 1 }}>
                     <List component="nav" sx={{ p: 0, '& .MuiListItemIcon-root': { minWidth: 32 } }}>
-                      <ListItemButton>
+                      <ListItemButton onClick={handleOpenChangePassword}>
                         <ListItemIcon>
                           <Setting2 variant="Bulk" size={18} />
                         </ListItemIcon>
@@ -145,6 +153,8 @@ export default function ProfilePage() {
           </Transitions>
         )}
       </Popper>
+
+      <ChangePasswordDialog open={changePasswordOpen} onClose={() => setChangePasswordOpen(false)} />
     </Box>
   );
 }
