@@ -17,4 +17,6 @@ public class SectionResponse {
     Integer status;
 
     String departmentName;
+
+    Integer departmentId;
 }
