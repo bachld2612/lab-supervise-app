@@ -52,4 +52,11 @@ public class MajorController {
         majorService.update(request, id);
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
     }
+
+    @DeleteMapping("/v1/{id}")
+    @AuthFilter(role = "ADMIN")
+    public ResponseEntity<?> delete(@PathVariable int id) {
+        majorService.deleteById(id);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+    }
 }
