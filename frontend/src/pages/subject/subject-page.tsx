@@ -80,11 +80,11 @@ import { Add, ArrowDown2, ArrowRight2, Command, Edit2, Eye, TableDocument, Trash
 import { useIntl } from 'react-intl';
 import { HttpStatusCode } from 'axios';
 import useAuth from 'hooks/useAuth';
-import { type Semester } from 'types/semester';
-import { deleteById, getList } from 'api/semester';
+import { deleteById, getList } from 'api/subject';
 import { DEFAULT_PAGE_SIZE, PageRequest } from 'types/paging';
+import { type Subject } from 'types/subject';
 
-const fuzzyFilter: FilterFn<Semester> = (row, columnId, value, addMeta) => {
+const fuzzyFilter: FilterFn<Subject> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);
   addMeta(itemRank);
   return itemRank.passed;
@@ -98,7 +98,7 @@ function EditAction({
   setReload,
   setAlert
 }: {
-  row: Row<Semester>;
+  row: Row<Subject>;
   reload: boolean;
   setReload: (e: boolean) => void;
   setAlert: React.Dispatch<
@@ -128,7 +128,7 @@ function EditAction({
     const response = await deleteById(row.original.id);
 
     if (response.statusCode == HttpStatusCode.Ok) {
-      setAlert({ open: true, message: 'Xóa học kỳ thành công', severity: 'success' });
+      setAlert({ open: true, message: 'Xóa môn học thành công', severity: 'success' });
       setReload(!reload);
     } else if (response.statusCode == HttpStatusCode.Unauthorized) {
       logout();
@@ -145,7 +145,7 @@ function EditAction({
     <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
       {hasDetailPermission && (
         <Tooltip title="Xem chi tiết">
-          <IconButton color="primary" onClick={() => navigate(`/semester/detail/${row.original.id}`)} disabled={row.original.status == 0}>
+          <IconButton color="primary" onClick={() => navigate(`/subject/detail/${row.original.id}`)} disabled={row.original.status == 0}>
             <Eye variant="Outline" />
           </IconButton>
         </Tooltip>
@@ -153,7 +153,7 @@ function EditAction({
 
       {hasEditPermission && (
         <Tooltip title="Chỉnh sửa">
-          <IconButton color="primary" onClick={() => navigate(`/semester/edit/${row.original.id}`)} disabled={row.original.status == 0}>
+          <IconButton color="primary" onClick={() => navigate(`/subject/edit/${row.original.id}`)} disabled={row.original.status == 0}>
             <Edit2 variant="Outline" />
           </IconButton>
         </Tooltip>
@@ -173,10 +173,10 @@ function EditAction({
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Bạn có muốn xóa học kỳ này không?</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Bạn có muốn xóa môn học này không?</DialogTitle>
 
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">Khi xóa học kỳ, tất cả thông tin đi kèm cũng sẽ bị xóa.</DialogContentText>
+          <DialogContentText id="alert-dialog-description">Khi xóa môn học, tất cả thông tin đi kèm cũng sẽ bị xóa.</DialogContentText>
         </DialogContent>
 
         <DialogActions>
@@ -300,7 +300,7 @@ function DraggableRow({ row }: { row: Row<any> }) {
 
 // ==============================|| REACT TABLE - MAIN ||============================== //
 
-export default function SemesterPage() {
+export default function SubjectPage() {
   const { logout, user } = useAuth();
   const intl = useIntl();
   const [reload, setReload] = useState(false);
@@ -313,7 +313,7 @@ export default function SemesterPage() {
     severity: 'success' as 'success' | 'error' | 'info' | 'warning'
   });
 
-  const columns = useMemo<ColumnDef<Semester>[]>(
+  const columns = useMemo<ColumnDef<Subject>[]>(
     () => [
       {
         id: 'id',
@@ -326,30 +326,30 @@ export default function SemesterPage() {
         meta: { className: 'cell-center' }
       },
       {
+        id: 'code',
+        header: 'Mã môn học',
+        accessorKey: 'code',
+        dataType: 'text',
+        enableGrouping: false
+      },
+      {
         id: 'name',
-        header: 'Tên học kỳ',
+        header: 'Tên môn học',
         accessorKey: 'name',
         dataType: 'text',
         enableGrouping: false
       },
       {
-        id: 'studyYear',
-        header: 'Năm học',
-        accessorKey: 'studyYear',
+        id: 'creditNumber',
+        header: 'Số tín chỉ',
+        accessorKey: 'creditNumber',
         dataType: 'text',
         enableGrouping: false
       },
       {
-        id: 'startDate',
-        header: 'Ngày bắt đầu',
-        accessorKey: 'startDate',
-        dataType: 'text',
-        enableGrouping: false
-      },
-      {
-        id: 'endDate',
-        header: 'Ngày kết thúc',
-        accessorKey: 'endDate',
+        id: 'sectionName',
+        header: 'Tên bộ môn',
+        accessorKey: 'sectionName',
         dataType: 'text',
         enableGrouping: false
       },
@@ -382,7 +382,7 @@ export default function SemesterPage() {
   );
 
   let options: number[] = [10, 25, 50, 100];
-  const [data, setData] = useState<Semester[]>([]);
+  const [data, setData] = useState<Subject[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [pageNumber, setPageNumber] = useState(0);
@@ -414,7 +414,7 @@ export default function SemesterPage() {
   };
 
   useEffect(() => {
-    const fetchSemesters = async () => {
+    const fetchSubjects = async () => {
       const response = await getList(pageRequest);
 
       if (response.statusCode === HttpStatusCode.Ok) {
@@ -430,7 +430,7 @@ export default function SemesterPage() {
       }
     };
 
-    fetchSemesters();
+    fetchSubjects();
   }, [pageRequest, intl, logout, reload]);
 
   useEffect(() => {
@@ -445,7 +445,7 @@ export default function SemesterPage() {
     columns,
     manualPagination: true,
     defaultColumn: { cell: RowEditable },
-    getRowId: (row: Semester) => (row.id ?? '').toString(),
+    getRowId: (row: Subject) => (row.id ?? '').toString(),
     state: { rowSelection, columnFilters, sorting, grouping, columnOrder, columnVisibility },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
@@ -474,13 +474,13 @@ export default function SemesterPage() {
       setSelectedRow,
       revertData: (rowIndex: number, revert: unknown) => {
         if (revert) {
-          setData((old: Semester[]) => old.map((row, index) => (index === rowIndex ? originalData[rowIndex] : row)));
+          setData((old: Subject[]) => old.map((row, index) => (index === rowIndex ? originalData[rowIndex] : row)));
         } else {
           setOriginalData((old) => old.map((row, index) => (index === rowIndex ? data[rowIndex] : row)));
         }
       },
       updateData: (rowIndex, columnId, value) => {
-        setData((old: Semester[]) =>
+        setData((old: Subject[]) =>
           old.map((row, index) => {
             if (index === rowIndex) {
               return { ...old[rowIndex]!, [columnId]: value };
@@ -540,7 +540,7 @@ export default function SemesterPage() {
         })}
       >
         <Typography variant="h3" gutterBottom>
-          Quản lý học kỳ
+          Quản lý môn học
         </Typography>
 
         {hasAddPermission && (
@@ -551,10 +551,10 @@ export default function SemesterPage() {
               justifyContent: 'center'
             }}
             variant="contained"
-            onClick={() => navigate('/semester/add')}
+            onClick={() => navigate('/subject/add')}
             startIcon={<Add />}
           >
-            Thêm học kỳ
+            Thêm môn học
           </Button>
         )}
       </Stack>
@@ -600,7 +600,7 @@ export default function SemesterPage() {
                   setPageRequest({ ...pageRequest, page: 0, keyword: globalFilter });
                 }
               }}
-              placeholder={'Tìm kiếm tên học kỳ, năm học'}
+              placeholder={'Tìm kiếm mã môn, tên môn'}
               sx={{ minWidth: 200 }}
               inputProps={{
                 sx: {

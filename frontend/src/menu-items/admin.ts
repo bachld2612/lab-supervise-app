@@ -42,6 +42,13 @@ const adminMenu: NavItemType = {
       icon: icons.profile
     },
     {
+      id: 'manage-subjects',
+      title: 'Quản lý môn học',
+      type: 'item',
+      url: '/subject',
+      icon: icons.table
+    },
+    {
       id: 'department-management',
       title: 'Quản lý thông tin trường',
       type: 'collapse',

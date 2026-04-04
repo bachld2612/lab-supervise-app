@@ -13,7 +13,7 @@ public interface SubjectRepository extends JpaRepository<Subject, Integer> {
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.SubjectResponse(
-            s.id, s.name, s.code, s.creditNumber, s.status, sec.name
+            s.id, s.name, s.code, s.creditNumber, s.status, sec.name, sec.id
         )
         FROM Subject s
             JOIN Section sec ON s.sectionId = sec.id
@@ -22,12 +22,13 @@ public interface SubjectRepository extends JpaRepository<Subject, Integer> {
                 OR LOWER(s.code) LIKE :keyword
             )
             AND (:status IS NULL OR s.status = :status)
+        ORDER BY s.updatedAt DESC
     """)
     Page<SubjectResponse> findByKeyword(Pageable pageable, String keyword, Integer status);
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.SubjectResponse(
-            s.id, s.name, s.code, s.creditNumber, s.status, sec.name
+            s.id, s.name, s.code, s.creditNumber, s.status, sec.name, sec.id
         )
         FROM Subject s
             JOIN Section sec ON s.sectionId = sec.id
