@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface SectionRepository extends JpaRepository<Section,Integer> {
 
     @Query("""
-        SELECT new com.bachld.backend.dto.response.SectionResponse(s.id, s.name, s.status, d.name)
+        SELECT new com.bachld.backend.dto.response.SectionResponse(s.id, s.name, s.status, d.name, d.id)
         FROM Section s
             JOIN Department d ON s.departmentId = d.id
         WHERE (LOWER(s.name) LIKE :keyword)
@@ -19,7 +19,7 @@ public interface SectionRepository extends JpaRepository<Section,Integer> {
     Page<SectionResponse> findByKeyword(Pageable pageable, String keyword, Integer status);
 
     @Query("""
-        SELECT new com.bachld.backend.dto.response.SectionResponse(s.id, s.name, s.status, d.name)
+        SELECT new com.bachld.backend.dto.response.SectionResponse(s.id, s.name, s.status, d.name, d.id)
         FROM Section s
             JOIN Department d ON s.departmentId = d.id
         WHERE s.id = :id
