@@ -7,7 +7,7 @@ import { Teacher } from 'types/teacher';
 import { Section } from 'types/section';
 import * as Yup from 'yup';
 import { useIntl } from 'react-intl';
-import teacherApi from 'api/teacher';
+import { create } from 'api/teacher';
 import { getList as getSections } from 'api/section';
 import { HttpStatusCode } from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -67,7 +67,7 @@ export default function AddTeacher() {
     validationSchema,
     initialValues,
     onSubmit: async (values) => {
-      const response = await teacherApi.create(values);
+      const response = await create(values);
 
       if (response.statusCode === HttpStatusCode.Ok) {
         navigate('/teacher', {

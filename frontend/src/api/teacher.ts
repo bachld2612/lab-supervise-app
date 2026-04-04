@@ -56,11 +56,4 @@ const resetPassword = async (userId: number) => {
   }
 };
 
-export default {
-  getList,
-  getById,
-  create,
-  update,
-  deleteById,
-  resetPassword
-};
+export { getList, getById, create, update, deleteById, resetPassword };
