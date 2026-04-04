@@ -20,5 +20,9 @@ public class ManageClassResponse {
 
     String teacherName;
 
+    Integer teacherId;
+
     String majorName;
+
+    Integer majorId;
 }

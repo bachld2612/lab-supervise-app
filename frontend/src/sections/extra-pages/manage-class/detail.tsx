@@ -8,25 +8,26 @@ import { useEffect, useState } from 'react';
 import useAuth from 'hooks/useAuth';
 import { useNavigate, useParams } from 'react-router';
 import { useIntl } from 'react-intl';
-import { getById } from 'api/subject';
-import { type Subject } from 'types/subject';
+import { getById } from 'api/manageClass';
+import { ManageClass } from 'types/manageClass';
 import AnimateButton from 'components/@extended/AnimateButton';
 
-// ==============================|| SUBJECT DETAIL PAGE ||============================== //
+// ==============================|| MANAGE CLASS DETAIL PAGE ||============================== //
 
-export default function DetailSubject() {
+export default function DetailManageClass() {
   const { id } = useParams<{ id: string }>();
   const { logout, user } = useAuth();
   const intl = useIntl();
   const navigate = useNavigate();
-  const [subjectDetail, setSubjectDetail] = useState<Subject>({
+  const [classDetail, setClassDetail] = useState<ManageClass>({
     id: 0,
     status: 0,
     name: '',
-    code: '',
-    creditNumber: 0,
-    sectionId: 0,
-    sectionName: ''
+    maxStudent: 0,
+    teacherId: 0,
+    teacherName: '',
+    majorId: 0,
+    majorName: ''
   });
   const [hasEditPermission, setHasEditPermission] = useState(false);
 
@@ -37,12 +38,12 @@ export default function DetailSubject() {
   });
 
   useEffect(() => {
-    const fetchSubject = async () => {
+    const fetchClass = async () => {
       if (id) {
         const response = await getById(Number(id));
 
         if (response.statusCode === HttpStatusCode.Ok) {
-          setSubjectDetail(response.data);
+          setClassDetail(response.data);
         } else if (response.statusCode === HttpStatusCode.Unauthorized) {
           logout();
         } else {
@@ -51,7 +52,7 @@ export default function DetailSubject() {
       }
     };
 
-    fetchSubject();
+    fetchClass();
   }, [id, intl, logout]);
 
   useEffect(() => {
@@ -63,75 +64,71 @@ export default function DetailSubject() {
   return (
     <Box>
       <Box display="flex" alignItems="center" gap={2} mb={3}>
-        <Typography variant="h3">Chi tiết thông tin môn học</Typography>
+        <Typography variant="h3">Chi tiết thông tin lớp quản lý</Typography>
       </Box>
 
-      <Paper elevation={0} sx={{ p: 4, border: '1px solid', borderColor: 'divider', maxWidth: 800, mx: 'auto' }}>
+      <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', ml: 30, mr: 30 }}>
         <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ mb: 3 }}>
-          Thông tin môn học
+          Thông tin lớp quản lý
         </Typography>
 
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Stack sx={{ gap: 1 }}>
-              <InputLabel>Mã môn học</InputLabel>
-              <Typography variant="body1" fontWeight={500}>
-                {subjectDetail.code}
-              </Typography>
+              <InputLabel>Tên lớp</InputLabel>
+              <Typography variant="body1">{classDetail.name}</Typography>
             </Stack>
           </Grid>
 
           <Grid size={{ xs: 12, sm: 6 }}>
             <Stack sx={{ gap: 1 }}>
-              <InputLabel>Tên môn học</InputLabel>
-              <Typography variant="body1" fontWeight={500}>
-                {subjectDetail.name}
-              </Typography>
+              <InputLabel>Sĩ số tối đa</InputLabel>
+              <Typography variant="body1">{classDetail.maxStudent}</Typography>
             </Stack>
           </Grid>
 
           <Grid size={{ xs: 12, sm: 6 }}>
             <Stack sx={{ gap: 1 }}>
-              <InputLabel>Số tín chỉ</InputLabel>
-              <Typography variant="body1" fontWeight={500}>
-                {subjectDetail.creditNumber}
-              </Typography>
+              <InputLabel>Giảng viên</InputLabel>
+              <Typography variant="body1">{classDetail.teacherName}</Typography>
             </Stack>
           </Grid>
 
           <Grid size={{ xs: 12, sm: 6 }}>
             <Stack sx={{ gap: 1 }}>
-              <InputLabel>Bộ môn</InputLabel>
-              <Typography variant="body1" fontWeight={500}>
-                {subjectDetail.sectionName}
-              </Typography>
+              <InputLabel>Chuyên ngành</InputLabel>
+              <Typography variant="body1">{classDetail.majorName}</Typography>
             </Stack>
           </Grid>
         </Grid>
 
-        <Stack direction="row" sx={{ justifyContent: 'flex-end', mt: 4, gap: 2 }}>
-          <AnimateButton>
-            <Button
-              onClick={() => navigate('/subject')}
-              variant="contained"
-              sx={{
-                bgcolor: 'secondary.main',
-                color: 'white',
-                '&:hover': { bgcolor: 'secondary.dark' }
-              }}
-            >
-              Trở về
-            </Button>
-          </AnimateButton>
+        <Grid container spacing={2} sx={{ mt: 3 }}>
+          <Grid size={12}>
+            <Stack direction="row" sx={{ justifyContent: 'flex-end', gap: 1 }}>
+              <AnimateButton>
+                <Button
+                  onClick={() => navigate('/manage-class')}
+                  variant="contained"
+                  sx={{
+                    bgcolor: '#7e7e7eff',
+                    color: 'white',
+                    '&:hover': { bgcolor: '#9a9999ff' }
+                  }}
+                >
+                  Trở về
+                </Button>
+              </AnimateButton>
 
-          {hasEditPermission && (
-            <AnimateButton>
-              <Button variant="contained" onClick={() => navigate(`/subject/edit/${id}`)}>
-                Cập nhật
-              </Button>
-            </AnimateButton>
-          )}
-        </Stack>
+              {hasEditPermission && (
+                <AnimateButton>
+                  <Button variant="contained" onClick={() => navigate(`/manage-class/edit/${id}`)}>
+                    Cập nhật
+                  </Button>
+                </AnimateButton>
+              )}
+            </Stack>
+          </Grid>
+        </Grid>
       </Paper>
 
       <Snackbar

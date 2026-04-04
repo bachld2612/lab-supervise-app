@@ -99,4 +99,12 @@ public class ManageClassService {
 
         manageClassRepository.save(manageClass);
     }
+
+    public void deleteById(Integer id) {
+        ManageClass manageClass = manageClassRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp quản lý có id: " + id));
+
+        manageClass.setStatus(Status.INACTIVE.getValue());
+        manageClassRepository.save(manageClass);
+    }
 }

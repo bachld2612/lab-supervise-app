@@ -13,7 +13,7 @@ public interface ManageClassRepository extends JpaRepository<ManageClass,Integer
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.ManageClassResponse(
-            mc.id, mc.name, mc.maxStudent, mc.status, u.fullName, mj.name
+            mc.id, mc.name, mc.maxStudent, mc.status, u.fullName, t.id, mj.name, mj.id
         )
         FROM ManageClass mc
             JOIN Teacher t ON mc.teacherId = t.id
@@ -21,12 +21,13 @@ public interface ManageClassRepository extends JpaRepository<ManageClass,Integer
             JOIN Major mj ON mc.majorId = mj.id
         WHERE (LOWER(mc.name) LIKE :keyword)
             AND (:status IS NULL OR mc.status = :status)
+        ORDER BY mc.updatedAt DESC
     """)
     Page<ManageClassResponse> findByKeyword(Pageable pageable, String keyword, Integer status);
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.ManageClassResponse(
-            mc.id, mc.name, mc.maxStudent, mc.status, u.fullName, mj.name
+            mc.id, mc.name, mc.maxStudent, mc.status, u.fullName, t.id, mj.name, mj.id
         )
         FROM ManageClass mc
             JOIN Teacher t ON mc.teacherId = t.id
