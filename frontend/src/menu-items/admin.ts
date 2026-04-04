@@ -67,6 +67,13 @@ const adminMenu: NavItemType = {
           type: 'item',
           url: '/major',
           icon: icons.box
+        },
+        {
+          id: 'manage-semesters',
+          title: 'Quản lý học kỳ',
+          type: 'item',
+          url: '/semester',
+          icon: icons.box
         }
       ]
     }
