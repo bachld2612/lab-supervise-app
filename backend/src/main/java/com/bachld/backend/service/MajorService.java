@@ -74,4 +74,12 @@ public class MajorService {
 
         majorRepository.save(major);
     }
+
+    public void deleteById(Integer id) {
+        Major major = majorRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy ngành có id: " + id));
+
+        major.setStatus(Status.INACTIVE.getValue());
+        majorRepository.save(major);
+    }
 }

@@ -60,6 +60,13 @@ const adminMenu: NavItemType = {
           type: 'item',
           url: '/section',
           icon: icons.box
+        },
+        {
+          id: 'manage-majors',
+          title: 'Quản lý ngành',
+          type: 'item',
+          url: '/major',
+          icon: icons.box
         }
       ]
     }

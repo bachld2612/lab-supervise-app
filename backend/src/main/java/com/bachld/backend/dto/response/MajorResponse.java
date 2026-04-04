@@ -17,4 +17,6 @@ public class MajorResponse {
     Integer status;
 
     String departmentName;
+
+    Integer departmentId;
 }

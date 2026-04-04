@@ -1,10 +1,10 @@
 import { PageRequest } from 'types/paging';
-import { Section } from 'types/section';
 import axiosServices from 'utils/axios';
+import { Major } from 'types/major';
 
 const getList = async (pageRequest: PageRequest) => {
   try {
-    const response = await axiosServices.get('/api/section/v1', { params: pageRequest });
+    const response = await axiosServices.get('/api/major/v1', { params: pageRequest });
     return response.data;
   } catch (error: Error | any) {
     return error;
@@ -13,25 +13,25 @@ const getList = async (pageRequest: PageRequest) => {
 
 const getById = async (id: number) => {
   try {
-    const response = await axiosServices.get(`/api/section/v1/${id}`);
+    const response = await axiosServices.get(`/api/major/v1/${id}`);
     return response.data;
   } catch (error: Error | any) {
     return error;
   }
 };
 
-const create = async (section: Section) => {
+const create = async (major: Major) => {
   try {
-    const response = await axiosServices.post('/api/section/v1', section);
+    const response = await axiosServices.post('/api/major/v1', major);
     return response.data;
   } catch (error: Error | any) {
     return error;
   }
 };
 
-const update = async (section: Section, id: number) => {
+const update = async (major: Major, id: number) => {
   try {
-    const response = await axiosServices.put(`/api/section/v1/${id}`, section);
+    const response = await axiosServices.put(`/api/major/v1/${id}`, major);
     return response.data;
   } catch (error: Error | any) {
     return error;
@@ -40,7 +40,7 @@ const update = async (section: Section, id: number) => {
 
 const deleteById = async (id: number) => {
   try {
-    const response = await axiosServices.delete(`/api/section/v1/${id}`);
+    const response = await axiosServices.delete(`/api/major/v1/${id}`);
     return response.data;
   } catch (error: Error | any) {
     return error;
