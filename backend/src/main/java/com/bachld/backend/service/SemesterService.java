@@ -86,4 +86,12 @@ public class SemesterService {
 
         semesterRepository.save(semester);
     }
+
+    public void deleteById(int id) {
+        Semester semester = semesterRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy học kỳ có id: " + id));
+
+        semester.setStatus(Status.INACTIVE.getValue());
+        semesterRepository.save(semester);
+    }
 }
