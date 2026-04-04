@@ -26,6 +26,10 @@ const DetailTeacher = Loadable(lazy(() => import('sections/extra-pages/teacher/d
 const DepartmentPage = Loadable(lazy(() => import('pages/tlu-information/department-page')));
 const SectionPage = Loadable(lazy(() => import('pages/tlu-information/section-page')));
 const MajorPage = Loadable(lazy(() => import('pages/tlu-information/major-page')));
+const SemesterPage = Loadable(lazy(() => import('pages/tlu-information/semester-page')));
+const AddSemester = Loadable(lazy(() => import('sections/extra-pages/semester/add')));
+const EditSemester = Loadable(lazy(() => import('sections/extra-pages/semester/edit')));
+const DetailSemester = Loadable(lazy(() => import('sections/extra-pages/semester/detail')));
 
 const AdminDashboardPage = Loadable(lazy(() => import('pages/dashboard/admin-dashboard-page')));
 const TeacherDashboardPage = Loadable(lazy(() => import('pages/dashboard/teacher-dashboard-page')));
@@ -95,6 +99,22 @@ const MainRoutes = {
         {
           path: 'major',
           element: <MajorPage />
+        },
+        {
+          path: 'semester',
+          element: <SemesterPage />
+        },
+        {
+          path: 'semester/add',
+          element: <AddSemester />
+        },
+        {
+          path: 'semester/edit/:id',
+          element: <EditSemester />
+        },
+        {
+          path: 'semester/detail/:id',
+          element: <DetailSemester />
         }
       ]
     },
