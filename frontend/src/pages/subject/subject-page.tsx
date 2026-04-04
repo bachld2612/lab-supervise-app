@@ -540,7 +540,7 @@ export default function SubjectPage() {
         })}
       >
         <Typography variant="h3" gutterBottom>
-          Quản lý môn học
+          Danh sách môn học
         </Typography>
 
         {hasAddPermission && (

@@ -1,5 +1,5 @@
 import { CSSProperties, Fragment, useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // material-ui
 import Divider from '@mui/material/Divider';
@@ -18,9 +18,6 @@ import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
-import CircularProgress from '@mui/material/CircularProgress';
 
 // third-party
 import {
@@ -67,7 +64,7 @@ import IconButton from 'components/@extended/IconButton';
 import { EmptyTable, HeaderSort, RowEditable } from 'components/third-party/react-table';
 
 // assets
-import { Add, ArrowDown2, ArrowRight2, Command, Edit2, TableDocument, Trash } from 'iconsax-reactjs';
+import { Add, ArrowDown2, ArrowRight2, Command, Edit2, Eye, TableDocument, Trash } from 'iconsax-reactjs';
 import {
   Alert,
   Button,
@@ -84,206 +81,20 @@ import {
 import { useIntl } from 'react-intl';
 import { HttpStatusCode } from 'axios';
 import useAuth from 'hooks/useAuth';
-import { type Major } from 'types/major';
-import { type Department } from 'types/department';
-import { getList, deleteById, create, update } from 'api/major';
-import { getList as getDepartments } from 'api/department';
+import { type ManageClass } from 'types/manageClass';
+import { deleteById, getList } from 'api/manageClass';
 import { DEFAULT_PAGE_SIZE, PageRequest } from 'types/paging';
 
-const fuzzyFilter: FilterFn<Major> = (row, columnId, value, addMeta) => {
+const fuzzyFilter: FilterFn<ManageClass> = (row, columnId, value, addMeta) => {
+  // rank the item
   const itemRank = rankItem(row.getValue(columnId), value);
+
+  // store the ranking info
   addMeta(itemRank);
+
+  // return if the item should be filtered in/out
   return itemRank.passed;
 };
-
-// ==============================|| MAJOR FORM DIALOG ||============================== //
-
-function MajorFormDialog({
-  open,
-  onClose,
-  major,
-  reload,
-  setReload,
-  setAlert
-}: {
-  open: boolean;
-  onClose: () => void;
-  major: Major | null;
-  reload: boolean;
-  setReload: (e: boolean) => void;
-  setAlert: React.Dispatch<
-    React.SetStateAction<{
-      open: boolean;
-      message: string;
-      severity: 'success' | 'error' | 'info' | 'warning';
-    }>
-  >;
-}) {
-  const { logout } = useAuth();
-  const [name, setName] = useState('');
-  const [nameError, setNameError] = useState('');
-  const [departmentId, setDepartmentId] = useState<number>(0);
-  const [departmentError, setDepartmentError] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [loadingDepartments, setLoadingDepartments] = useState(false);
-
-  const isEdit = major !== null;
-
-  useEffect(() => {
-    const fetchDepartments = async () => {
-      setLoadingDepartments(true);
-      const response = await getDepartments({ page: 0, size: 1000, status: '1' });
-      if (response.statusCode === HttpStatusCode.Ok) {
-        setDepartments(response.data.content);
-      } else if (response.statusCode === HttpStatusCode.Unauthorized) {
-        logout();
-      }
-      setLoadingDepartments(false);
-    };
-    fetchDepartments();
-  }, [logout]);
-
-  useEffect(() => {
-    if (open) {
-      if (major) {
-        setName(major.name);
-        setDepartmentId(major.departmentId);
-      } else {
-        setName('');
-        setDepartmentId(0);
-      }
-      setNameError('');
-      setDepartmentError('');
-    }
-  }, [open, major]);
-
-  const validate = (): boolean => {
-    let valid = true;
-    if (!name.trim()) {
-      setNameError('Tên ngành không được phép bỏ trống');
-      valid = false;
-    } else {
-      setNameError('');
-    }
-    if (!departmentId || departmentId === 0) {
-      setDepartmentError('Khoa không được phép bỏ trống');
-      valid = false;
-    } else {
-      setDepartmentError('');
-    }
-    return valid;
-  };
-
-  const handleSubmit = async () => {
-    if (!validate()) return;
-
-    setSubmitting(true);
-
-    try {
-      if (isEdit) {
-        const response = await update({ name, departmentId } as Major, major.id);
-
-        if (response.statusCode == HttpStatusCode.Ok) {
-          setAlert({ open: true, message: 'Cập nhật ngành thành công', severity: 'success' });
-          setReload(!reload);
-          onClose();
-        } else if (response.statusCode == HttpStatusCode.Unauthorized) {
-          logout();
-        } else if (response.statusCode == HttpStatusCode.UnprocessableEntity) {
-          setAlert({ open: true, message: response.data, severity: 'error' });
-        } else {
-          setAlert({ open: true, message: 'Lỗi không xác định', severity: 'error' });
-        }
-      } else {
-        const response = await create({ name, departmentId } as Major);
-
-        if (response.statusCode == HttpStatusCode.Ok) {
-          setAlert({ open: true, message: 'Thêm ngành thành công', severity: 'success' });
-          setReload(!reload);
-          onClose();
-        } else if (response.statusCode == HttpStatusCode.Unauthorized) {
-          logout();
-        } else if (response.statusCode == HttpStatusCode.UnprocessableEntity) {
-          setAlert({ open: true, message: response.data, severity: 'error' });
-        } else {
-          setAlert({ open: true, message: 'Lỗi không xác định', severity: 'error' });
-        }
-      }
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  return (
-    <Dialog open={open} onClose={onClose} aria-labelledby="major-form-dialog-title" maxWidth="sm" fullWidth>
-      <DialogTitle id="major-form-dialog-title">{isEdit ? 'Cập nhật ngành' : 'Thêm ngành mới'}</DialogTitle>
-
-      <DialogContent>
-        <TextField
-          autoFocus
-          margin="dense"
-          label="Tên ngành"
-          type="text"
-          fullWidth
-          variant="outlined"
-          value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-            if (nameError) setNameError('');
-          }}
-          error={!!nameError}
-          helperText={nameError}
-          sx={{ mt: 1 }}
-        />
-
-        <Autocomplete
-          options={departments}
-          loading={loadingDepartments}
-          getOptionLabel={(option) => option.name || ''}
-          value={departments.find((d) => d.id === departmentId) || null}
-          onChange={(_, newValue) => {
-            setDepartmentId(newValue ? newValue.id : 0);
-            if (departmentError) setDepartmentError('');
-          }}
-          isOptionEqualToValue={(option, value) => option.id === value.id}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              margin="dense"
-              label="Khoa"
-              variant="outlined"
-              fullWidth
-              error={!!departmentError}
-              helperText={departmentError}
-              InputProps={{
-                ...params.InputProps,
-                endAdornment: (
-                  <>
-                    {loadingDepartments ? <CircularProgress color="inherit" size={20} /> : null}
-                    {params.InputProps.endAdornment}
-                  </>
-                )
-              }}
-            />
-          )}
-          sx={{ mt: 1 }}
-        />
-      </DialogContent>
-
-      <DialogActions>
-        <Button variant="contained" color="primary" onClick={onClose}>
-          Huỷ
-        </Button>
-
-        <Button variant="contained" color="success" onClick={handleSubmit} disabled={submitting}>
-          {isEdit ? 'Cập nhật' : 'Thêm mới'}
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-}
 
 // ==============================|| REACT TABLE - EDIT ACTION ||============================== //
 
@@ -291,10 +102,9 @@ function EditAction({
   row,
   reload,
   setReload,
-  setAlert,
-  onEdit
+  setAlert
 }: {
-  row: Row<Major>;
+  row: Row<ManageClass>;
   reload: boolean;
   setReload: (e: boolean) => void;
   setAlert: React.Dispatch<
@@ -304,15 +114,17 @@ function EditAction({
       severity: 'success' | 'error' | 'info' | 'warning';
     }>
   >;
-  onEdit: (major: Major) => void;
 }) {
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const [hasDetailPermission, setHasDetailPermission] = useState(false);
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
 
   useEffect(() => {
     if ([1].includes(user?.roleId ?? 0)) {
+      setHasDetailPermission(true);
       setHasEditPermission(true);
       setHasDeletePermission(true);
     }
@@ -322,12 +134,12 @@ function EditAction({
     const response = await deleteById(row.original.id);
 
     if (response.statusCode == HttpStatusCode.Ok) {
-      setAlert({ open: true, message: 'Xóa ngành thành công', severity: 'success' });
+      setAlert({ open: true, message: 'Xóa lớp thành công', severity: 'success' });
       setReload(!reload);
     } else if (response.statusCode == HttpStatusCode.Unauthorized) {
       logout();
     } else if (response.statusCode == HttpStatusCode.UnprocessableEntity) {
-      setAlert({ open: true, message: response.data, severity: 'error' });
+      setAlert({ open: true, message: response.data as string, severity: 'error' });
     } else {
       setAlert({ open: true, message: 'Lỗi không xác định', severity: 'error' });
     }
@@ -336,10 +148,18 @@ function EditAction({
   };
 
   return (
-    <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
+    <Stack direction="row" sx={{ gap: 1, alignItems: 'center', justifyContent: 'center' }}>
+      {hasDetailPermission && (
+        <Tooltip title="Xem chi tiết">
+          <IconButton color="primary" onClick={() => navigate(`/manage-class/detail/${row.original.id}`)}>
+            <Eye variant="Outline" />
+          </IconButton>
+        </Tooltip>
+      )}
+
       {hasEditPermission && (
         <Tooltip title="Chỉnh sửa">
-          <IconButton color="primary" onClick={() => onEdit(row.original)} disabled={row.original.status == 0}>
+          <IconButton color="primary" onClick={() => navigate(`/manage-class/edit/${row.original.id}`)}>
             <Edit2 variant="Outline" />
           </IconButton>
         </Tooltip>
@@ -347,7 +167,7 @@ function EditAction({
 
       {hasDeletePermission && (
         <Tooltip title="Xóa">
-          <IconButton disabled={row.original.status == 0} color="primary" onClick={() => setOpenDelete(true)}>
+          <IconButton color="primary" onClick={() => setOpenDelete(true)}>
             <Trash variant="Outline" />
           </IconButton>
         </Tooltip>
@@ -359,10 +179,10 @@ function EditAction({
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Bạn có muốn xóa ngành này không?</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Bạn có muốn xóa lớp này không?</DialogTitle>
 
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">Khi xóa ngành, tất cả thông tin đi kèm cũng sẽ bị xóa.</DialogContentText>
+          <DialogContentText id="alert-dialog-description">Khi xóa lớp, tất cả thông tin đi kèm cũng sẽ bị xóa.</DialogContentText>
         </DialogContent>
 
         <DialogActions>
@@ -484,41 +304,16 @@ function DraggableRow({ row }: { row: Row<any> }) {
   );
 }
 
-// ==============================|| REACT TABLE - MAIN ||============================== //
+// ==============================|| MANAGE CLASS - MAIN ||============================== //
 
-export default function MajorPage() {
+export default function ManageClassPage() {
   const { logout, user } = useAuth();
   const intl = useIntl();
   const [reload, setReload] = useState(false);
-  const [formOpen, setFormOpen] = useState(false);
-  const [editingMajor, setEditingMajor] = useState<Major | null>(null);
-
-  const handleOpenAdd = () => {
-    setEditingMajor(null);
-    setFormOpen(true);
-  };
-
-  const handleOpenEdit = (major: Major) => {
-    setEditingMajor(major);
-    setFormOpen(true);
-  };
-
-  const handleCloseForm = () => {
-    setFormOpen(false);
-    setEditingMajor(null);
-  };
-
-  const [alert, setAlert] = useState({
-    open: false,
-    message: '',
-    severity: 'success' as 'success' | 'error' | 'info' | 'warning'
-  });
-
-  const columns = useMemo<ColumnDef<Major>[]>(
+  const columns = useMemo<ColumnDef<ManageClass>[]>(
     () => [
       {
         id: 'id',
-        title: 'Id',
         header: '#',
         accessorKey: 'id',
         dataType: 'text',
@@ -528,17 +323,35 @@ export default function MajorPage() {
       },
       {
         id: 'name',
-        header: 'Tên ngành',
+        header: 'Tên lớp',
         accessorKey: 'name',
         dataType: 'text',
-        enableGrouping: false
+        enableGrouping: false,
+        meta: { width: '30%' }
       },
       {
-        id: 'departmentName',
-        header: 'Tên khoa',
-        accessorKey: 'departmentName',
+        id: 'maxStudent',
+        header: 'Sĩ số tối đa',
+        accessorKey: 'maxStudent',
         dataType: 'text',
-        enableGrouping: false
+        enableGrouping: false,
+        meta: { width: '15%', className: 'cell-center' }
+      },
+      {
+        id: 'teacherName',
+        header: 'Giảng viên',
+        accessorKey: 'teacherName',
+        dataType: 'text',
+        enableGrouping: false,
+        meta: { width: '20%' }
+      },
+      {
+        id: 'majorName',
+        header: 'Chuyên ngành',
+        accessorKey: 'majorName',
+        dataType: 'text',
+        enableGrouping: false,
+        meta: { width: '15%' }
       },
       {
         id: 'status',
@@ -546,7 +359,6 @@ export default function MajorPage() {
         accessorKey: 'status',
         cell: (cell) => {
           const { status } = cell.row.original;
-
           return (
             <Chip
               label={status === 1 ? 'Hoạt động' : status === 0 ? 'Dừng hoạt động' : 'UNKNOWN'}
@@ -555,12 +367,13 @@ export default function MajorPage() {
           );
         },
         dataType: 'select',
-        enableGrouping: false
+        enableGrouping: false,
+        meta: { width: '10%' }
       },
       {
         id: 'edit',
         header: 'Hành động',
-        cell: ({ row }) => <EditAction row={row} reload={reload} setReload={setReload} setAlert={setAlert} onEdit={handleOpenEdit} />,
+        cell: ({ row }) => <EditAction row={row} reload={reload} setReload={setReload} setAlert={setAlert} />,
         enableGrouping: false,
         meta: { className: 'cell-center', width: '10%' }
       }
@@ -568,7 +381,7 @@ export default function MajorPage() {
     [reload]
   );
   let options: number[] = [10, 25, 50, 100];
-  const [data, setData] = useState<Major[]>([]);
+  const [data, setData] = useState<ManageClass[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [pageNumber, setPageNumber] = useState(0);
@@ -580,6 +393,12 @@ export default function MajorPage() {
     status: ''
   });
   const [hasAddPermission, setHasAddPermission] = useState(false);
+  const [alert, setAlert] = useState({
+    open: false,
+    message: '',
+    severity: 'success' as 'success' | 'error' | 'info' | 'warning'
+  });
+  const navigate = useNavigate();
   const location = useLocation();
   const [columnOrder, setColumnOrder] = useState<string[]>(() => columns.map((c) => c.id!));
 
@@ -590,26 +409,24 @@ export default function MajorPage() {
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState<SortingState>([]);
   const [grouping, setGrouping] = useState<GroupingState>([]);
-
   const [columnVisibility, setColumnVisibility] = useState({});
 
   const [originalData, setOriginalData] = useState(() => [...data]);
   const [selectedRow, setSelectedRow] = useState({});
 
   const handleChangePageSize = (event: SelectChangeEvent<number>) => {
-    setPageRequest((prev) => ({ ...prev, size: event.target.value, page: 0 }));
+    setPageRequest((prev) => ({ ...prev, size: Number(event.target.value), page: 0 }));
   };
 
   useEffect(() => {
-    const fetchMajors = async () => {
+    const fetchClasses = async () => {
       const response = await getList(pageRequest);
 
       if (response.statusCode === HttpStatusCode.Ok) {
-        const data = response.data;
-        setData(data.content);
-        setTotalPages(data.totalPages);
-        setTotalElements(data.totalElements);
-        setPageNumber(data.pageable.pageNumber);
+        setData(response.data.content);
+        setTotalPages(response.data.totalPages);
+        setTotalElements(response.data.totalElements);
+        setPageNumber(response.data.pageable.pageNumber);
       } else if (response.statusCode === HttpStatusCode.Unauthorized) {
         logout();
       } else {
@@ -617,7 +434,7 @@ export default function MajorPage() {
       }
     };
 
-    fetchMajors();
+    fetchClasses();
   }, [pageRequest, intl, logout, reload]);
 
   useEffect(() => {
@@ -632,7 +449,7 @@ export default function MajorPage() {
     columns,
     manualPagination: true,
     defaultColumn: { cell: RowEditable },
-    getRowId: (row: Major) => (row.id ?? '').toString(),
+    getRowId: (row: ManageClass) => (row.id ?? '').toString(),
     state: { rowSelection, columnFilters, sorting, grouping, columnOrder, columnVisibility },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
@@ -661,13 +478,13 @@ export default function MajorPage() {
       setSelectedRow,
       revertData: (rowIndex: number, revert: unknown) => {
         if (revert) {
-          setData((old: Major[]) => old.map((row, index) => (index === rowIndex ? originalData[rowIndex] : row)));
+          setData((old: ManageClass[]) => old.map((row, index) => (index === rowIndex ? originalData[rowIndex] : row)));
         } else {
           setOriginalData((old) => old.map((row, index) => (index === rowIndex ? data[rowIndex] : row)));
         }
       },
       updateData: (rowIndex, columnId, value) => {
-        setData((old: Major[]) =>
+        setData((old: ManageClass[]) =>
           old.map((row, index) => {
             if (index === rowIndex) {
               return { ...old[rowIndex]!, [columnId]: value };
@@ -707,8 +524,6 @@ export default function MajorPage() {
   const columnSensors = useSensors(useSensor(MouseSensor, {}), useSensor(TouchSensor, {}), useSensor(KeyboardSensor, {}));
   const rowSensors = useSensors(useSensor(MouseSensor, {}), useSensor(TouchSensor, {}), useSensor(KeyboardSensor, {}));
 
-  useEffect(() => setColumnVisibility({ id: false }), []);
-
   useEffect(() => {
     if ([1].includes(user?.roleId ?? 0)) {
       setHasAddPermission(true);
@@ -716,11 +531,7 @@ export default function MajorPage() {
   }, [user?.roleId]);
 
   return (
-    <Stack
-      sx={() => ({
-        p: 0
-      })}
-    >
+    <Stack sx={{ p: 0 }}>
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         sx={(theme) => ({
@@ -731,21 +542,17 @@ export default function MajorPage() {
         })}
       >
         <Typography variant="h3" gutterBottom>
-          Danh sách ngành
+          Danh sách lớp quản lý
         </Typography>
 
         {hasAddPermission && (
           <Button
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
+            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             variant="contained"
-            onClick={handleOpenAdd}
+            onClick={() => navigate('/manage-class/add')}
             startIcon={<Add />}
           >
-            Thêm ngành
+            Thêm lớp
           </Button>
         )}
       </Stack>
@@ -791,18 +598,8 @@ export default function MajorPage() {
                   setPageRequest({ ...pageRequest, page: 0, keyword: globalFilter });
                 }
               }}
-              placeholder={'Tìm kiếm tên ngành'}
-              sx={{ minWidth: 100 }}
-              inputProps={{
-                sx: {
-                  textOverflow: 'ellipsis',
-                  '&::placeholder': {
-                    textOverflow: 'ellipsis',
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap'
-                  }
-                }
-              }}
+              placeholder={'Tìm kiếm tên lớp'}
+              sx={{ minWidth: 200 }}
             />
 
             <Select
@@ -810,7 +607,6 @@ export default function MajorPage() {
               onChange={(event) => setPageRequest({ ...pageRequest, page: 0, status: event.target.value })}
               displayEmpty
               input={<OutlinedInput />}
-              slotProps={{ input: { 'aria-label': 'Status Filter' } }}
             >
               <MenuItem value="">Trạng thái</MenuItem>
               <MenuItem value="1">Hoạt động</MenuItem>
@@ -823,13 +619,7 @@ export default function MajorPage() {
           </Typography>
         </Stack>
 
-        {/* Column DnD Context */}
-        <DndContext
-          collisionDetection={closestCenter}
-          modifiers={[restrictToHorizontalAxis]}
-          onDragEnd={handleColumnDragEnd}
-          sensors={columnSensors}
-        >
+        <DndContext collisionDetection={closestCenter} modifiers={[restrictToHorizontalAxis]} onDragEnd={handleColumnDragEnd} sensors={columnSensors}>
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -845,13 +635,7 @@ export default function MajorPage() {
               </TableHead>
 
               <TableBody>
-                {/* Row DnD Context */}
-                <DndContext
-                  collisionDetection={closestCenter}
-                  modifiers={[restrictToVerticalAxis]}
-                  onDragEnd={handleRowDragEnd}
-                  sensors={rowSensors}
-                >
+                <DndContext collisionDetection={closestCenter} modifiers={[restrictToVerticalAxis]} onDragEnd={handleRowDragEnd} sensors={rowSensors}>
                   {table.getRowModel().rows.length > 0 ? (
                     <SortableContext items={dataIds} strategy={verticalListSortingStrategy}>
                       {table.getRowModel().rows.map((row) => (
@@ -902,7 +686,7 @@ export default function MajorPage() {
             </Stack>
           </Grid>
 
-          <Grid sx={{ mt: { xs: 2, sm: 0 } }}>
+          <Grid sx={{ mt: { xs: 2, sm: 0 }, mb: 2 }}>
             <Pagination
               count={totalPages}
               variant="contained"
@@ -915,16 +699,6 @@ export default function MajorPage() {
           </Grid>
         </Grid>
       </MainCard>
-
-      {/* Major Form Dialog */}
-      <MajorFormDialog
-        open={formOpen}
-        onClose={handleCloseForm}
-        major={editingMajor}
-        reload={reload}
-        setReload={setReload}
-        setAlert={setAlert}
-      />
     </Stack>
   );
 }
