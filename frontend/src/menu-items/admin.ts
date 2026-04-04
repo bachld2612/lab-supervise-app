@@ -49,6 +49,13 @@ const adminMenu: NavItemType = {
       icon: icons.table
     },
     {
+      id: 'manage-classes',
+      title: 'Danh sách lớp quản lý',
+      type: 'item',
+      url: '/manage-class',
+      icon: icons.table
+    },
+    {
       id: 'department-management',
       title: 'Danh sách thông tin trường',
       type: 'collapse',
