@@ -23,4 +23,6 @@ public class SubjectResponse {
     Integer status;
 
     String sectionName;
+
+    Integer sectionId;
 }
