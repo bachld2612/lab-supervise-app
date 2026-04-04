@@ -540,7 +540,7 @@ export default function SemesterPage() {
         })}
       >
         <Typography variant="h3" gutterBottom>
-          Quản lý học kỳ
+          Danh sách học kỳ
         </Typography>
 
         {hasAddPermission && (

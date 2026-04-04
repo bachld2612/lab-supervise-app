@@ -731,7 +731,7 @@ export default function SectionPage() {
         })}
       >
         <Typography variant="h3" gutterBottom>
-          Quản lý bộ môn
+          Danh sách bộ môn
         </Typography>
 
         {hasAddPermission && (

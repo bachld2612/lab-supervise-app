@@ -36,6 +36,11 @@ const AddSubject = Loadable(lazy(() => import('sections/extra-pages/subject/add'
 const EditSubject = Loadable(lazy(() => import('sections/extra-pages/subject/edit')));
 const DetailSubject = Loadable(lazy(() => import('sections/extra-pages/subject/detail')));
 
+const ManageClassPage = Loadable(lazy(() => import('pages/manage-class/manage-class-page')));
+const AddManageClass = Loadable(lazy(() => import('sections/extra-pages/manage-class/add')));
+const EditManageClass = Loadable(lazy(() => import('sections/extra-pages/manage-class/edit')));
+const DetailManageClass = Loadable(lazy(() => import('sections/extra-pages/manage-class/detail')));
+
 const AdminDashboardPage = Loadable(lazy(() => import('pages/dashboard/admin-dashboard-page')));
 const TeacherDashboardPage = Loadable(lazy(() => import('pages/dashboard/teacher-dashboard-page')));
 const ItCenterDashboardPage = Loadable(lazy(() => import('pages/dashboard/it-center-dashboard-page')));
@@ -136,6 +141,22 @@ const MainRoutes = {
         {
           path: 'subject/detail/:id',
           element: <DetailSubject />
+        },
+        {
+          path: 'manage-class',
+          element: <ManageClassPage />
+        },
+        {
+          path: 'manage-class/add',
+          element: <AddManageClass />
+        },
+        {
+          path: 'manage-class/edit/:id',
+          element: <EditManageClass />
+        },
+        {
+          path: 'manage-class/detail/:id',
+          element: <DetailManageClass />
         }
       ]
     },

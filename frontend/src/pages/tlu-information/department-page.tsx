@@ -662,7 +662,7 @@ export default function DepartmentPage() {
         })}
       >
         <Typography variant="h3" gutterBottom>
-          Quản lý khoa
+          Danh sách khoa
         </Typography>
 
         {hasAddPermission && (
