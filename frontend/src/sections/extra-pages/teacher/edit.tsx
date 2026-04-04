@@ -7,7 +7,7 @@ import { Teacher } from 'types/teacher';
 import { Section } from 'types/section';
 import * as Yup from 'yup';
 import { useIntl } from 'react-intl';
-import teacherApi from 'api/teacher';
+import { getById, update } from 'api/teacher';
 import { getList as getSections } from 'api/section';
 import { HttpStatusCode } from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -53,7 +53,7 @@ export default function EditTeacher() {
 
       // Fetch teacher detail
       if (id) {
-        const teacherRes = await teacherApi.getById(Number(id));
+        const teacherRes = await getById(Number(id));
         if (teacherRes.statusCode === HttpStatusCode.Ok) {
           setInitialTeacher(teacherRes.data);
         } else if (teacherRes.statusCode === HttpStatusCode.Unauthorized) {
@@ -86,7 +86,7 @@ export default function EditTeacher() {
     validationSchema,
     initialValues: initialTeacher,
     onSubmit: async (values) => {
-      const response = await teacherApi.update(values, Number(id));
+      const response = await update(values, Number(id));
 
       if (response.statusCode === HttpStatusCode.Ok) {
         navigate('/teacher', {

@@ -35,13 +35,6 @@ const adminMenu: NavItemType = {
       icon: icons.profile
     },
     {
-      id: 'manage-schedules',
-      title: 'Quản lý lịch mượn',
-      type: 'item',
-      url: '/admin/schedules',
-      icon: icons.calendar
-    },
-    {
       id: 'manage-users',
       title: 'Quản lý giảng viên',
       type: 'item',
@@ -49,11 +42,19 @@ const adminMenu: NavItemType = {
       icon: icons.profile
     },
     {
-      id: 'admin-reports',
-      title: 'Báo cáo thống kê',
-      type: 'item',
-      url: '/admin/reports',
-      icon: icons.table
+      id: 'department-management',
+      title: 'Quản lý thông tin trường',
+      type: 'collapse',
+      icon: icons.box,
+      children: [
+        {
+          id: 'manage-departments',
+          title: 'Quản lý khoa',
+          type: 'item',
+          url: '/department',
+          icon: icons.box
+        }
+      ]
     }
   ]
 };
