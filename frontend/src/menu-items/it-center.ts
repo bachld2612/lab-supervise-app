@@ -29,7 +29,7 @@ const itCenterMenu: NavItemType = {
     },
     {
       id: 'system-users',
-      title: 'Quản lý tài khoản',
+      title: 'Danh sách tài khoản',
       type: 'item',
       url: '/it-center/users',
       icon: icons.user

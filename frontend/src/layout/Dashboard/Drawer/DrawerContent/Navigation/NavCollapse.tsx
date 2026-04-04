@@ -283,6 +283,7 @@ export default function NavCollapse({ menu, level, parentId, setSelectedItems, s
                 primary={
                   <Typography
                     variant="h6"
+                    noWrap
                     sx={(theme) => ({
                       fontWeight: isSelected || anchorEl ? 500 : 400,
                       color: lightTextColor,

@@ -29,55 +29,55 @@ const adminMenu: NavItemType = {
     },
     {
       id: 'user-management',
-      title: 'Quản lý nhân viên',
+      title: 'Danh sách nhân viên',
       type: 'item',
       url: '/user',
       icon: icons.profile
     },
     {
       id: 'manage-users',
-      title: 'Quản lý giảng viên',
+      title: 'Danh sách giảng viên',
       type: 'item',
       url: '/teacher',
       icon: icons.profile
     },
     {
       id: 'manage-subjects',
-      title: 'Quản lý môn học',
+      title: 'Danh sách môn học',
       type: 'item',
       url: '/subject',
       icon: icons.table
     },
     {
       id: 'department-management',
-      title: 'Quản lý thông tin trường',
+      title: 'Danh sách thông tin trường',
       type: 'collapse',
       icon: icons.box,
       children: [
         {
           id: 'manage-departments',
-          title: 'Quản lý khoa',
+          title: 'Danh sách khoa',
           type: 'item',
           url: '/department',
           icon: icons.box
         },
         {
           id: 'manage-sections',
-          title: 'Quản lý bộ môn',
+          title: 'Danh sách bộ môn',
           type: 'item',
           url: '/section',
           icon: icons.box
         },
         {
           id: 'manage-majors',
-          title: 'Quản lý ngành',
+          title: 'Danh sách ngành',
           type: 'item',
           url: '/major',
           icon: icons.box
         },
         {
           id: 'manage-semesters',
-          title: 'Quản lý học kỳ',
+          title: 'Danh sách học kỳ',
           type: 'item',
           url: '/semester',
           icon: icons.box

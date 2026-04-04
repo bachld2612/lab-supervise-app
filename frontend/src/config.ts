@@ -5,7 +5,7 @@ import { DefaultConfigProps } from 'types/config';
 
 export const APP_DEFAULT_PATH = '/sample-page';
 export const HORIZONTAL_MAX_ITEM = 8;
-export const DRAWER_WIDTH = 280;
+export const DRAWER_WIDTH = 300;
 export const MINI_DRAWER_WIDTH = 90;
 export const HEADER_HEIGHT = 74;
 
