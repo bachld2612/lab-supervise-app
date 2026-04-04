@@ -74,4 +74,12 @@ public class SectionService {
 
         sectionRepository.save(section);
     }
+
+    public void deleteById(Integer id) {
+        Section section = sectionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bộ môn có id: " + id));
+
+        section.setStatus(Status.INACTIVE.getValue());
+        sectionRepository.save(section);
+    }
 }

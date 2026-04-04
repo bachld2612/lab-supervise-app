@@ -53,6 +53,13 @@ const adminMenu: NavItemType = {
           type: 'item',
           url: '/department',
           icon: icons.box
+        },
+        {
+          id: 'manage-sections',
+          title: 'Quản lý bộ môn',
+          type: 'item',
+          url: '/section',
+          icon: icons.box
         }
       ]
     }
