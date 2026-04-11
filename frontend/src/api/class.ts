@@ -1,0 +1,50 @@
+import { Classes } from 'types/classes';
+import { PageRequest } from 'types/paging';
+import axiosServices from 'utils/axios';
+
+const getList = async (pageRequest: PageRequest) => {
+  try {
+    const response = await axiosServices.get('/api/class/v1', { params: pageRequest });
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+const getById = async (id: number) => {
+  try {
+    const response = await axiosServices.get(`/api/class/v1/${id}`);
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+const create = async (classes: Classes) => {
+  try {
+    const response = await axiosServices.post('/api/class/v1', classes);
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+const update = async (classes: Classes, id: number) => {
+  try {
+    const response = await axiosServices.put(`/api/class/v1/${id}`, classes);
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+const deleteById = async (id: number) => {
+  try {
+    const response = await axiosServices.delete(`/api/class/v1/${id}`);
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+export { getList, getById, create, update, deleteById };

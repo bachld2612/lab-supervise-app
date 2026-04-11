@@ -33,6 +33,7 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
             )
             AND (:manageClassId IS NULL OR :manageClassId = s.manageClassId)
             AND (:status IS NULL OR :status = u.status)
+        ORDER BY s.code ASC
     """)
     Page<StudentResponse> findByKeyword(Pageable pageable, String keyword, Integer status, Integer manageClassId);
 

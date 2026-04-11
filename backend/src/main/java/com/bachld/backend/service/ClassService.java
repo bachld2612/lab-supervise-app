@@ -127,4 +127,12 @@ public class ClassService {
 
         classRepository.save(classes);
     }
+
+    public void delete(Integer id) {
+        Classes cs = classRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp học phần có id: " + id));
+
+        cs.setStatus(Status.INACTIVE.getValue());
+        classRepository.save(cs);
+    }
 }
