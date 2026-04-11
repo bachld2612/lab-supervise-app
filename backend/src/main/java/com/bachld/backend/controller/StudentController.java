@@ -28,9 +28,10 @@ public class StudentController {
     public ResponseEntity<?> getList(
             @PageableDefault Pageable pageable,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Integer status
+            @RequestParam(required = false) Integer status,
+            @RequestParam(required = false) Integer manageClassId
     ) {
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), studentService.getList(pageable, keyword, status)));
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), studentService.getList(pageable, keyword, status, manageClassId)));
     }
 
     @GetMapping("/v1/{id}")
@@ -50,6 +51,13 @@ public class StudentController {
     @AuthFilter(role = "ADMIN")
     public ResponseEntity<?> update(@PathVariable int id, @RequestBody @Valid StudentUpdateRequest request) {
         studentService.update(request, id);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+    }
+
+    @DeleteMapping("/v1/{id}")
+    @AuthFilter(role = "ADMIN")
+    public ResponseEntity<?> delete(@PathVariable int id) {
+        studentService.delete(id);
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
     }
 }

@@ -22,7 +22,7 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.StudentResponse(
-            s.id, u.email, u.phone, u.fullName, s.code, mc.name, u.hometown, u.birthday, u.rawPassword, u.status
+            s.id, u.email, u.phone, u.fullName, s.code, mc.id, mc.name, u.hometown, u.birthday, u.rawPassword, u.status
         )
         FROM Student s JOIN User u ON s.userId = u.id
             JOIN ManageClass mc ON mc.id = s.manageClassId
@@ -31,13 +31,14 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
                 OR LOWER(u.phone) LIKE :keyword
                 OR LOWER(s.code) LIKE :keyword
             )
+            AND (:manageClassId IS NULL OR :manageClassId = s.manageClassId)
             AND (:status IS NULL OR :status = u.status)
     """)
-    Page<StudentResponse> findByKeyword(Pageable pageable, String keyword, Integer status);
+    Page<StudentResponse> findByKeyword(Pageable pageable, String keyword, Integer status, Integer manageClassId);
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.StudentResponse(
-            s.id, u.email, u.phone, u.fullName, s.code, mc.name, u.hometown, u.birthday, u.rawPassword, u.status
+            s.id, u.email, u.phone, u.fullName, s.code, mc.id, mc.name, u.hometown, u.birthday, u.rawPassword, u.status
         )
         FROM Student s JOIN User u ON s.userId = u.id
             JOIN ManageClass mc ON mc.id = s.manageClassId

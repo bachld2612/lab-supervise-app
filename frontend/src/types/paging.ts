@@ -17,6 +17,7 @@ export interface PageRequest {
   roleId?: string | undefined;
   roleType?: string | undefined;
   status?: string | undefined;
+  manageClassId?: string | undefined;
 }
 
 export const DEFAULT_PAGE_SIZE = 10;
