@@ -11,7 +11,9 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.ClassResponse(
-            c.id, c.name, c.maxStudent, c.sessionNumber, c.status, s.name, u.fullName, sc.name
+            c.id, c.name,
+            (SELECT CAST(COUNT(stc.studentId) AS integer) FROM StudentClass stc WHERE stc.classId = c.id),
+            c.maxStudent, c.sessionNumber, c.status, s.id, s.name, t.id, u.fullName, sc.id, sc.name
         )
         FROM Classes c
             JOIN Subject s ON c.subjectId = s.id
@@ -25,7 +27,9 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.ClassResponse(
-            c.id, c.name, c.maxStudent, c.sessionNumber, c.status, s.name, u.fullName, sc.name
+            c.id, c.name,
+            (SELECT CAST(COUNT(stc.studentId) AS integer) FROM StudentClass stc WHERE stc.classId = c.id),
+            c.maxStudent, c.sessionNumber, c.status, s.id, s.name, t.id, u.fullName, sc.id, sc.name
         )
         FROM Classes c
             JOIN Subject s ON c.subjectId = s.id

@@ -81,12 +81,11 @@ import {
 import { useIntl } from 'react-intl';
 import { HttpStatusCode } from 'axios';
 import useAuth from 'hooks/useAuth';
-import { type Schedule } from 'types/schedule';
-import { getList, deleteById } from 'api/schedule';
+import { type Classes } from 'types/classes';
+import { deleteById, getList } from 'api/class';
 import { DEFAULT_PAGE_SIZE, PageRequest } from 'types/paging';
-import { formatTimeWithoutSecond } from 'utils/formatDate';
 
-const fuzzyFilter: FilterFn<Schedule> = (row, columnId, value, addMeta) => {
+const fuzzyFilter: FilterFn<Classes> = (row, columnId, value, addMeta) => {
   // rank the item
   const itemRank = rankItem(row.getValue(columnId), value);
 
@@ -105,7 +104,7 @@ function EditAction({
   setReload,
   setAlert
 }: {
-  row: Row<Schedule>;
+  row: Row<Classes>;
   reload: boolean;
   setReload: (e: boolean) => void;
   setAlert: React.Dispatch<
@@ -135,12 +134,12 @@ function EditAction({
     const response = await deleteById(row.original.id);
 
     if (response.statusCode == HttpStatusCode.Ok) {
-      setAlert({ open: true, message: 'Xóa ca học thành công', severity: 'success' });
+      setAlert({ open: true, message: 'Xóa lớp học phần thành công', severity: 'success' });
       setReload(!reload);
     } else if (response.statusCode == HttpStatusCode.Unauthorized) {
       logout();
     } else if (response.statusCode == HttpStatusCode.UnprocessableEntity) {
-      setAlert({ open: true, message: response.data, severity: 'error' });
+      setAlert({ open: true, message: response.data as string, severity: 'error' });
     } else {
       setAlert({ open: true, message: 'Lỗi không xác định', severity: 'error' });
     }
@@ -151,13 +150,9 @@ function EditAction({
   return (
     <Stack direction="row" sx={{ gap: 1, alignItems: 'center', justifyContent: 'center' }}>
       {hasDetailPermission && (
-        <Tooltip title={row.original.status === 0 ? 'Không thể xem chi tiết khi ca học dừng hoạt động' : 'Xem chi tiết'}>
+        <Tooltip title={row.original.status === 0 ? 'Không thể xem chi tiết khi lớp dừng hoạt động' : 'Xem chi tiết'}>
           <span>
-            <IconButton
-              color="primary"
-              onClick={() => navigate(`/schedule/detail/${row.original.id}`)}
-              disabled={row.original.status === 0}
-            >
+            <IconButton color="primary" onClick={() => navigate(`/class/detail/${row.original.id}`)} disabled={row.original.status == 0}>
               <Eye variant="Outline" />
             </IconButton>
           </span>
@@ -165,9 +160,9 @@ function EditAction({
       )}
 
       {hasEditPermission && (
-        <Tooltip title={row.original.status === 0 ? 'Không thể chỉnh sửa khi ca học dừng hoạt động' : 'Chỉnh sửa'}>
+        <Tooltip title={row.original.status === 0 ? 'Không thể chỉnh sửa khi lớp dừng hoạt động' : 'Chỉnh sửa'}>
           <span>
-            <IconButton color="primary" onClick={() => navigate(`/schedule/edit/${row.original.id}`)} disabled={row.original.status === 0}>
+            <IconButton color="primary" onClick={() => navigate(`/class/edit/${row.original.id}`)} disabled={row.original.status == 0}>
               <Edit2 variant="Outline" />
             </IconButton>
           </span>
@@ -175,9 +170,9 @@ function EditAction({
       )}
 
       {hasDeletePermission && (
-        <Tooltip title={row.original.status === 0 ? 'Không thể xóa khi ca học dừng hoạt động' : 'Xóa'}>
+        <Tooltip title={row.original.status === 0 ? 'Không thể xóa khi lớp dừng hoạt động' : 'Xóa'}>
           <span>
-            <IconButton color="primary" onClick={() => setOpenDelete(true)} disabled={row.original.status === 0}>
+            <IconButton color="primary" onClick={() => setOpenDelete(true)} disabled={row.original.status == 0}>
               <Trash variant="Outline" />
             </IconButton>
           </span>
@@ -190,10 +185,10 @@ function EditAction({
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Bạn có muốn xóa ca học này không?</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Bạn có muốn xóa lớp học phần này không?</DialogTitle>
 
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">Khi xóa ca học, tất cả thông tin đi kèm cũng sẽ bị xóa.</DialogContentText>
+          <DialogContentText id="alert-dialog-description">Khi xóa lớp học phần, tất cả thông tin đi kèm cũng sẽ bị xóa.</DialogContentText>
         </DialogContent>
 
         <DialogActions>
@@ -315,13 +310,13 @@ function DraggableRow({ row }: { row: Row<any> }) {
   );
 }
 
-// ==============================|| SCHEDULE - MAIN ||============================== //
+// ==============================|| CLASS - MAIN ||============================== //
 
-export default function SchedulePage() {
+export default function ClassPage() {
   const { logout, user } = useAuth();
   const intl = useIntl();
   const [reload, setReload] = useState(false);
-  const columns = useMemo<ColumnDef<Schedule>[]>(
+  const columns = useMemo<ColumnDef<Classes>[]>(
     () => [
       {
         id: 'id',
@@ -334,34 +329,44 @@ export default function SchedulePage() {
       },
       {
         id: 'name',
-        header: 'Tên ca học',
+        header: 'Tên lớp',
         accessorKey: 'name',
-        dataType: 'text',
-        enableGrouping: false,
-        meta: { width: '30%' }
-      },
-      {
-        id: 'periods',
-        header: 'Tiết học',
-        accessorKey: 'periods',
-        cell: (cell) => {
-          const { periods } = cell.row.original;
-          return periods ?? '-';
-        },
         dataType: 'text',
         enableGrouping: false,
         meta: { width: '20%' }
       },
       {
-        id: 'time',
-        header: 'Thời gian học',
-        cell: (cell) => {
-          const { startTime, endTime } = cell.row.original;
-          return `${formatTimeWithoutSecond(startTime)} - ${formatTimeWithoutSecond(endTime)}`;
-        },
+        id: 'subjectName',
+        header: 'Môn học',
+        accessorKey: 'subjectName',
         dataType: 'text',
         enableGrouping: false,
-        meta: { width: '25%' }
+        meta: { width: '15%' }
+      },
+      {
+        id: 'teacherName',
+        header: 'Giảng viên',
+        accessorKey: 'teacherName',
+        dataType: 'text',
+        enableGrouping: false,
+        meta: { width: '15%' }
+      },
+      {
+        id: 'scheduleName',
+        header: 'Lịch học',
+        accessorKey: 'scheduleName',
+        dataType: 'text',
+        enableGrouping: false,
+        meta: { width: '20%' }
+      },
+      {
+        id: 'studentCount',
+        header: 'Sĩ số',
+        accessorKey: 'currentStudent',
+        cell: (cell) => `${cell.row.original.currentStudent}/${cell.row.original.maxStudent}`,
+        dataType: 'text',
+        enableGrouping: false,
+        meta: { width: '10%', className: 'cell-center' }
       },
       {
         id: 'status',
@@ -369,7 +374,6 @@ export default function SchedulePage() {
         accessorKey: 'status',
         cell: (cell) => {
           const { status } = cell.row.original;
-
           return (
             <Chip
               label={status === 1 ? 'Hoạt động' : status === 0 ? 'Dừng hoạt động' : 'UNKNOWN'}
@@ -379,7 +383,7 @@ export default function SchedulePage() {
         },
         dataType: 'select',
         enableGrouping: false,
-        meta: { width: '15%' }
+        meta: { width: '10%' }
       },
       {
         id: 'edit',
@@ -392,7 +396,7 @@ export default function SchedulePage() {
     [reload]
   );
   let options: number[] = [10, 25, 50, 100];
-  const [data, setData] = useState<Schedule[]>([]);
+  const [data, setData] = useState<Classes[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [pageNumber, setPageNumber] = useState(0);
@@ -420,26 +424,24 @@ export default function SchedulePage() {
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState<SortingState>([]);
   const [grouping, setGrouping] = useState<GroupingState>([]);
-
   const [columnVisibility, setColumnVisibility] = useState({});
 
   const [originalData, setOriginalData] = useState(() => [...data]);
   const [selectedRow, setSelectedRow] = useState({});
 
   const handleChangePageSize = (event: SelectChangeEvent<number>) => {
-    setPageRequest((prev) => ({ ...prev, size: event.target.value, page: 0 }));
+    setPageRequest((prev) => ({ ...prev, size: Number(event.target.value), page: 0 }));
   };
 
   useEffect(() => {
-    const fetchSchedules = async () => {
+    const fetchClasses = async () => {
       const response = await getList(pageRequest);
 
       if (response.statusCode === HttpStatusCode.Ok) {
-        const data = response.data;
-        setData(data.content);
-        setTotalPages(data.totalPages);
-        setTotalElements(data.totalElements);
-        setPageNumber(data.pageable.pageNumber);
+        setData(response.data.content);
+        setTotalPages(response.data.totalPages);
+        setTotalElements(response.data.totalElements);
+        setPageNumber(response.data.pageable.pageNumber);
       } else if (response.statusCode === HttpStatusCode.Unauthorized) {
         logout();
       } else {
@@ -447,7 +449,7 @@ export default function SchedulePage() {
       }
     };
 
-    fetchSchedules();
+    fetchClasses();
   }, [pageRequest, intl, logout, reload]);
 
   useEffect(() => {
@@ -462,7 +464,7 @@ export default function SchedulePage() {
     columns,
     manualPagination: true,
     defaultColumn: { cell: RowEditable },
-    getRowId: (row: Schedule) => (row.id ?? '').toString(),
+    getRowId: (row: Classes) => (row.id ?? '').toString(),
     state: { rowSelection, columnFilters, sorting, grouping, columnOrder, columnVisibility },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
@@ -491,13 +493,13 @@ export default function SchedulePage() {
       setSelectedRow,
       revertData: (rowIndex: number, revert: unknown) => {
         if (revert) {
-          setData((old: Schedule[]) => old.map((row, index) => (index === rowIndex ? originalData[rowIndex] : row)));
+          setData((old: Classes[]) => old.map((row, index) => (index === rowIndex ? originalData[rowIndex] : row)));
         } else {
           setOriginalData((old) => old.map((row, index) => (index === rowIndex ? data[rowIndex] : row)));
         }
       },
       updateData: (rowIndex, columnId, value) => {
-        setData((old: Schedule[]) =>
+        setData((old: Classes[]) =>
           old.map((row, index) => {
             if (index === rowIndex) {
               return { ...old[rowIndex]!, [columnId]: value };
@@ -556,17 +558,17 @@ export default function SchedulePage() {
         })}
       >
         <Typography variant="h3" gutterBottom>
-          Danh sách ca học
+          Danh sách lớp học phần
         </Typography>
 
         {hasAddPermission && (
           <Button
             sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             variant="contained"
-            onClick={() => navigate('/schedule/add')}
+            onClick={() => navigate('/class/add')}
             startIcon={<Add />}
           >
-            Thêm ca học
+            Thêm lớp
           </Button>
         )}
       </Stack>
@@ -612,7 +614,7 @@ export default function SchedulePage() {
                   setPageRequest({ ...pageRequest, page: 0, keyword: globalFilter });
                 }
               }}
-              placeholder={'Tìm kiếm tên ca học'}
+              placeholder={'Tìm kiếm tên lớp'}
               sx={{ minWidth: 200 }}
             />
 

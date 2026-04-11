@@ -14,15 +14,23 @@ public class ClassResponse {
 
     String name;
 
+    Integer currentStudent;
+
     Integer maxStudent;
 
     Integer sessionNumber;
 
     Integer status;
 
+    Integer subjectId;
+
     String subjectName;
 
+    Integer teacherId;
+
     String teacherName;
+
+    Integer scheduleId;
 
     String scheduleName;
 }
