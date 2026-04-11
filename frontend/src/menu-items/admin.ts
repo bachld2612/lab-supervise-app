@@ -63,6 +63,13 @@ const adminMenu: NavItemType = {
       icon: icons.table
     },
     {
+      id: 'manage-subject-classes',
+      title: 'Danh sách lớp học phần',
+      type: 'item',
+      url: '/class',
+      icon: icons.table
+    },
+    {
       id: 'department-management',
       title: 'Danh sách thông tin trường',
       type: 'collapse',
