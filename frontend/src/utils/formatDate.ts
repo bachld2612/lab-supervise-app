@@ -32,3 +32,12 @@ export function formatDateWithoutYear(date: string) {
 
   return formattedDate.substring(0, formattedDate.lastIndexOf('/'));
 }
+
+export function formatTimeWithoutSecond(time: string) {
+  if (!time) return '';
+  const parts = time.split(':');
+  if (parts.length >= 2) {
+    return `${parts[0]}:${parts[1]}`;
+  }
+  return time;
+}

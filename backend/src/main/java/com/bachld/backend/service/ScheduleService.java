@@ -5,6 +5,7 @@ import com.bachld.backend.dto.request.ScheduleUpdateRequest;
 import com.bachld.backend.dto.response.ScheduleResponse;
 import com.bachld.backend.model.Schedule;
 import com.bachld.backend.repository.ScheduleRepository;
+import com.bachld.backend.util.enums.Period;
 import com.bachld.backend.util.enums.Status;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,17 +42,12 @@ public class ScheduleService {
 
     @Transactional
     public void create(ScheduleCreateRequest request) {
-        if (request.getStartTime().isAfter(request.getEndTime()) || request.getStartTime().equals(request.getEndTime())) {
-            throw new IllegalArgumentException("Giờ bắt đầu phải trước giờ kết thúc");
-        }
-
         Schedule schedule = new Schedule();
         schedule.setName(request.getName());
-        schedule.setSessionCount(request.getSessionCount());
         schedule.setDaysOfWeek(request.getDaysOfWeek());
-        schedule.setStartTime(request.getStartTime());
-        schedule.setEndTime(request.getEndTime());
         schedule.setStatus(Status.ACTIVE.getValue());
+
+        processPeriods(schedule, request.getPeriods());
 
         scheduleRepository.save(schedule);
     }
@@ -63,24 +61,50 @@ public class ScheduleService {
             schedule.setName(request.getName());
         }
 
-        if (request.getSessionCount() != null) {
-            schedule.setSessionCount(request.getSessionCount());
-        }
-
         if (request.getDaysOfWeek() != null && !request.getDaysOfWeek().isEmpty()) {
             schedule.setDaysOfWeek(request.getDaysOfWeek());
         }
 
-        LocalTime newStart = request.getStartTime() != null ? request.getStartTime() : schedule.getStartTime();
-        LocalTime newEnd = request.getEndTime() != null ? request.getEndTime() : schedule.getEndTime();
-
-        if (newStart.isAfter(newEnd) || newStart.equals(newEnd)) {
-            throw new IllegalArgumentException("Giờ bắt đầu phải trước giờ kết thúc");
+        if (request.getPeriods() != null && !request.getPeriods().isEmpty()) {
+            processPeriods(schedule, request.getPeriods());
         }
 
-        schedule.setStartTime(newStart);
-        schedule.setEndTime(newEnd);
-
         scheduleRepository.save(schedule);
+    }
+
+    @Transactional
+    public void delete(int id) {
+        Schedule schedule = scheduleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lịch học có id: " + id));
+        
+        schedule.setStatus(Status.INACTIVE.getValue());
+        scheduleRepository.save(schedule);
+    }
+
+    private void processPeriods(Schedule schedule, String periodsStr) {
+        if (periodsStr == null || periodsStr.isEmpty()) return;
+
+        List<Integer> periodList = Arrays.stream(periodsStr.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(Integer::parseInt)
+                .distinct()
+                .sorted()
+                .toList();
+
+        if (periodList.isEmpty()) {
+            throw new IllegalArgumentException("Danh sách tiết học không được để trống");
+        }
+
+        String sortedPeriods = periodList.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(","));
+        schedule.setPeriods(sortedPeriods);
+
+        Period firstPeriod = Period.fromValue(periodList.get(0));
+        Period lastPeriod = Period.fromValue(periodList.get(periodList.size() - 1));
+
+        schedule.setStartTime(firstPeriod.getStartTime());
+        schedule.setEndTime(lastPeriod.getEndTime());
     }
 }

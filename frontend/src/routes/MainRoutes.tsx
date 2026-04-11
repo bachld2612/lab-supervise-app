@@ -26,10 +26,16 @@ const DetailTeacher = Loadable(lazy(() => import('sections/extra-pages/teacher/d
 const DepartmentPage = Loadable(lazy(() => import('pages/tlu-information/department-page')));
 const SectionPage = Loadable(lazy(() => import('pages/tlu-information/section-page')));
 const MajorPage = Loadable(lazy(() => import('pages/tlu-information/major-page')));
+
 const SemesterPage = Loadable(lazy(() => import('pages/tlu-information/semester-page')));
 const AddSemester = Loadable(lazy(() => import('sections/extra-pages/semester/add')));
 const EditSemester = Loadable(lazy(() => import('sections/extra-pages/semester/edit')));
 const DetailSemester = Loadable(lazy(() => import('sections/extra-pages/semester/detail')));
+
+const SchedulePage = Loadable(lazy(() => import('pages/tlu-information/schedule-page')));
+const AddSchedule = Loadable(lazy(() => import('sections/extra-pages/schedule/add')));
+const EditSchedule = Loadable(lazy(() => import('sections/extra-pages/schedule/edit')));
+const DetailSchedule = Loadable(lazy(() => import('sections/extra-pages/schedule/detail')));
 
 const SubjectPage = Loadable(lazy(() => import('pages/subject/subject-page')));
 const AddSubject = Loadable(lazy(() => import('sections/extra-pages/subject/add')));
@@ -157,6 +163,22 @@ const MainRoutes = {
         {
           path: 'manage-class/detail/:id',
           element: <DetailManageClass />
+        },
+        {
+          path: 'schedule',
+          element: <SchedulePage />
+        },
+        {
+          path: 'schedule/add',
+          element: <AddSchedule />
+        },
+        {
+          path: 'schedule/edit/:id',
+          element: <EditSchedule />
+        },
+        {
+          path: 'schedule/detail/:id',
+          element: <DetailSchedule />
         }
       ]
     },
