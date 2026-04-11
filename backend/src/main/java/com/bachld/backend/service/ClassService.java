@@ -72,7 +72,8 @@ public class ClassService {
         classes.setScheduleId(request.getScheduleId());
         classes.setStatus(Status.ACTIVE.getValue());
 
-        int sessionNumber = (subject.getCreditNumber() * 15) / schedule.getSessionCount();
+        int sessionCount = schedule.getPeriods().split(",").length;
+        int sessionNumber = (subject.getCreditNumber() * 15) / sessionCount;
         classes.setSessionNumber(sessionNumber);
 
         classRepository.save(classes);
@@ -119,7 +120,8 @@ public class ClassService {
         ScheduleResponse currentSchedule = scheduleRepository.findByIdAndStatus(classes.getScheduleId(), Status.ACTIVE.getValue());
         
         if (currentSubject != null && currentSchedule != null) {
-            int newSessionNumber = (currentSubject.getCreditNumber() * 15) / currentSchedule.getSessionCount();
+            int currentSessionCount = currentSchedule.getPeriods().split(",").length;
+            int newSessionNumber = (currentSubject.getCreditNumber() * 15) / currentSessionCount;
             classes.setSessionNumber(newSessionNumber);
         }
 
