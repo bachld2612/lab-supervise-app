@@ -47,6 +47,11 @@ const AddManageClass = Loadable(lazy(() => import('sections/extra-pages/manage-c
 const EditManageClass = Loadable(lazy(() => import('sections/extra-pages/manage-class/edit')));
 const DetailManageClass = Loadable(lazy(() => import('sections/extra-pages/manage-class/detail')));
 
+const StudentPage = Loadable(lazy(() => import('pages/student/student-page')));
+const AddStudent = Loadable(lazy(() => import('sections/extra-pages/student/add')));
+const EditStudent = Loadable(lazy(() => import('sections/extra-pages/student/edit')));
+const DetailStudent = Loadable(lazy(() => import('sections/extra-pages/student/detail')));
+
 const AdminDashboardPage = Loadable(lazy(() => import('pages/dashboard/admin-dashboard-page')));
 const TeacherDashboardPage = Loadable(lazy(() => import('pages/dashboard/teacher-dashboard-page')));
 const ItCenterDashboardPage = Loadable(lazy(() => import('pages/dashboard/it-center-dashboard-page')));
@@ -179,6 +184,22 @@ const MainRoutes = {
         {
           path: 'schedule/detail/:id',
           element: <DetailSchedule />
+        },
+        {
+          path: 'student',
+          element: <StudentPage />
+        },
+        {
+          path: 'student/add',
+          element: <AddStudent />
+        },
+        {
+          path: 'student/edit/:id',
+          element: <EditStudent />
+        },
+        {
+          path: 'student/detail/:id',
+          element: <DetailStudent />
         }
       ]
     },

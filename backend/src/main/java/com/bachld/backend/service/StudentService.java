@@ -37,7 +37,7 @@ public class StudentService {
 
     ManageClassRepository manageClassRepository;
 
-    public Page<StudentResponse> getList(Pageable pageable, String keyword, Integer status) {
+    public Page<StudentResponse> getList(Pageable pageable, String keyword, Integer status, Integer manageClassId) {
         if (keyword != null) {
             keyword = "%" + keyword.trim().toLowerCase() + "%";
         }
@@ -45,7 +45,7 @@ public class StudentService {
             keyword = "%%";
         }
 
-        return studentRepository.findByKeyword(pageable, keyword, status);
+        return studentRepository.findByKeyword(pageable, keyword, status, manageClassId);
     }
 
     public StudentResponse getById(Integer id) {
@@ -78,6 +78,7 @@ public class StudentService {
         student.setCode(request.getCode());
         student.setManageClassId(request.getManageClassId());
         student.setUserId(user.getId());
+        student.setStatus(Status.ACTIVE.getValue());
         studentRepository.save(student);
     }
 
@@ -125,5 +126,15 @@ public class StudentService {
 
         userRepository.save(user);
         studentRepository.save(student);
+    }
+
+    public void delete(Integer id) {
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sinh viên có id: " + id));
+        User user = userRepository.findById(student.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng có id: " + student.getUserId()));
+
+        user.setStatus(Status.INACTIVE.getValue());
+        userRepository.save(user);
     }
 }

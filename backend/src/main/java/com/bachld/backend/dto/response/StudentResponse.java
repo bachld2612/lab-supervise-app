@@ -24,7 +24,9 @@ public class StudentResponse {
 
     String code;
 
-    String classManageName;
+    Integer manageClassId;
+
+    String manageClassName;
 
     String hometown;
 
