@@ -523,6 +523,7 @@ export default function ManageClassPage() {
 
   const columnSensors = useSensors(useSensor(MouseSensor, {}), useSensor(TouchSensor, {}), useSensor(KeyboardSensor, {}));
   const rowSensors = useSensors(useSensor(MouseSensor, {}), useSensor(TouchSensor, {}), useSensor(KeyboardSensor, {}));
+  useEffect(() => setColumnVisibility({ id: false }), []);
 
   useEffect(() => {
     if ([1].includes(user?.roleId ?? 0)) {

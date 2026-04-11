@@ -1,0 +1,298 @@
+import { Paper, Typography, InputLabel, TextField, Button, Snackbar, Alert, Box, Autocomplete, CircularProgress } from '@mui/material';
+import { Grid, Stack } from '@mui/system';
+import AnimateButton from 'components/@extended/AnimateButton';
+import { useFormik } from 'formik';
+import { useState, useEffect } from 'react';
+import { Classes } from 'types/classes';
+import * as Yup from 'yup';
+import { useIntl } from 'react-intl';
+import { create } from 'api/class';
+import { getList as getTeacherList } from 'api/teacher';
+import { getList as getSubjectList } from 'api/subject';
+import { getList as getScheduleList } from 'api/schedule';
+import { HttpStatusCode } from 'axios';
+import { useNavigate } from 'react-router-dom';
+import useAuth from 'hooks/useAuth';
+import { Teacher } from 'types/teacher';
+import { Subject } from 'types/subject';
+import { Schedule } from 'types/schedule';
+
+export default function AddClass() {
+  const intl = useIntl();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState({
+    open: false,
+    message: '',
+    severity: 'success' as 'success' | 'error' | 'info' | 'warning'
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const resT = await getTeacherList({ page: 0, size: 1000, keyword: '', status: '1' });
+      if (resT.statusCode === HttpStatusCode.Ok) setTeachers(resT.data.content);
+
+      const resS = await getSubjectList({ page: 0, size: 1000, keyword: '', status: '1' });
+      if (resS.statusCode === HttpStatusCode.Ok) setSubjects(resS.data.content);
+
+      const resSch = await getScheduleList({ page: 0, size: 1000, keyword: '', status: '1' });
+      if (resSch.statusCode === HttpStatusCode.Ok) setSchedules(resSch.data.content);
+      setLoading(false);
+    };
+    fetchData();
+  }, []);
+
+  const validationSchema = Yup.object({
+    name: Yup.string().required('Tên lớp không được phép bỏ trống'),
+    maxStudent: Yup.number().required('Sĩ số tối đa không được phép bỏ trống').min(1, 'Sĩ số tối đa phải lớn hơn 0'),
+    subjectId: Yup.number().required('Môn học không được phép bỏ trống').min(1, 'Môn học không được phép bỏ trống'),
+    teacherId: Yup.number().required('Giảng viên không được phép bỏ trống').min(1, 'Giảng viên không được phép bỏ trống'),
+    scheduleId: Yup.number().required('Lịch học không được phép bỏ trống').min(1, 'Lịch học không được phép bỏ trống')
+  });
+
+  const initialValues: Classes = {
+    id: 0,
+    status: 1,
+    name: '',
+    maxStudent: '' as any,
+    currentStudent: 0,
+    subjectId: 0,
+    subjectName: '',
+    teacherId: 0,
+    teacherName: '',
+    scheduleId: 0,
+    scheduleName: ''
+  };
+
+  const formik = useFormik<Classes>({
+    validationSchema,
+    initialValues: initialValues,
+    onSubmit: async (values) => {
+      const response = await create(values);
+
+      if (response.statusCode === HttpStatusCode.Ok) {
+        navigate('/class', {
+          state: { alert: { open: true, severity: 'success', message: 'Thêm lớp học phần thành công' } }
+        });
+      } else if (response.statusCode === HttpStatusCode.BadRequest) {
+        const errors = Object.entries(response.data);
+        if (errors.length > 0) {
+          const firstError = errors[0][1];
+          setAlert({ open: true, message: firstError as string, severity: 'error' });
+        }
+      } else if (response.statusCode === HttpStatusCode.Unauthorized) {
+        logout();
+      } else if (response.statusCode === HttpStatusCode.UnprocessableEntity) {
+        setAlert({ open: true, message: response.message, severity: 'error' });
+      } else {
+        setAlert({ open: true, message: intl.formatMessage({ id: 'unknown-error' }), severity: 'error' });
+      }
+    }
+  });
+
+  return (
+    <Box>
+      <Box display="flex" alignItems="center" gap={2} mb={3}>
+        <Typography variant="h3">Thêm lớp học phần</Typography>
+      </Box>
+
+      <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', ml: 30, mr: 30 }}>
+        <form onSubmit={formik.handleSubmit} noValidate>
+          <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ mb: 3 }}>
+            Thông tin lớp học phần
+          </Typography>
+
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <InputLabel htmlFor="name" required sx={{ '& .MuiInputLabel-asterisk': { color: 'error.main' }, mb: 1 }}>
+                Tên lớp
+              </InputLabel>
+
+              <TextField
+                id="name"
+                name="name"
+                placeholder="Nhập tên lớp"
+                size="small"
+                fullWidth
+                value={formik.values.name}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.name && Boolean(formik.errors.name)}
+                helperText={formik.touched.name && formik.errors.name}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, md: 6 }}>
+              <InputLabel htmlFor="maxStudent" required sx={{ '& .MuiInputLabel-asterisk': { color: 'error.main' }, mb: 1 }}>
+                Sĩ số tối đa
+              </InputLabel>
+
+              <TextField
+                id="maxStudent"
+                name="maxStudent"
+                type="number"
+                placeholder="Nhập sĩ số tối đa"
+                size="small"
+                fullWidth
+                value={formik.values.maxStudent}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.maxStudent && Boolean(formik.errors.maxStudent)}
+                helperText={formik.touched.maxStudent && formik.errors.maxStudent}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12 }}>
+              <InputLabel htmlFor="subjectId" required sx={{ '& .MuiInputLabel-asterisk': { color: 'error.main' }, mb: 1 }}>
+                Môn học
+              </InputLabel>
+
+              <Autocomplete
+                id="subjectId"
+                options={subjects}
+                getOptionLabel={(option) => `${option.code} - ${option.name}`}
+                value={subjects.find((s) => s.id === formik.values.subjectId) || null}
+                onChange={(_, newValue) => {
+                  formik.setFieldValue('subjectId', newValue ? newValue.id : 0);
+                }}
+                loading={loading}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder="Chọn môn học"
+                    size="small"
+                    error={formik.touched.subjectId && Boolean(formik.errors.subjectId)}
+                    helperText={formik.touched.subjectId && formik.errors.subjectId}
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      )
+                    }}
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12 }}>
+              <InputLabel htmlFor="teacherId" required sx={{ '& .MuiInputLabel-asterisk': { color: 'error.main' }, mb: 1 }}>
+                Giảng viên
+              </InputLabel>
+
+              <Autocomplete
+                id="teacherId"
+                options={teachers}
+                getOptionLabel={(option) => `${option.code} - ${option.fullName}`}
+                value={teachers.find((t) => t.id === formik.values.teacherId) || null}
+                onChange={(_, newValue) => {
+                  formik.setFieldValue('teacherId', newValue ? newValue.id : 0);
+                }}
+                loading={loading}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder="Chọn giảng viên"
+                    size="small"
+                    error={formik.touched.teacherId && Boolean(formik.errors.teacherId)}
+                    helperText={formik.touched.teacherId && formik.errors.teacherId}
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      )
+                    }}
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12 }}>
+              <InputLabel htmlFor="scheduleId" required sx={{ '& .MuiInputLabel-asterisk': { color: 'error.main' }, mb: 1 }}>
+                Lịch học
+              </InputLabel>
+
+              <Autocomplete
+                id="scheduleId"
+                options={schedules}
+                getOptionLabel={(option) => option.name || ''}
+                value={schedules.find((s) => s.id === formik.values.scheduleId) || null}
+                onChange={(_, newValue) => {
+                  formik.setFieldValue('scheduleId', newValue ? newValue.id : 0);
+                }}
+                loading={loading}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder="Chọn lịch học"
+                    size="small"
+                    error={formik.touched.scheduleId && Boolean(formik.errors.scheduleId)}
+                    helperText={formik.touched.scheduleId && formik.errors.scheduleId}
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      )
+                    }}
+                  />
+                )}
+              />
+            </Grid>
+          </Grid>
+
+          <Grid>
+            <Grid size={12} sx={{ p: 0, m: 0 }}>
+              <Stack direction="row" sx={{ justifyContent: 'flex-end' }}>
+                <AnimateButton>
+                  <Button
+                    onClick={() => navigate('/class')}
+                    variant="contained"
+                    sx={{
+                      my: 3,
+                      ml: 1,
+                      bgcolor: '#7e7e7eff',
+                      color: 'white',
+                      '&:hover': { bgcolor: '#9a9999ff' }
+                    }}
+                  >
+                    Trở về
+                  </Button>
+                </AnimateButton>
+
+                <AnimateButton>
+                  <Button variant="contained" type="submit" sx={{ my: 3, ml: 1 }}>
+                    Thêm
+                  </Button>
+                </AnimateButton>
+              </Stack>
+            </Grid>
+          </Grid>
+        </form>
+      </Paper>
+
+      <Snackbar
+        open={alert.open}
+        autoHideDuration={3000}
+        onClose={() => setAlert({ ...alert, open: false })}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert onClose={() => setAlert({ ...alert, open: false })} severity={alert.severity} variant="filled" sx={{ width: '100%' }}>
+          {alert.message}
+        </Alert>
+      </Snackbar>
+    </Box>
+  );
+}
