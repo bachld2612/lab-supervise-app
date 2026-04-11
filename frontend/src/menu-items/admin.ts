@@ -42,6 +42,13 @@ const adminMenu: NavItemType = {
       icon: icons.profile
     },
     {
+      id: 'manage-students',
+      title: 'Danh sách sinh viên',
+      type: 'item',
+      url: '/student',
+      icon: icons.profile
+    },
+    {
       id: 'manage-subjects',
       title: 'Danh sách môn học',
       type: 'item',
