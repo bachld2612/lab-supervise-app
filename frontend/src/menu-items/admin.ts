@@ -88,6 +88,13 @@ const adminMenu: NavItemType = {
           type: 'item',
           url: '/semester',
           icon: icons.box
+        },
+        {
+          id: 'manage-schedules',
+          title: 'Danh sách ca học',
+          type: 'item',
+          url: '/schedule',
+          icon: icons.box
         }
       ]
     }

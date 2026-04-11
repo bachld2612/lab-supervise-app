@@ -16,9 +16,9 @@ public class ScheduleResponse {
 
     String name;
 
-    Integer sessionCount;
-
     String daysOfWeek;
+
+    String periods;
 
     LocalTime startTime;
 
