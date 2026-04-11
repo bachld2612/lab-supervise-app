@@ -52,4 +52,11 @@ public class ScheduleController {
         scheduleService.update(request, id);
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
     }
+
+    @DeleteMapping("/v1/{id}")
+    @AuthFilter(role = "ADMIN")
+    public ResponseEntity<?> delete(@PathVariable int id) {
+        scheduleService.delete(id);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+    }
 }

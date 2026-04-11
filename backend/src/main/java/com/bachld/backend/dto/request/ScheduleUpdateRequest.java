@@ -1,13 +1,11 @@
 package com.bachld.backend.dto.request;
 
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalTime;
 
 @Data
 @AllArgsConstructor
@@ -17,12 +15,8 @@ public class ScheduleUpdateRequest {
 
     String name;
 
-    @Min(value = 1, message = "Số tiết phải lớn hơn 0")
-    Integer sessionCount;
-
     String daysOfWeek;
 
-    LocalTime startTime;
-
-    LocalTime endTime;
+    @Pattern(regexp = "^([1-9]|1[0-2])(,[1-9]|,1[0-2])*$", message = "Định dạng tiết học không hợp lệ.")
+    String periods;
 }
