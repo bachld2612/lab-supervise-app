@@ -1,7 +1,7 @@
 package com.bachld.service;
 
-import com.bachld.model.Role;
-import com.bachld.model.User;
+import com.bachld.model.response.Role;
+import com.bachld.model.response.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

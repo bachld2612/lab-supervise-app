@@ -16,6 +16,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.net.URL;
 import java.util.Arrays;
+import java.awt.Window;
 
 public class LoginPanel extends JPanel {
 
@@ -356,8 +357,24 @@ public class LoginPanel extends JPanel {
         authService.loginAsync(email, password, new AuthService.AuthCallback() {
             @Override public void onSuccess(AuthResponse response) {
                 setLoginEnabled(true);
-                JOptionPane.showMessageDialog(LoginPanel.this,
-                        "Đăng nhập thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                // Transition to MainFrame
+                SwingUtilities.invokeLater(() -> {
+                    // Create PersonalComputer dependencies
+                    com.bachld.client.PersonalComputerApiClient pcApiClient =
+                            new com.bachld.client.PersonalComputerApiClient(
+                                    com.bachld.config.RestClient.getInstance());
+                    com.bachld.service.PersonalComputerService pcService =
+                            new com.bachld.service.PersonalComputerService(pcApiClient);
+
+                    MainFrame mainFrame = new MainFrame(authService, pcService);
+                    mainFrame.setVisible(true);
+                    
+                    // Close the login frame
+                    Window ancestor = SwingUtilities.getWindowAncestor(LoginPanel.this);
+                    if (ancestor != null) {
+                        ancestor.dispose();
+                    }
+                });
             }
             @Override public void onError(String msg) {
                 showGeneralError(msg);

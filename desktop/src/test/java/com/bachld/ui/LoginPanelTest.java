@@ -1,6 +1,6 @@
 package com.bachld.ui;
 
-import com.bachld.model.AuthResponse;
+import com.bachld.model.response.AuthResponse;
 import com.bachld.service.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

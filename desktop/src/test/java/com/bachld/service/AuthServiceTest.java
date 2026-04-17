@@ -3,10 +3,10 @@ package com.bachld.service;
 import com.bachld.client.AuthApiClient;
 import com.bachld.config.RestClient;
 import com.bachld.exception.RestClientException;
-import com.bachld.model.AuthData;
-import com.bachld.model.AuthResponse;
-import com.bachld.model.Role;
-import com.bachld.model.User;
+import com.bachld.model.response.AuthData;
+import com.bachld.model.response.AuthResponse;
+import com.bachld.model.response.Role;
+import com.bachld.model.response.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
