@@ -31,6 +31,9 @@ public class Util {
     @Autowired
     private SectionRepository sectionRepository;
 
+    @Autowired
+    private PersonalComputerRepository personalComputerRepository;
+
     public User getCurrentUser() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByIdAndStatus(Integer.valueOf(userId), Status.ACTIVE.getValue()).orElse(null);
@@ -91,6 +94,16 @@ public class Util {
         if (subject.isPresent()) {
             if (id == null || subject.get().getId() != id) {
                 throw new IllegalArgumentException("Mã môn học đã tồn tại");
+            }
+        }
+    }
+
+    public void validateIpAddress(String ipAddress, Integer userId) {
+        Optional<PersonalComputer> pc = personalComputerRepository.findByIpAddress(ipAddress);
+        
+        if (pc.isPresent()) {
+            if (userId == null || !pc.get().getUserId().equals(userId)) {
+                throw new IllegalArgumentException("Địa chỉ IP đã tồn tại ở thiết bị khác");
             }
         }
     }
