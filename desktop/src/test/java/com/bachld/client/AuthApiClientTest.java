@@ -2,7 +2,7 @@ package com.bachld.client;
 
 import com.bachld.config.RestClient;
 import com.bachld.exception.RestClientException;
-import com.bachld.model.AuthResponse;
+import com.bachld.model.response.AuthResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
