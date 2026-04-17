@@ -1,6 +1,6 @@
 package com.bachld.config;
 
-import com.bachld.model.ApiErrorResponse;
+import com.bachld.model.response.ApiErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

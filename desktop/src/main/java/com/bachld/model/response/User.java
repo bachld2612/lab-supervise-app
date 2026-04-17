@@ -40,6 +40,13 @@ public class User {
     
     public User() {
     }
+
+    public User(Long id, String email, String fullName, String phone) {
+        this.id = id;
+        this.email = email;
+        this.fullName = fullName;
+        this.phone = phone;
+    }
     
     public Long getId() {
         return id;
