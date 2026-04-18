@@ -10,12 +10,14 @@ import { getById, update } from 'api/class';
 import { getList as getTeacherList } from 'api/teacher';
 import { getList as getSubjectList } from 'api/subject';
 import { getList as getScheduleList } from 'api/schedule';
+import { getList as getSemesterList } from 'api/semester';
 import { HttpStatusCode } from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import useAuth from 'hooks/useAuth';
 import { Teacher } from 'types/teacher';
 import { Subject } from 'types/subject';
 import { Schedule } from 'types/schedule';
+import { Semester } from 'types/semester';
 
 export default function EditClass() {
   const intl = useIntl();
@@ -25,6 +27,7 @@ export default function EditClass() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [semesters, setSemesters] = useState<Semester[]>([]);
   const [loading, setLoading] = useState(false);
   const [classData, setClassData] = useState<Classes>({
     id: 0,
@@ -37,7 +40,11 @@ export default function EditClass() {
     teacherId: 0,
     teacherName: '',
     scheduleId: 0,
-    scheduleName: ''
+    scheduleName: '',
+    startDate: '',
+    endDate: '',
+    semesterId: 0,
+    semesterName: ''
   });
 
   const [alert, setAlert] = useState({
@@ -58,6 +65,9 @@ export default function EditClass() {
       const resSch = await getScheduleList({ page: 0, size: 1000, keyword: '', status: '1' });
       if (resSch.statusCode === HttpStatusCode.Ok) setSchedules(resSch.data.content);
 
+      const resSem = await getSemesterList({ page: 0, size: 1000, keyword: '', status: '1' });
+      if (resSem.statusCode === HttpStatusCode.Ok) setSemesters(resSem.data.content);
+
       if (id) {
         const resC = await getById(Number(id));
         if (resC.statusCode === HttpStatusCode.Ok) {
@@ -76,7 +86,10 @@ export default function EditClass() {
     maxStudent: Yup.number().required('Sĩ số tối đa không được phép bỏ trống').min(1, 'Sĩ số tối đa phải lớn hơn 0'),
     subjectId: Yup.number().required('Môn học không được phép bỏ trống').min(1, 'Môn học không được phép bỏ trống'),
     teacherId: Yup.number().required('Giảng viên không được phép bỏ trống').min(1, 'Giảng viên không được phép bỏ trống'),
-    scheduleId: Yup.number().required('Lịch học không được phép bỏ trống').min(1, 'Lịch học không được phép bỏ trống')
+    scheduleId: Yup.number().required('Lịch học không được phép bỏ trống').min(1, 'Lịch học không được phép bỏ trống'),
+    semesterId: Yup.number().required('Học kì không được phép bỏ trống').min(1, 'Học kì không được phép bỏ trống'),
+    startDate: Yup.string().required('Ngày bắt đầu không được phép bỏ trống'),
+    endDate: Yup.string().required('Ngày kết thúc không được phép bỏ trống')
   });
 
   const formik = useFormik<Classes>({
@@ -93,6 +106,10 @@ export default function EditClass() {
       teacherName: classData.teacherName || '',
       scheduleId: classData.scheduleId || 0,
       scheduleName: classData.scheduleName || '',
+      semesterId: classData.semesterId || 0,
+      semesterName: classData.semesterName || '',
+      startDate: classData.startDate || '',
+      endDate: classData.endDate || '',
       status: classData.status || 1
     },
     onSubmit: async (values) => {
@@ -269,6 +286,88 @@ export default function EditClass() {
                     }}
                   />
                 )}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12 }}>
+              <InputLabel htmlFor="semesterId" required sx={{ '& .MuiInputLabel-asterisk': { color: 'error.main' }, mb: 1 }}>
+                Học kì
+              </InputLabel>
+
+              <Autocomplete
+                id="semesterId"
+                options={semesters}
+                getOptionLabel={(option) => option.name || ''}
+                value={semesters.find((s) => s.id === formik.values.semesterId) || null}
+                onChange={(_, newValue) => {
+                  formik.setFieldValue('semesterId', newValue ? newValue.id : 0);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder="Chọn học kì"
+                    size="small"
+                    error={formik.touched.semesterId && Boolean(formik.errors.semesterId)}
+                    helperText={formik.touched.semesterId && formik.errors.semesterId}
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      )
+                    }}
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, md: 6 }}>
+              <InputLabel htmlFor="startDate" required sx={{ '& .MuiInputLabel-asterisk': { color: 'error.main' }, mb: 1 }}>
+                Ngày bắt đầu
+              </InputLabel>
+
+              <TextField
+                id="startDate"
+                name="startDate"
+                type="date"
+                fullWidth
+                size="small"
+                value={formik.values.startDate}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.startDate && Boolean(formik.errors.startDate)}
+                helperText={formik.touched.startDate && formik.errors.startDate}
+                slotProps={{
+                  inputLabel: {
+                    shrink: true
+                  }
+                }}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, md: 6 }}>
+              <InputLabel htmlFor="endDate" required sx={{ '& .MuiInputLabel-asterisk': { color: 'error.main' }, mb: 1 }}>
+                Ngày kết thúc
+              </InputLabel>
+
+              <TextField
+                id="endDate"
+                name="endDate"
+                type="date"
+                fullWidth
+                size="small"
+                value={formik.values.endDate}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.endDate && Boolean(formik.errors.endDate)}
+                helperText={formik.touched.endDate && formik.errors.endDate}
+                slotProps={{
+                  inputLabel: {
+                    shrink: true
+                  }
+                }}
               />
             </Grid>
           </Grid>

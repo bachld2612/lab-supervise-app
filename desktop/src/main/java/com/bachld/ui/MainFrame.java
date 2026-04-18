@@ -11,13 +11,25 @@ import java.awt.*;
 public class MainFrame extends JFrame {
     private final AuthService authService;
     private final PersonalComputerService pcService;
+    private final com.bachld.service.ClassService classService;
+    private final com.bachld.service.WebSocketService webSocketService;
+    private com.bachld.service.WindowsTrackingService windowsTrackingService;
     private JPanel contentArea;
     private CardLayout cardLayout;
     private SidebarPanel sidebarPanel;
 
-    public MainFrame(AuthService authService, PersonalComputerService pcService) {
+    public MainFrame(AuthService authService, PersonalComputerService pcService, com.bachld.service.ClassService classService, com.bachld.service.WebSocketService webSocketService) {
         this.authService = authService;
         this.pcService = pcService;
+        this.classService = classService;
+        this.webSocketService = webSocketService;
+        
+        // Initialize tracking for Windows
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+            this.windowsTrackingService = new com.bachld.service.WindowsTrackingService(webSocketService);
+            this.windowsTrackingService.start();
+        }
+        
         initFrame();
     }
 
@@ -52,7 +64,7 @@ public class MainFrame extends JFrame {
         contentArea.setBorder(new EmptyBorder(0, 30, 30, 30));
 
         // Pages
-        contentArea.add(createPage("Quản lý lớp học"), "CLASS_MGMT");
+        contentArea.add(wrapInPageWrapper(new ClassManagementPanel(classService), "Quản lý lớp học"), "CLASS_MGMT");
         contentArea.add(new PersonalComputerPanel(pcService), "PC_MGMT");
 
         mainWrapper.add(contentArea, BorderLayout.CENTER);
@@ -126,6 +138,14 @@ public class MainFrame extends JFrame {
         );
         
         if (confirm == JOptionPane.YES_OPTION) {
+            // Stop tracking
+            if (windowsTrackingService != null) {
+                windowsTrackingService.stop();
+            }
+            // Disconnect WebSocket
+            if (webSocketService != null) {
+                webSocketService.disconnect();
+            }
             // Clear token
             com.bachld.service.TokenManager.getInstance().clearToken();
             
@@ -135,7 +155,7 @@ public class MainFrame extends JFrame {
         }
     }
 
-    private JPanel createPage(String title) {
+    private JPanel wrapInPageWrapper(JPanel content, String title) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
         
@@ -157,24 +177,12 @@ public class MainFrame extends JFrame {
         
         panel.add(titlePanel, BorderLayout.NORTH);
         
-        // Body (Sample Card)
+        // Body (Inject provided content)
         JPanel body = new JPanel(new BorderLayout());
         body.setOpaque(false);
         body.setBorder(new EmptyBorder(30, 0, 0, 0));
+        body.add(content, BorderLayout.CENTER);
         
-        JPanel card = new JPanel(new BorderLayout());
-        card.setBackground(Color.WHITE);
-        card.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(226, 232, 240), 1),
-            new EmptyBorder(30, 30, 30, 30)
-        ));
-        
-        JLabel msg = new JLabel("Đang tải dữ liệu cho " + title + "...");
-        msg.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        msg.setForeground(new Color(100, 116, 139));
-        card.add(msg, BorderLayout.CENTER);
-        
-        body.add(card, BorderLayout.NORTH);
         panel.add(body, BorderLayout.CENTER);
         
         return panel;

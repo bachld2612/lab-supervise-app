@@ -42,6 +42,10 @@ public class AppConfig {
         return properties.getProperty("server.api.url", "http://localhost:8080/api");
     }
 
+    public String getServerWsUrl() {
+        return properties.getProperty("server.ws.url", "ws://localhost:8080/ws");
+    }
+
     public int getMonitoringInterval() {
         return Integer.parseInt(
                 properties.getProperty("monitoring.interval", "10"));

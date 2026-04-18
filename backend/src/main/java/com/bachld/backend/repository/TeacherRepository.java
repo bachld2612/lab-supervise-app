@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
+    Optional<Teacher> findByUserId(Integer userId);
 
     @Query("""
         SELECT t

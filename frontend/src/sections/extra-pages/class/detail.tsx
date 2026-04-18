@@ -30,7 +30,11 @@ export default function DetailClass() {
     teacherId: 0,
     teacherName: '',
     scheduleId: 0,
-    scheduleName: ''
+    scheduleName: '',
+    startDate: '',
+    endDate: '',
+    semesterId: 0,
+    semesterName: ''
   });
   const [hasEditPermission, setHasEditPermission] = useState(false);
 
@@ -110,6 +114,27 @@ export default function DetailClass() {
             <Stack sx={{ gap: 1 }}>
               <InputLabel>Lịch học</InputLabel>
               <Typography variant="body1">{classDetail.scheduleName}</Typography>
+            </Stack>
+          </Grid>
+
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Stack sx={{ gap: 1 }}>
+              <InputLabel>Học kỳ</InputLabel>
+              <Typography variant="body1">{classDetail.semesterName}</Typography>
+            </Stack>
+          </Grid>
+
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Stack sx={{ gap: 1 }}>
+              <InputLabel>Ngày bắt đầu</InputLabel>
+              <Typography variant="body1">{classDetail.startDate}</Typography>
+            </Stack>
+          </Grid>
+
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Stack sx={{ gap: 1 }}>
+              <InputLabel>Ngày kết thúc</InputLabel>
+              <Typography variant="body1">{classDetail.endDate}</Typography>
             </Stack>
           </Grid>
         </Grid>

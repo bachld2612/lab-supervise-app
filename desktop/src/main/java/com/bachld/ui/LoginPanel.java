@@ -359,14 +359,25 @@ public class LoginPanel extends JPanel {
                 setLoginEnabled(true);
                 // Transition to MainFrame
                 SwingUtilities.invokeLater(() -> {
-                    // Create PersonalComputer dependencies
+                    // Create dependencies
+                    com.bachld.config.RestClient restClient = com.bachld.config.RestClient.getInstance();
+                    
                     com.bachld.client.PersonalComputerApiClient pcApiClient =
-                            new com.bachld.client.PersonalComputerApiClient(
-                                    com.bachld.config.RestClient.getInstance());
+                            new com.bachld.client.PersonalComputerApiClient(restClient);
                     com.bachld.service.PersonalComputerService pcService =
                             new com.bachld.service.PersonalComputerService(pcApiClient);
 
-                    MainFrame mainFrame = new MainFrame(authService, pcService);
+                    com.bachld.client.ClassApiClient classApiClient =
+                            new com.bachld.client.ClassApiClient(restClient);
+                    com.bachld.service.ClassService classService =
+                            new com.bachld.service.ClassService(classApiClient);
+
+                    // Initialize and connect WebSocket service
+                    com.bachld.service.WebSocketService wsService =
+                            com.bachld.service.WebSocketService.getInstance(com.bachld.service.TokenManager.getInstance());
+                    wsService.connect();
+
+                    MainFrame mainFrame = new MainFrame(authService, pcService, classService, wsService);
                     mainFrame.setVisible(true);
                     
                     // Close the login frame

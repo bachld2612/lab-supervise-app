@@ -2,15 +2,10 @@ package com.bachld.backend.service;
 
 import com.bachld.backend.dto.request.ClassCreateRequest;
 import com.bachld.backend.dto.request.ClassUpdateRequest;
-import com.bachld.backend.dto.response.ClassResponse;
-import com.bachld.backend.dto.response.ScheduleResponse;
-import com.bachld.backend.dto.response.SubjectResponse;
-import com.bachld.backend.dto.response.TeacherResponse;
-import com.bachld.backend.model.Classes;
-import com.bachld.backend.repository.ClassRepository;
-import com.bachld.backend.repository.ScheduleRepository;
-import com.bachld.backend.repository.SubjectRepository;
-import com.bachld.backend.repository.TeacherRepository;
+import com.bachld.backend.dto.response.*;
+import com.bachld.backend.model.*;
+import com.bachld.backend.repository.*;
+import com.bachld.backend.util.Util;
 import com.bachld.backend.util.enums.Status;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +14,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +35,10 @@ public class ClassService {
     TeacherRepository teacherRepository;
 
     ScheduleRepository scheduleRepository;
+
+    SemesterRepository semesterRepository;
+
+    Util util;
 
     public Page<ClassResponse> getList(Pageable pageable, String keyword, Integer status) {
         if (keyword != null) {
@@ -64,12 +71,27 @@ public class ClassService {
             throw new IllegalArgumentException("Không tìm thấy lịch học có id: " + request.getScheduleId());
         }
 
+        SemesterResponse semester = semesterRepository.findByIdAndStatus(request.getSemesterId(), Status.ACTIVE.getValue());
+        if (semester == null) {
+            throw new IllegalArgumentException("Không tìm thấy học kì có id: " +  request.getSemesterId());
+        }
+
+        LocalDate startDate = LocalDate.parse(request.getStartDate());
+        LocalDate endDate = LocalDate.parse(request.getEndDate());
+
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("Ngày bắt đầu phải nhỏ hơn ngày kết thúc");
+        }
+
         Classes classes = new Classes();
         classes.setName(request.getName());
         classes.setMaxStudent(request.getMaxStudent());
         classes.setSubjectId(request.getSubjectId());
         classes.setTeacherId(request.getTeacherId());
         classes.setScheduleId(request.getScheduleId());
+        classes.setStartDate(startDate);
+        classes.setEndDate(endDate);
+        classes.setSemesterId(request.getSemesterId());
         classes.setStatus(Status.ACTIVE.getValue());
 
         int sessionCount = schedule.getPeriods().split(",").length;
@@ -77,6 +99,47 @@ public class ClassService {
         classes.setSessionNumber(sessionNumber);
 
         classRepository.save(classes);
+    }
+
+    public List<ClassResponse> getListByStudentUserId() {
+        User currentUser = util.getCurrentUser();
+        LocalDate today = LocalDate.now();
+        List<ClassResponse> response = classRepository.findActiveClassByStudentUserId(currentUser.getId(),  today);
+
+        List<Schedule> schedules = scheduleRepository.findAll();
+        Map<Integer, Schedule> scheduleMap = schedules.stream()
+                .collect(Collectors.toMap(BaseEntity::getId, s -> s));
+
+        LocalTime nowTime = LocalTime.now();
+        int dayOfWeek = today.getDayOfWeek().getValue();
+
+        // studyStatus = 1 --> studying
+        // studyStatus = 0 --> Not study
+        for (ClassResponse clazz : response) {
+            Schedule schedule = scheduleMap.get(clazz.getScheduleId());
+
+            if (schedule != null && schedule.getDaysOfWeek() != null) {
+                boolean isToday = Arrays.asList(schedule.getDaysOfWeek().split(","))
+                        .contains(String.valueOf(dayOfWeek));
+
+                boolean isActiveTime = !nowTime.isBefore(schedule.getStartTime()) && !nowTime.isAfter(schedule.getEndTime());
+
+                if (isToday && isActiveTime) {
+                    clazz.setStudyStatus(1);
+                    break;
+                }
+            }
+        }
+
+        for (ClassResponse clazz : response) {
+            if (clazz.getStudyStatus() == null || clazz.getStudyStatus() != 1 ) {
+                clazz.setStudyStatus(0);
+            }
+        }
+
+        return response.stream()
+                .sorted(Comparator.comparing(ClassResponse::getStudyStatus).reversed())
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -114,6 +177,26 @@ public class ClassService {
                 throw new IllegalArgumentException("Không tìm thấy lịch học có id: " + request.getScheduleId());
             }
             classes.setScheduleId(request.getScheduleId());
+        }
+
+        if (request.getSemesterId() != null) {
+            SemesterResponse semester = semesterRepository.findByIdAndStatus(request.getSemesterId(), Status.ACTIVE.getValue());
+            if (semester == null) {
+                throw new IllegalArgumentException("Không tìm thấy học kì có id: " +  request.getSemesterId());
+            }
+            classes.setSemesterId(request.getSemesterId());
+        }
+
+        if (request.getStartDate() != null && !request.getStartDate().isEmpty()) {
+            classes.setStartDate(LocalDate.parse(request.getStartDate()));
+        }
+
+        if (request.getEndDate() != null && !request.getEndDate().isEmpty()) {
+            classes.setEndDate(LocalDate.parse(request.getEndDate()));
+        }
+
+        if (classes.getStartDate().isAfter(classes.getEndDate())) {
+            throw new IllegalArgumentException("Ngày bắt đầu phải sớm hơn ngày kết thúc");
         }
 
         SubjectResponse currentSubject = subjectRepository.findByIdAndStatus(classes.getSubjectId(), Status.ACTIVE.getValue());
