@@ -10,4 +10,8 @@ export interface Classes {
   status: number;
   scheduleId: number;
   scheduleName: string;
+  startDate: string;
+  endDate: string;
+  semesterId: number;
+  semesterName: string;
 }

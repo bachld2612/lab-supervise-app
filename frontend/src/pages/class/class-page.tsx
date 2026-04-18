@@ -357,7 +357,31 @@ export default function ClassPage() {
         accessorKey: 'scheduleName',
         dataType: 'text',
         enableGrouping: false,
-        meta: { width: '20%' }
+        meta: { width: '15%' }
+      },
+      {
+        id: 'semesterName',
+        header: 'Học kì',
+        accessorKey: 'semesterName',
+        dataType: 'text',
+        enableGrouping: false,
+        meta: { width: '10%' }
+      },
+      {
+        id: 'startDate',
+        header: 'Ngày bắt đầu',
+        accessorKey: 'startDate',
+        dataType: 'text',
+        enableGrouping: false,
+        meta: { width: '10%' }
+      },
+      {
+        id: 'endDate',
+        header: 'Ngày kết thúc',
+        accessorKey: 'endDate',
+        dataType: 'text',
+        enableGrouping: false,
+        meta: { width: '10%' }
       },
       {
         id: 'studentCount',

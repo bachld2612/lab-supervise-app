@@ -59,4 +59,10 @@ public class ClassController {
         classService.delete(id);
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
     }
+
+    @GetMapping("/v1/student")
+    @AuthFilter(role = "STUDENT")
+    public ResponseEntity<?> getListByStudentUserId() {
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), classService.getListByStudentUserId()));
+    }
 }
