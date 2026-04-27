@@ -1,6 +1,7 @@
 package com.bachld.ui;
 
 import com.bachld.model.response.ClassData;
+import com.bachld.util.Util;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -82,8 +83,8 @@ public class ClassCard extends JPanel {
         // Date Grid
         JPanel dates = new JPanel(new GridLayout(1, 2, 10, 0));
         dates.setOpaque(false);
-        dates.add(dateBox("Ngày bắt đầu", data.getStartDate()));
-        dates.add(dateBox("Ngày kết thúc", data.getEndDate()));
+        dates.add(dateBox("Ngày bắt đầu", Util.formatDate(data.getStartDate())));
+        dates.add(dateBox("Ngày kết thúc", Util.formatDate(data.getEndDate())));
         dates.setAlignmentX(LEFT_ALIGNMENT);
         center.add(dates);
         

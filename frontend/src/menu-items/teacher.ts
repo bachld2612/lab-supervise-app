@@ -1,5 +1,5 @@
 // assets
-import { CalendarTick, ElementPlus, Profile, Teacher, Danger } from 'iconsax-reactjs';
+import { CalendarTick, ElementPlus, Profile, Teacher, Danger, Monitor, Stop } from 'iconsax-reactjs';
 
 // types
 import { NavItemType } from 'types/menu';
@@ -10,7 +10,9 @@ const icons = {
   add: ElementPlus,
   profile: Profile,
   teacher: Teacher,
-  danger: Danger
+  danger: Danger,
+  monitor: Monitor,
+  stop: Stop
 };
 
 // ==============================|| MENU ITEMS - TEACHER ||============================== //
@@ -21,32 +23,18 @@ const teacherMenu: NavItemType = {
   type: 'group',
   children: [
     {
-      id: 'teacher-schedule',
-      title: 'Lịch dạy giảng viên',
+      id: 'teacher-dashboard',
+      title: 'Trang chủ',
       type: 'item',
-      url: '/teacher/schedule',
-      icon: icons.calendar
+      url: 'dashboard/teacher',
+      icon: icons.monitor
     },
     {
-      id: 'request-lab',
-      title: 'Đăng ký mượn phòng',
+      id: 'ban-application',
+      title: 'Ứng dụng cấm',
       type: 'item',
-      url: '/teacher/request',
-      icon: icons.add
-    },
-    {
-      id: 'my-classes',
-      title: 'Danh sách lớp học',
-      type: 'item',
-      url: '/teacher/classes',
-      icon: icons.teacher
-    },
-    {
-      id: 'report-issue',
-      title: 'Báo cáo sự cố',
-      type: 'item',
-      url: '/teacher/report',
-      icon: icons.danger
+      url: 'ban-application',
+      icon: icons.stop
     }
   ]
 };

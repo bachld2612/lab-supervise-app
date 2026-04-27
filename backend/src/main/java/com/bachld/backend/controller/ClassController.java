@@ -65,4 +65,26 @@ public class ClassController {
     public ResponseEntity<?> getListByStudentUserId() {
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), classService.getListByStudentUserId()));
     }
+
+    @GetMapping("/v1/teacher")
+    @AuthFilter(role = "TEACHER")
+    public ResponseEntity<?> getListByTeacherUserId() {
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), classService.getListByTeacherUserId()));
+    }
+
+    @GetMapping("/v1/{classId}/tracking")
+    @AuthFilter(role = "TEACHER")
+    public ResponseEntity<?> getTrackingByClassId(@PathVariable int classId) {
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), classService.getTrackingByClassId(classId)));
+    }
+
+    @GetMapping("/v1/{classId}/student")
+    @AuthFilter(role = "TEACHER,ADMIN")
+    public ResponseEntity<?> getStudentsByClassId(
+            @PathVariable int classId,
+            @PageableDefault Pageable pageable,
+            @RequestParam(required = false) String keyword
+    ) {
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), classService.getStudentsByClassId(classId, pageable, keyword)));
+    }
 }

@@ -38,6 +38,10 @@ public class ClassService {
 
     SemesterRepository semesterRepository;
 
+    StudentRepository studentRepository;
+
+    StudentClassInfoRepository studentClassInfoRepository;
+
     Util util;
 
     public Page<ClassResponse> getList(Pageable pageable, String keyword, Integer status) {
@@ -209,6 +213,48 @@ public class ClassService {
         }
 
         classRepository.save(classes);
+    }
+
+    public List<ClassResponse> getListByTeacherUserId() {
+        User currentUser = util.getCurrentUser();
+        LocalDate today = LocalDate.now();
+        List<ClassResponse> response = classRepository.findActiveClassByTeacherUserId(currentUser.getId(), today);
+
+        List<Schedule> schedules = scheduleRepository.findAll();
+        Map<Integer, Schedule> scheduleMap = schedules.stream()
+                .collect(Collectors.toMap(BaseEntity::getId, s -> s));
+
+        LocalTime nowTime = LocalTime.now();
+        int dayOfWeek = today.getDayOfWeek().getValue();
+
+        for (ClassResponse clazz : response) {
+            Schedule schedule = scheduleMap.get(clazz.getScheduleId());
+            if (schedule != null && schedule.getDaysOfWeek() != null) {
+                boolean isToday = Arrays.asList(schedule.getDaysOfWeek().split(","))
+                        .contains(String.valueOf(dayOfWeek));
+                boolean isActiveTime = !nowTime.isBefore(schedule.getStartTime()) && !nowTime.isAfter(schedule.getEndTime());
+                clazz.setStudyStatus((isToday && isActiveTime) ? 1 : 0);
+            } else {
+                clazz.setStudyStatus(0);
+            }
+        }
+
+        return response.stream()
+                .sorted(Comparator.comparing(ClassResponse::getStudyStatus).reversed())
+                .collect(Collectors.toList());
+    }
+
+    public List<ClassStudentTrackingResponse> getTrackingByClassId(Integer classId) {
+        return studentClassInfoRepository.findStudentsWithLatestTracking(classId);
+    }
+
+    public Page<StudentResponse> getStudentsByClassId(Integer classId, Pageable pageable, String keyword) {
+        if (keyword != null) {
+            keyword = "%" + keyword.trim().toLowerCase() + "%";
+        } else {
+            keyword = "%%";
+        }
+        return studentRepository.findByClassId(pageable, classId, keyword);
     }
 
     public void delete(Integer id) {
