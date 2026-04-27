@@ -60,6 +60,8 @@ const DetailClass = Loadable(lazy(() => import('sections/extra-pages/class/detai
 const AdminDashboardPage = Loadable(lazy(() => import('pages/dashboard/admin-dashboard-page')));
 const TeacherDashboardPage = Loadable(lazy(() => import('pages/dashboard/teacher-dashboard-page')));
 const ItCenterDashboardPage = Loadable(lazy(() => import('pages/dashboard/it-center-dashboard-page')));
+const TeacherClassTrackingPage = Loadable(lazy(() => import('pages/teacher/teacher-class-tracking-page')));
+const BanApplicationPage = Loadable(lazy(() => import('pages/teacher/ban-application-page')));
 
 // ==============================|| MAIN ROUTES ||============================== //
 
@@ -221,6 +223,14 @@ const MainRoutes = {
         {
           path: 'class/detail/:id',
           element: <DetailClass />
+        },
+        {
+          path: 'teacher/class/:id/tracking',
+          element: <TeacherClassTrackingPage />
+        },
+        {
+          path: 'ban-application',
+          element: <BanApplicationPage />
         }
       ]
     },

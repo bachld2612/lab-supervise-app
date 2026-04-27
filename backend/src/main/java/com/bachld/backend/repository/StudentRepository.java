@@ -48,4 +48,21 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
             AND u.status = :status
     """)
     StudentResponse findStudentByIdAndStatus(int id, int status);
+
+    @Query("""
+        SELECT new com.bachld.backend.dto.response.StudentResponse(
+            s.id, u.email, u.phone, u.fullName, s.code, mc.id, mc.name, u.hometown, u.birthday, u.rawPassword, u.status
+        )
+        FROM StudentClass stc
+            JOIN Student s ON s.id = stc.studentId
+            JOIN User u ON u.id = s.userId
+            JOIN ManageClass mc ON mc.id = s.manageClassId
+        WHERE stc.classId = :classId
+            AND (LOWER(u.fullName) LIKE :keyword
+                OR LOWER(u.email) LIKE :keyword
+                OR LOWER(u.phone) LIKE :keyword
+            )
+        ORDER BY s.code ASC
+    """)
+    Page<StudentResponse> findByClassId(Pageable pageable, Integer classId, String keyword);
 }

@@ -1,7 +1,23 @@
 package com.bachld.backend.repository;
 
+import com.bachld.backend.dto.response.ClassStudentTrackingResponse;
 import com.bachld.backend.model.StudentClassInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 public interface StudentClassInfoRepository extends JpaRepository<StudentClassInfo,Integer> {
+
+    @Query("""
+        SELECT new com.bachld.backend.dto.response.ClassStudentTrackingResponse(s.id, u.fullName, s.code, u.email, u.phone, mc.id, mc.name)
+        FROM StudentClass stc
+            JOIN Student s ON s.id = stc.studentId
+            JOIN User u ON u.id = s.userId
+            JOIN ManageClass mc ON mc.id = s.manageClassId
+        WHERE stc.classId = :classId
+        ORDER BY s.code ASC
+    """)
+    List<ClassStudentTrackingResponse> findStudentsWithLatestTracking(@Param("classId") Integer classId);
 }
