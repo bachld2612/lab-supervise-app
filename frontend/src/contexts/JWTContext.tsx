@@ -61,12 +61,15 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
         if (token && verifyToken(token)) {
           setSession(token);
           const response = await axios.get('/api/user/v1/profile');
-          const user = response.data.data || response.data;
+          const userProfile = response.data.data || response.data;
           dispatch({
             type: LOGIN,
             payload: {
               isLoggedIn: true,
-              user
+              user: {
+                ...userProfile,
+                name: userProfile.fullName
+              }
             }
           });
         } else {
