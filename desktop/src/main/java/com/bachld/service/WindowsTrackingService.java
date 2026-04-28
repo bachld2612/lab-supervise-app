@@ -24,10 +24,13 @@ public class WindowsTrackingService {
     
     // Windows constants for hook
     private static final int EVENT_SYSTEM_FOREGROUND = 0x0003;
+    private static final int EVENT_OBJECT_NAMECHANGE = 0x800C;
     private static final int WINEVENT_OUTOFCONTEXT = 0x0000;
+    private static final int OBJID_WINDOW = 0x00000000;
 
     private final WebSocketService webSocketService;
     private HANDLE hHook; // Using HANDLE as HWINEVENTHOOK might not be directly exposed in some JNA versions
+    private HANDLE hNameChangeHook;
     private WinEventProc listener;
     private final AtomicReference<String> lastApp = new AtomicReference<>("");
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -52,7 +55,19 @@ public class WindowsTrackingService {
                                      WinDef.DWORD dwEventThread, WinDef.DWORD dwmsEventTime) {
                     if (hwnd != null) {
                         try {
-                            handleWindowChange(hwnd);
+                            int eventCode = event.intValue();
+                            if (eventCode == EVENT_SYSTEM_FOREGROUND) {
+                                handleWindowChange(hwnd);
+                            } else if (eventCode == EVENT_OBJECT_NAMECHANGE) {
+                                // Only process if it's the main window title changing (OBJID_WINDOW)
+                                if (idObject.intValue() == OBJID_WINDOW) {
+                                    // And only if this window is currently in the foreground
+                                    HWND foregroundWindow = User32.INSTANCE.GetForegroundWindow();
+                                    if (hwnd.equals(foregroundWindow)) {
+                                        handleWindowChange(hwnd);
+                                    }
+                                }
+                            }
                         } catch (Exception e) {
                             log.error("Error processing window change: {}", e.getMessage());
                         }
@@ -60,12 +75,16 @@ public class WindowsTrackingService {
                 }
             };
 
-            // Register the hook
+            // Register the hooks
             hHook = User32.INSTANCE.SetWinEventHook(
                     EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND,
                     null, listener, 0, 0, WINEVENT_OUTOFCONTEXT);
 
-            if (hHook == null) {
+            hNameChangeHook = User32.INSTANCE.SetWinEventHook(
+                    EVENT_OBJECT_NAMECHANGE, EVENT_OBJECT_NAMECHANGE,
+                    null, listener, 0, 0, WINEVENT_OUTOFCONTEXT);
+
+            if (hHook == null || hNameChangeHook == null) {
                 log.error("Failed to set WinEventHook. Native error code: {}", Kernel32.INSTANCE.GetLastError());
                 return;
             }
@@ -116,7 +135,7 @@ public class WindowsTrackingService {
                     log.info("Application Focus Change: {}", currentAppInfo);
                     webSocketService.sendPCInfo(currentAppInfo);
                 }
-            }, 500, TimeUnit.MILLISECONDS);
+            }, 100, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -166,8 +185,12 @@ public class WindowsTrackingService {
         if (hHook != null) {
             User32.INSTANCE.UnhookWinEvent(hHook);
             hHook = null;
-            log.info("Windows Event Hook removed.");
         }
+        if (hNameChangeHook != null) {
+            User32.INSTANCE.UnhookWinEvent(hNameChangeHook);
+            hNameChangeHook = null;
+        }
+        log.info("Windows Event Hooks removed.");
         scheduler.shutdown();
     }
 }
