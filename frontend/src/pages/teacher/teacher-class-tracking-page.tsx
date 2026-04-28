@@ -116,9 +116,11 @@ export default function TeacherClassTrackingPage() {
                           <Box
                             sx={{
                               maxHeight: 180,
+                              overflowX: 'auto',
                               overflowY: 'auto',
                               pr: 0.5,
-                              '&::-webkit-scrollbar': { width: 4 },
+                              pb: 0.5,
+                              '&::-webkit-scrollbar': { width: 4, height: 4 },
                               '&::-webkit-scrollbar-track': { bgcolor: 'transparent' },
                               '&::-webkit-scrollbar-thumb': { bgcolor: 'divider', borderRadius: 2 }
                             }}
@@ -128,7 +130,7 @@ export default function TeacherClassTrackingPage() {
                                 Chưa có dữ liệu
                               </Typography>
                             ) : (
-                              <Stack spacing={0.5}>
+                              <Stack spacing={0.5} sx={{ minWidth: 'max-content' }}>
                                 {student.appHistory.map((entry, idx) => (
                                   <Stack key={idx} direction="row" spacing={1} alignItems="baseline">
                                     <Typography variant="caption" color="text.disabled" sx={{ minWidth: 56, fontFamily: 'monospace' }}>
@@ -138,8 +140,6 @@ export default function TeacherClassTrackingPage() {
                                       variant="caption"
                                       sx={{
                                         flex: 1,
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
                                         whiteSpace: 'nowrap',
                                         color: idx === 0 ? 'primary.main' : 'text.secondary',
                                         fontWeight: idx === 0 ? 'medium' : 'normal'
