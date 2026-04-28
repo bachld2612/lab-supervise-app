@@ -1490,3 +1490,57 @@ Caused by: java.net.UnknownHostException: api.example.com
 2026-04-28 08:14:53.180 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
 2026-04-28 08:14:54.066 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - teacher-class-tracking-page.tsx
 2026-04-28 08:14:54.067 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - teacher-class-tracking-page.tsx
+2026-04-28 08:15:30.776 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 08:15:30.778 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 08:15:30.918 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 08:15:30.919 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 08:15:33.645 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 08:15:33.646 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 08:15:34.034 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - teacher-class-tracking-page.tsx
+2026-04-28 08:15:34.036 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - teacher-class-tracking-page.tsx
+2026-04-28 08:15:34.720 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 08:15:34.721 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 08:15:34.877 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 08:15:34.878 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 08:15:42.514 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: explorer.exe
+2026-04-28 08:15:42.514 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: explorer.exe
+2026-04-28 08:15:42.623 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - teacher-class-tracking-page.tsx
+2026-04-28 08:15:42.623 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - teacher-class-tracking-page.tsx
+2026-04-28 08:15:45.850 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - class-page.tsx
+2026-04-28 08:15:45.850 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - class-page.tsx
+2026-04-28 08:15:46.550 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 08:15:46.550 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 08:15:53.916 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 08:15:53.917 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 08:15:54.070 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - class-page.tsx
+2026-04-28 08:15:54.071 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - class-page.tsx
+2026-04-28 08:16:01.716 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 08:16:01.717 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 08:16:01.824 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 08:16:01.825 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 08:16:02.379 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - class-page.tsx
+2026-04-28 08:16:02.380 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - class-page.tsx
+2026-04-28 08:16:02.629 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 08:16:02.630 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 08:16:04.092 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - class-page.tsx
+2026-04-28 08:16:04.092 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - class-page.tsx
+2026-04-28 08:16:26.292 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 08:16:26.292 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 08:16:26.418 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 08:16:26.419 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 08:16:27.238 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: New Tab - Brave
+2026-04-28 08:16:27.239 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: New Tab - Brave
+2026-04-28 08:16:30.312 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: horizontal - Tìm trên Google - Brave
+2026-04-28 08:16:30.313 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: horizontal - Tìm trên Google - Brave
+2026-04-28 08:16:31.311 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - class-page.tsx
+2026-04-28 08:16:31.313 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - class-page.tsx
+2026-04-28 08:16:35.130 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: horizontal - Tìm trên Google - Brave
+2026-04-28 08:16:35.131 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: horizontal - Tìm trên Google - Brave
+2026-04-28 08:16:35.812 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - class-page.tsx
+2026-04-28 08:16:35.813 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - class-page.tsx
+2026-04-28 08:17:26.707 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - lab-monitor.log (Working Tree) (lab-monitor.log)
+2026-04-28 08:17:26.708 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - lab-monitor.log (Working Tree) (lab-monitor.log)
+2026-04-28 08:17:41.754 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 08:17:41.756 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 08:17:43.186 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-28 08:17:43.188 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: TLU Lab Monitor v1.0.0
