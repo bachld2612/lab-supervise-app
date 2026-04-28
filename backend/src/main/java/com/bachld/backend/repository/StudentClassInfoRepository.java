@@ -1,11 +1,13 @@
 package com.bachld.backend.repository;
 
 import com.bachld.backend.dto.response.ClassStudentTrackingResponse;
+import com.bachld.backend.dto.response.StudentAppUsageRaw;
 import com.bachld.backend.model.StudentClassInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface StudentClassInfoRepository extends JpaRepository<StudentClassInfo,Integer> {
@@ -20,4 +22,17 @@ public interface StudentClassInfoRepository extends JpaRepository<StudentClassIn
         ORDER BY s.code ASC
     """)
     List<ClassStudentTrackingResponse> findStudentsWithLatestTracking(@Param("classId") Integer classId);
+
+    @Query("""
+        SELECT new com.bachld.backend.dto.response.StudentAppUsageRaw(s.id, sci.applicationName, sci.createdAt)
+        FROM StudentClassInfo sci
+            JOIN StudentClass stc ON stc.id = sci.studentClassId
+            JOIN Student s ON s.id = stc.studentId
+        WHERE stc.classId = :classId
+            AND FUNCTION('DATE', sci.createdAt) = :date
+        ORDER BY s.id ASC, sci.createdAt ASC
+    """)
+    List<StudentAppUsageRaw> findAppUsageByClassIdAndDate(
+            @Param("classId") Integer classId,
+            @Param("date") LocalDate date);
 }

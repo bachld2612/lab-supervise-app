@@ -30,6 +30,17 @@ interface StudentClassInfoResponse {
   createdAt: string;
 }
 
+interface ClassStudentTrackingResponse {
+  studentId: number;
+  fullName: string;
+  code: string;
+  email: string;
+  phone: string;
+  manageClassId: number;
+  manageClassName: string;
+  applicationsToday: AppUsageEntry[];
+}
+
 export function useClassTracking(classId: number | null) {
   const [students, setStudents] = useState<StudentTrackingState[]>([]);
   const [connected, setConnected] = useState(false);
@@ -42,8 +53,19 @@ export function useClassTracking(classId: number | null) {
     getClassStudentTracking(classId)
       .then((res) => {
         if (res.statusCode === HttpStatusCode.Ok) {
-          const data = res.data ?? [];
-          setStudents(data.map((s: Omit<StudentTrackingState, 'appHistory'>) => ({ ...s, appHistory: [] })));
+          const data: ClassStudentTrackingResponse[] = res.data ?? [];
+          setStudents(
+            data.map((s) => ({
+              studentId: s.studentId,
+              fullName: s.fullName,
+              code: s.code,
+              email: s.email,
+              phone: s.phone,
+              manageClassId: s.manageClassId,
+              manageClassName: s.manageClassName,
+              appHistory: [...s.applicationsToday].reverse(),
+            }))
+          );
         }
       })
       .finally(() => setLoading(false));

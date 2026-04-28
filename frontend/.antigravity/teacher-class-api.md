@@ -323,3 +323,190 @@ export default function ClassStudentList({ classId }: { classId: number }) {
 - `classId` là ID của **lớp học phần** (`Classes` entity), không phải lớp quản lý (`ManageClass`).
 - Không filter theo `status` của sinh viên — nếu cần, thêm param `status` và mở rộng query tương ứng.
 - Kết quả mặc định sắp xếp theo `code` sinh viên tăng dần.
+
+---
+
+# API: Tracking sinh viên trong lớp học (kèm lịch sử ứng dụng)
+
+## Endpoint
+
+```
+GET /api/class/v1/{classId}/tracking?date=2026-04-28
+Authorization: Bearer <teacher_token>
+```
+
+**Role yêu cầu:** `TEACHER`
+
+---
+
+## Query Parameters
+
+| Param | Type | Required | Mô tả |
+|---|---|---|---|
+| `classId` | `number` (path) | ✅ | ID của lớp học phần |
+| `date` | `string` | ❌ | Ngày lọc lịch sử ứng dụng (yyyy-MM-dd). Mặc định: **hôm nay** |
+
+---
+
+## Logic xử lý
+
+1. Lấy danh sách tất cả sinh viên trong lớp (join `StudentClass → Student → User → ManageClass`).
+2. Lấy toàn bộ records `StudentClassInfo` của lớp đó theo ngày (`DATE(createdAt) = date`), sắp xếp theo `createdAt ASC`.
+3. Group records theo `studentId`, gắn vào từng sinh viên qua field `applicationsToday`.
+4. Sinh viên không có activity nào trong ngày sẽ có `applicationsToday = []`.
+
+---
+
+## Response
+
+**HTTP 200 OK**
+
+```json
+{
+  "code": 200,
+  "data": [
+    {
+      "studentId": 5,
+      "fullName": "Nguyễn Văn A",
+      "code": "2051060001",
+      "email": "nguyenvana@tlu.edu.vn",
+      "phone": "0901234567",
+      "manageClassId": 3,
+      "manageClassName": "CNTT-K65-01",
+      "applicationsToday": [
+        {
+          "applicationName": "Google Chrome",
+          "createdAt": "2026-04-28T07:15:32"
+        },
+        {
+          "applicationName": "Visual Studio Code",
+          "createdAt": "2026-04-28T07:18:45"
+        },
+        {
+          "applicationName": "Google Chrome",
+          "createdAt": "2026-04-28T07:25:10"
+        }
+      ]
+    },
+    {
+      "studentId": 6,
+      "fullName": "Trần Thị B",
+      "code": "2051060002",
+      "email": "tranthib@tlu.edu.vn",
+      "phone": "0912345678",
+      "manageClassId": 3,
+      "manageClassName": "CNTT-K65-01",
+      "applicationsToday": []
+    }
+  ]
+}
+```
+
+---
+
+## Response fields
+
+| Field | Type | Mô tả |
+|---|---|---|
+| `studentId` | `number` | ID sinh viên (Student entity) |
+| `fullName` | `string` | Họ và tên sinh viên |
+| `code` | `string` | Mã sinh viên |
+| `email` | `string` | Email |
+| `phone` | `string` | Số điện thoại |
+| `manageClassId` | `number` | ID lớp quản lý |
+| `manageClassName` | `string` | Tên lớp quản lý |
+| `applicationsToday` | `AppUsageItem[]` | Danh sách ứng dụng sinh viên đã dùng trong ngày lọc |
+
+### `AppUsageItem`
+
+| Field | Type | Mô tả |
+|---|---|---|
+| `applicationName` | `string` | Tên ứng dụng (foreground window title từ desktop app) |
+| `createdAt` | `string` | Thời điểm ghi nhận (ISO 8601, ví dụ `2026-04-28T07:15:32`) |
+
+---
+
+## Sử dụng trong React (Frontend)
+
+### Types (`src/types/tracking.ts`)
+
+```typescript
+export interface AppUsageItem {
+  applicationName: string;
+  createdAt: string; // ISO 8601
+}
+
+export interface ClassStudentTrackingResponse {
+  studentId: number;
+  fullName: string;
+  code: string;
+  email: string;
+  phone: string;
+  manageClassId: number;
+  manageClassName: string;
+  applicationsToday: AppUsageItem[];
+}
+```
+
+### API call (`src/api/classApi.ts`)
+
+```typescript
+import axios from 'src/utils/axios';
+import { ClassStudentTrackingResponse } from 'src/types/tracking';
+
+export const getClassTracking = async (
+  classId: number,
+  date?: string // yyyy-MM-dd, mặc định server dùng today
+): Promise<ClassStudentTrackingResponse[]> => {
+  const res = await axios.get(`/api/class/v1/${classId}/tracking`, {
+    params: date ? { date } : undefined,
+  });
+  return res.data.data;
+};
+```
+
+### Component ví dụ
+
+```tsx
+import { useEffect, useState } from 'react';
+import { getClassTracking } from 'src/api/classApi';
+import { ClassStudentTrackingResponse } from 'src/types/tracking';
+
+export default function ClassTrackingPanel({ classId }: { classId: number }) {
+  const [students, setStudents] = useState<ClassStudentTrackingResponse[]>([]);
+
+  useEffect(() => {
+    getClassTracking(classId).then(setStudents);
+  }, [classId]);
+
+  return (
+    <div>
+      {students.map((s) => (
+        <div key={s.studentId}>
+          <strong>{s.fullName}</strong> ({s.code}) — {s.manageClassName}
+          {s.applicationsToday.length === 0 ? (
+            <p>Chưa có hoạt động hôm nay</p>
+          ) : (
+            <ul>
+              {s.applicationsToday.map((app, idx) => (
+                <li key={idx}>
+                  {app.applicationName} — {new Date(app.createdAt).toLocaleTimeString('vi-VN')}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+---
+
+## Lưu ý
+
+- Mỗi entry trong `applicationsToday` là **1 lần gửi WebSocket** từ desktop app — không deduplicated, không aggregated. Nếu sinh viên dùng Chrome 50 lần sẽ có 50 entries.
+- `createdAt` là thời điểm server nhận và lưu record (không phải thời điểm client gửi).
+- Để hiển thị ứng dụng **đang dùng gần nhất**, lấy phần tử cuối cùng của `applicationsToday` (đã sắp xếp `createdAt ASC`).
+- Kết hợp với WebSocket topic `/topic/class/{classId}` để cập nhật realtime khi sinh viên chuyển ứng dụng.

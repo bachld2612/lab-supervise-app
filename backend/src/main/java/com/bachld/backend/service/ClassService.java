@@ -244,8 +244,26 @@ public class ClassService {
                 .collect(Collectors.toList());
     }
 
-    public List<ClassStudentTrackingResponse> getTrackingByClassId(Integer classId) {
-        return studentClassInfoRepository.findStudentsWithLatestTracking(classId);
+    public List<ClassStudentTrackingResponse> getTrackingByClassId(Integer classId, LocalDate date) {
+        List<ClassStudentTrackingResponse> students = studentClassInfoRepository.findStudentsWithLatestTracking(classId);
+
+        List<StudentAppUsageRaw> rawUsage = studentClassInfoRepository.findAppUsageByClassIdAndDate(classId, date);
+
+        Map<Integer, List<AppUsageItem>> usageByStudent = rawUsage.stream()
+                .collect(Collectors.groupingBy(
+                        StudentAppUsageRaw::getStudentId,
+                        Collectors.mapping(
+                                r -> AppUsageItem.builder()
+                                        .applicationName(r.getApplicationName())
+                                        .createdAt(r.getCreatedAt())
+                                        .build(),
+                                Collectors.toList()
+                        )
+                ));
+
+        students.forEach(s -> s.setApplicationsToday(usageByStudent.getOrDefault(s.getStudentId(), List.of())));
+
+        return students;
     }
 
     public Page<StudentResponse> getStudentsByClassId(Integer classId, Pageable pageable, String keyword) {

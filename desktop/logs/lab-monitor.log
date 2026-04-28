@@ -1544,3 +1544,1284 @@ Caused by: java.net.UnknownHostException: api.example.com
 2026-04-28 08:17:41.756 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
 2026-04-28 08:17:43.186 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
 2026-04-28 08:17:43.188 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: TLU Lab Monitor v1.0.0
+2026-04-28 17:05:38.470 [main] INFO  com.bachld.config.AppConfig - Configuration loaded successfully.
+2026-04-28 17:05:38.472 [main] INFO  com.bachld.LabMonitorApp - Starting TLU Lab Monitor v1.0.0
+2026-04-28 17:05:38.473 [main] INFO  com.bachld.LabMonitorApp - Server API: http://localhost:8080
+2026-04-28 17:05:38.799 [main] INFO  com.bachld.LabMonitorApp - Initialized RestClient, TokenManager, and SessionManager
+2026-04-28 17:05:38.799 [main] INFO  com.bachld.LabMonitorApp - Created AuthApiClient
+2026-04-28 17:05:38.800 [main] INFO  com.bachld.LabMonitorApp - Created AuthService
+2026-04-28 17:05:38.803 [AWT-EventQueue-0] INFO  com.bachld.LabMonitorApp - Launching Login screen...
+2026-04-28 17:05:53.448 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172245@e.tlu.edu.vn
+2026-04-28 17:05:53.459 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: http://localhost:8080/api/auth/v1/login
+2026-04-28 17:05:53.551 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/auth/v1/login
+2026-04-28 17:05:53.612 [SwingWorker-pool-1-thread-1] ERROR com.bachld.client.AuthApiClient - API request failed: I/O error on POST request for "http://localhost:8080/api/auth/v1/login": Connection refused: getsockopt
+org.springframework.web.client.ResourceAccessException: I/O error on POST request for "http://localhost:8080/api/auth/v1/login": Connection refused: getsockopt
+	at org.springframework.web.client.RestTemplate.createResourceAccessException(RestTemplate.java:915)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:895)
+	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
+	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:538)
+	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:69)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:104)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:84)
+	at java.desktop/javax.swing.SwingWorker$1.call(SwingWorker.java:305)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.desktop/javax.swing.SwingWorker.run(SwingWorker.java:342)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:636)
+	at java.base/sun.net.www.http.HttpClient.<init>(HttpClient.java:282)
+	at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:386)
+	at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:408)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1320)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1253)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1139)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:1068)
+	at org.springframework.http.client.SimpleClientHttpRequest.executeInternal(SimpleClientHttpRequest.java:79)
+	at org.springframework.http.client.AbstractStreamingClientHttpRequest.executeInternal(AbstractStreamingClientHttpRequest.java:70)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:66)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:112)
+	at com.bachld.config.JwtInterceptor.intercept(JwtInterceptor.java:63)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:88)
+	at org.springframework.http.client.InterceptingClientHttpRequest.executeInternal(InterceptingClientHttpRequest.java:72)
+	at org.springframework.http.client.AbstractBufferingClientHttpRequest.executeInternal(AbstractBufferingClientHttpRequest.java:48)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:66)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:889)
+	... 11 common frames omitted
+2026-04-28 17:05:53.664 [AWT-EventQueue-0] ERROR com.bachld.service.AuthService - Authentication error for email: 2251172245@e.tlu.edu.vn
+com.bachld.exception.RestClientException: Failed to authenticate: I/O error on POST request for "http://localhost:8080/api/auth/v1/login": Connection refused: getsockopt
+	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:85)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:104)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:84)
+	at java.desktop/javax.swing.SwingWorker$1.call(SwingWorker.java:305)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.desktop/javax.swing.SwingWorker.run(SwingWorker.java:342)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: org.springframework.web.client.ResourceAccessException: I/O error on POST request for "http://localhost:8080/api/auth/v1/login": Connection refused: getsockopt
+	at org.springframework.web.client.RestTemplate.createResourceAccessException(RestTemplate.java:915)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:895)
+	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
+	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:538)
+	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:69)
+	... 8 common frames omitted
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:636)
+	at java.base/sun.net.www.http.HttpClient.<init>(HttpClient.java:282)
+	at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:386)
+	at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:408)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1320)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1253)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1139)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:1068)
+	at org.springframework.http.client.SimpleClientHttpRequest.executeInternal(SimpleClientHttpRequest.java:79)
+	at org.springframework.http.client.AbstractStreamingClientHttpRequest.executeInternal(AbstractStreamingClientHttpRequest.java:70)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:66)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:112)
+	at com.bachld.config.JwtInterceptor.intercept(JwtInterceptor.java:63)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:88)
+	at org.springframework.http.client.InterceptingClientHttpRequest.executeInternal(InterceptingClientHttpRequest.java:72)
+	at org.springframework.http.client.AbstractBufferingClientHttpRequest.executeInternal(AbstractBufferingClientHttpRequest.java:48)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:66)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:889)
+	... 11 common frames omitted
+2026-04-28 17:06:12.354 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172245@e.tlu.edu.vn
+2026-04-28 17:06:12.355 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: http://localhost:8080/api/auth/v1/login
+2026-04-28 17:06:12.356 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/auth/v1/login
+2026-04-28 17:06:12.357 [SwingWorker-pool-1-thread-2] ERROR com.bachld.client.AuthApiClient - API request failed: I/O error on POST request for "http://localhost:8080/api/auth/v1/login": Connection refused: getsockopt
+org.springframework.web.client.ResourceAccessException: I/O error on POST request for "http://localhost:8080/api/auth/v1/login": Connection refused: getsockopt
+	at org.springframework.web.client.RestTemplate.createResourceAccessException(RestTemplate.java:915)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:895)
+	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
+	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:538)
+	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:69)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:104)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:84)
+	at java.desktop/javax.swing.SwingWorker$1.call(SwingWorker.java:305)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.desktop/javax.swing.SwingWorker.run(SwingWorker.java:342)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:636)
+	at java.base/sun.net.www.http.HttpClient.<init>(HttpClient.java:282)
+	at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:386)
+	at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:408)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1320)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1253)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1139)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:1068)
+	at org.springframework.http.client.SimpleClientHttpRequest.executeInternal(SimpleClientHttpRequest.java:79)
+	at org.springframework.http.client.AbstractStreamingClientHttpRequest.executeInternal(AbstractStreamingClientHttpRequest.java:70)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:66)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:112)
+	at com.bachld.config.JwtInterceptor.intercept(JwtInterceptor.java:63)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:88)
+	at org.springframework.http.client.InterceptingClientHttpRequest.executeInternal(InterceptingClientHttpRequest.java:72)
+	at org.springframework.http.client.AbstractBufferingClientHttpRequest.executeInternal(AbstractBufferingClientHttpRequest.java:48)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:66)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:889)
+	... 11 common frames omitted
+2026-04-28 17:06:12.397 [AWT-EventQueue-0] ERROR com.bachld.service.AuthService - Authentication error for email: 2251172245@e.tlu.edu.vn
+com.bachld.exception.RestClientException: Failed to authenticate: I/O error on POST request for "http://localhost:8080/api/auth/v1/login": Connection refused: getsockopt
+	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:85)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:104)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:84)
+	at java.desktop/javax.swing.SwingWorker$1.call(SwingWorker.java:305)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.desktop/javax.swing.SwingWorker.run(SwingWorker.java:342)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: org.springframework.web.client.ResourceAccessException: I/O error on POST request for "http://localhost:8080/api/auth/v1/login": Connection refused: getsockopt
+	at org.springframework.web.client.RestTemplate.createResourceAccessException(RestTemplate.java:915)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:895)
+	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
+	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:538)
+	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:69)
+	... 8 common frames omitted
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:636)
+	at java.base/sun.net.www.http.HttpClient.<init>(HttpClient.java:282)
+	at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:386)
+	at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:408)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1320)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1253)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1139)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:1068)
+	at org.springframework.http.client.SimpleClientHttpRequest.executeInternal(SimpleClientHttpRequest.java:79)
+	at org.springframework.http.client.AbstractStreamingClientHttpRequest.executeInternal(AbstractStreamingClientHttpRequest.java:70)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:66)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:112)
+	at com.bachld.config.JwtInterceptor.intercept(JwtInterceptor.java:63)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:88)
+	at org.springframework.http.client.InterceptingClientHttpRequest.executeInternal(InterceptingClientHttpRequest.java:72)
+	at org.springframework.http.client.AbstractBufferingClientHttpRequest.executeInternal(AbstractBufferingClientHttpRequest.java:48)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:66)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:889)
+	... 11 common frames omitted
+2026-04-28 17:13:02.495 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172245@e.tlu.edu.vn
+2026-04-28 17:13:02.496 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: http://localhost:8080/api/auth/v1/login
+2026-04-28 17:13:02.497 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/auth/v1/login
+2026-04-28 17:13:02.500 [SwingWorker-pool-1-thread-3] ERROR com.bachld.client.AuthApiClient - API request failed: I/O error on POST request for "http://localhost:8080/api/auth/v1/login": Connection refused: getsockopt
+org.springframework.web.client.ResourceAccessException: I/O error on POST request for "http://localhost:8080/api/auth/v1/login": Connection refused: getsockopt
+	at org.springframework.web.client.RestTemplate.createResourceAccessException(RestTemplate.java:915)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:895)
+	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
+	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:538)
+	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:69)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:104)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:84)
+	at java.desktop/javax.swing.SwingWorker$1.call(SwingWorker.java:305)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.desktop/javax.swing.SwingWorker.run(SwingWorker.java:342)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:636)
+	at java.base/sun.net.www.http.HttpClient.<init>(HttpClient.java:282)
+	at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:386)
+	at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:408)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1320)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1253)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1139)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:1068)
+	at org.springframework.http.client.SimpleClientHttpRequest.executeInternal(SimpleClientHttpRequest.java:79)
+	at org.springframework.http.client.AbstractStreamingClientHttpRequest.executeInternal(AbstractStreamingClientHttpRequest.java:70)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:66)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:112)
+	at com.bachld.config.JwtInterceptor.intercept(JwtInterceptor.java:63)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:88)
+	at org.springframework.http.client.InterceptingClientHttpRequest.executeInternal(InterceptingClientHttpRequest.java:72)
+	at org.springframework.http.client.AbstractBufferingClientHttpRequest.executeInternal(AbstractBufferingClientHttpRequest.java:48)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:66)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:889)
+	... 11 common frames omitted
+2026-04-28 17:13:02.538 [AWT-EventQueue-0] ERROR com.bachld.service.AuthService - Authentication error for email: 2251172245@e.tlu.edu.vn
+com.bachld.exception.RestClientException: Failed to authenticate: I/O error on POST request for "http://localhost:8080/api/auth/v1/login": Connection refused: getsockopt
+	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:85)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:104)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:84)
+	at java.desktop/javax.swing.SwingWorker$1.call(SwingWorker.java:305)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.desktop/javax.swing.SwingWorker.run(SwingWorker.java:342)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: org.springframework.web.client.ResourceAccessException: I/O error on POST request for "http://localhost:8080/api/auth/v1/login": Connection refused: getsockopt
+	at org.springframework.web.client.RestTemplate.createResourceAccessException(RestTemplate.java:915)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:895)
+	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
+	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:538)
+	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:69)
+	... 8 common frames omitted
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:636)
+	at java.base/sun.net.www.http.HttpClient.<init>(HttpClient.java:282)
+	at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:386)
+	at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:408)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1320)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1253)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1139)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:1068)
+	at org.springframework.http.client.SimpleClientHttpRequest.executeInternal(SimpleClientHttpRequest.java:79)
+	at org.springframework.http.client.AbstractStreamingClientHttpRequest.executeInternal(AbstractStreamingClientHttpRequest.java:70)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:66)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:112)
+	at com.bachld.config.JwtInterceptor.intercept(JwtInterceptor.java:63)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:88)
+	at org.springframework.http.client.InterceptingClientHttpRequest.executeInternal(InterceptingClientHttpRequest.java:72)
+	at org.springframework.http.client.AbstractBufferingClientHttpRequest.executeInternal(AbstractBufferingClientHttpRequest.java:48)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:66)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:889)
+	... 11 common frames omitted
+2026-04-28 17:13:24.832 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172245@e.tlu.edu.vn
+2026-04-28 17:13:24.832 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: http://localhost:8080/api/auth/v1/login
+2026-04-28 17:13:24.833 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/auth/v1/login
+2026-04-28 17:13:24.833 [SwingWorker-pool-1-thread-4] ERROR com.bachld.client.AuthApiClient - API request failed: I/O error on POST request for "http://localhost:8080/api/auth/v1/login": Connection refused: getsockopt
+org.springframework.web.client.ResourceAccessException: I/O error on POST request for "http://localhost:8080/api/auth/v1/login": Connection refused: getsockopt
+	at org.springframework.web.client.RestTemplate.createResourceAccessException(RestTemplate.java:915)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:895)
+	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
+	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:538)
+	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:69)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:104)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:84)
+	at java.desktop/javax.swing.SwingWorker$1.call(SwingWorker.java:305)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.desktop/javax.swing.SwingWorker.run(SwingWorker.java:342)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:636)
+	at java.base/sun.net.www.http.HttpClient.<init>(HttpClient.java:282)
+	at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:386)
+	at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:408)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1320)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1253)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1139)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:1068)
+	at org.springframework.http.client.SimpleClientHttpRequest.executeInternal(SimpleClientHttpRequest.java:79)
+	at org.springframework.http.client.AbstractStreamingClientHttpRequest.executeInternal(AbstractStreamingClientHttpRequest.java:70)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:66)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:112)
+	at com.bachld.config.JwtInterceptor.intercept(JwtInterceptor.java:63)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:88)
+	at org.springframework.http.client.InterceptingClientHttpRequest.executeInternal(InterceptingClientHttpRequest.java:72)
+	at org.springframework.http.client.AbstractBufferingClientHttpRequest.executeInternal(AbstractBufferingClientHttpRequest.java:48)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:66)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:889)
+	... 11 common frames omitted
+2026-04-28 17:13:24.876 [AWT-EventQueue-0] ERROR com.bachld.service.AuthService - Authentication error for email: 2251172245@e.tlu.edu.vn
+com.bachld.exception.RestClientException: Failed to authenticate: I/O error on POST request for "http://localhost:8080/api/auth/v1/login": Connection refused: getsockopt
+	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:85)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:104)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:84)
+	at java.desktop/javax.swing.SwingWorker$1.call(SwingWorker.java:305)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.desktop/javax.swing.SwingWorker.run(SwingWorker.java:342)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: org.springframework.web.client.ResourceAccessException: I/O error on POST request for "http://localhost:8080/api/auth/v1/login": Connection refused: getsockopt
+	at org.springframework.web.client.RestTemplate.createResourceAccessException(RestTemplate.java:915)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:895)
+	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
+	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:538)
+	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:69)
+	... 8 common frames omitted
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531)
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:636)
+	at java.base/sun.net.www.http.HttpClient.<init>(HttpClient.java:282)
+	at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:386)
+	at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:408)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1320)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1253)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1139)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:1068)
+	at org.springframework.http.client.SimpleClientHttpRequest.executeInternal(SimpleClientHttpRequest.java:79)
+	at org.springframework.http.client.AbstractStreamingClientHttpRequest.executeInternal(AbstractStreamingClientHttpRequest.java:70)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:66)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:112)
+	at com.bachld.config.JwtInterceptor.intercept(JwtInterceptor.java:63)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:88)
+	at org.springframework.http.client.InterceptingClientHttpRequest.executeInternal(InterceptingClientHttpRequest.java:72)
+	at org.springframework.http.client.AbstractBufferingClientHttpRequest.executeInternal(AbstractBufferingClientHttpRequest.java:48)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:66)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:889)
+	... 11 common frames omitted
+2026-04-28 17:15:27.616 [main] INFO  com.bachld.config.AppConfig - Configuration loaded successfully.
+2026-04-28 17:15:27.617 [main] INFO  com.bachld.LabMonitorApp - Starting TLU Lab Monitor v1.0.0
+2026-04-28 17:15:27.618 [main] INFO  com.bachld.LabMonitorApp - Server API: https://bachld.id.vn/api
+2026-04-28 17:15:27.863 [main] INFO  com.bachld.LabMonitorApp - Initialized RestClient, TokenManager, and SessionManager
+2026-04-28 17:15:27.865 [main] INFO  com.bachld.LabMonitorApp - Created AuthApiClient
+2026-04-28 17:15:27.865 [main] INFO  com.bachld.LabMonitorApp - Created AuthService
+2026-04-28 17:15:27.868 [AWT-EventQueue-0] INFO  com.bachld.LabMonitorApp - Launching Login screen...
+2026-04-28 17:15:39.926 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172245@e.tlu.edu.vn
+2026-04-28 17:15:39.934 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: https://bachld.id.vn/api/api/auth/v1/login
+2026-04-28 17:15:40.017 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST https://bachld.id.vn/api/api/auth/v1/login
+2026-04-28 17:15:40.603 [SwingWorker-pool-1-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 403
+2026-04-28 17:15:40.603 [SwingWorker-pool-1-thread-1] ERROR c.bachld.config.CustomErrorHandler - HTTP error response - Status: 403 FORBIDDEN
+2026-04-28 17:15:40.611 [SwingWorker-pool-1-thread-1] ERROR c.bachld.config.CustomErrorHandler - Error handling HTTP response - Status: 403 FORBIDDEN
+org.springframework.web.client.HttpClientErrorException$Forbidden: 403 : "{"timestamp":"2026-04-28T10:15:40.510+00:00","status":403,"error":"Forbidden","path":"/api/api/auth/v1/login"}"
+	at org.springframework.web.client.HttpClientErrorException.create(HttpClientErrorException.java:109)
+	at org.springframework.web.client.DefaultResponseErrorHandler.handleError(DefaultResponseErrorHandler.java:183)
+	at org.springframework.web.client.DefaultResponseErrorHandler.handleError(DefaultResponseErrorHandler.java:137)
+	at com.bachld.config.CustomErrorHandler.handleError(CustomErrorHandler.java:101)
+	at org.springframework.web.client.ResponseErrorHandler.handleError(ResponseErrorHandler.java:63)
+	at org.springframework.web.client.RestTemplate.handleResponse(RestTemplate.java:942)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:891)
+	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
+	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:538)
+	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:69)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:104)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:84)
+	at java.desktop/javax.swing.SwingWorker$1.call(SwingWorker.java:305)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.desktop/javax.swing.SwingWorker.run(SwingWorker.java:342)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2026-04-28 17:15:40.613 [SwingWorker-pool-1-thread-1] ERROR com.bachld.client.AuthApiClient - API request failed: 403 : "{"timestamp":"2026-04-28T10:15:40.510+00:00","status":403,"error":"Forbidden","path":"/api/api/auth/v1/login"}"
+org.springframework.web.client.HttpClientErrorException$Forbidden: 403 : "{"timestamp":"2026-04-28T10:15:40.510+00:00","status":403,"error":"Forbidden","path":"/api/api/auth/v1/login"}"
+	at org.springframework.web.client.HttpClientErrorException.create(HttpClientErrorException.java:109)
+	at org.springframework.web.client.DefaultResponseErrorHandler.handleError(DefaultResponseErrorHandler.java:183)
+	at org.springframework.web.client.DefaultResponseErrorHandler.handleError(DefaultResponseErrorHandler.java:137)
+	at com.bachld.config.CustomErrorHandler.handleError(CustomErrorHandler.java:101)
+	at org.springframework.web.client.ResponseErrorHandler.handleError(ResponseErrorHandler.java:63)
+	at org.springframework.web.client.RestTemplate.handleResponse(RestTemplate.java:942)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:891)
+	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
+	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:538)
+	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:69)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:104)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:84)
+	at java.desktop/javax.swing.SwingWorker$1.call(SwingWorker.java:305)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.desktop/javax.swing.SwingWorker.run(SwingWorker.java:342)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2026-04-28 17:15:40.654 [AWT-EventQueue-0] ERROR com.bachld.service.AuthService - Authentication error for email: 2251172245@e.tlu.edu.vn
+com.bachld.exception.RestClientException: Failed to authenticate: 403 : "{"timestamp":"2026-04-28T10:15:40.510+00:00","status":403,"error":"Forbidden","path":"/api/api/auth/v1/login"}"
+	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:85)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:104)
+	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:84)
+	at java.desktop/javax.swing.SwingWorker$1.call(SwingWorker.java:305)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.desktop/javax.swing.SwingWorker.run(SwingWorker.java:342)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: org.springframework.web.client.HttpClientErrorException$Forbidden: 403 : "{"timestamp":"2026-04-28T10:15:40.510+00:00","status":403,"error":"Forbidden","path":"/api/api/auth/v1/login"}"
+	at org.springframework.web.client.HttpClientErrorException.create(HttpClientErrorException.java:109)
+	at org.springframework.web.client.DefaultResponseErrorHandler.handleError(DefaultResponseErrorHandler.java:183)
+	at org.springframework.web.client.DefaultResponseErrorHandler.handleError(DefaultResponseErrorHandler.java:137)
+	at com.bachld.config.CustomErrorHandler.handleError(CustomErrorHandler.java:101)
+	at org.springframework.web.client.ResponseErrorHandler.handleError(ResponseErrorHandler.java:63)
+	at org.springframework.web.client.RestTemplate.handleResponse(RestTemplate.java:942)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:891)
+	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
+	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:538)
+	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:69)
+	... 8 common frames omitted
+2026-04-28 17:16:15.753 [main] INFO  com.bachld.config.AppConfig - Configuration loaded successfully.
+2026-04-28 17:16:15.754 [main] INFO  com.bachld.LabMonitorApp - Starting TLU Lab Monitor v1.0.0
+2026-04-28 17:16:15.755 [main] INFO  com.bachld.LabMonitorApp - Server API: https://bachld.id.vn
+2026-04-28 17:16:15.957 [main] INFO  com.bachld.LabMonitorApp - Initialized RestClient, TokenManager, and SessionManager
+2026-04-28 17:16:15.957 [main] INFO  com.bachld.LabMonitorApp - Created AuthApiClient
+2026-04-28 17:16:15.958 [main] INFO  com.bachld.LabMonitorApp - Created AuthService
+2026-04-28 17:16:15.960 [AWT-EventQueue-0] INFO  com.bachld.LabMonitorApp - Launching Login screen...
+2026-04-28 17:16:30.580 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172245@e.tlu.edu.vn
+2026-04-28 17:16:30.587 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: https://bachld.id.vn/api/auth/v1/login
+2026-04-28 17:16:30.673 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST https://bachld.id.vn/api/auth/v1/login
+2026-04-28 17:16:31.141 [SwingWorker-pool-1-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-04-28 17:16:31.157 [SwingWorker-pool-1-thread-1] INFO  com.bachld.client.AuthApiClient - API response status: 200
+2026-04-28 17:16:31.200 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172245@e.tlu.edu.vn
+2026-04-28 17:16:31.251 [AWT-EventQueue-0] INFO  com.bachld.service.WebSocketService - Connecting to WebSocket at: ws://https://bachld.id.vn/ws
+2026-04-28 17:16:38.562 [SimpleAsyncTaskExecutor-1] WARN  com.bachld.service.WebSocketService - WebSocket transport error. Session may be lost: java.nio.channels.UnresolvedAddressException
+2026-04-28 17:16:38.562 [AWT-EventQueue-0] ERROR com.bachld.service.WebSocketService - Could not connect to WebSocket: java.nio.channels.UnresolvedAddressException
+2026-04-28 17:16:38.565 [WindowsTrackingThread] INFO  c.b.service.WindowsTrackingService - Starting Windows Event Hook for foreground tracking...
+2026-04-28 17:16:38.767 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
+2026-04-28 17:16:38.773 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
+2026-04-28 17:16:38.803 [SwingWorker-pool-1-thread-3] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: https://bachld.id.vn/api/personal-computer/v1/me
+2026-04-28 17:16:38.803 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: https://bachld.id.vn/api/class/v1/student
+2026-04-28 17:16:38.808 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://bachld.id.vn/api/personal-computer/v1/me
+2026-04-28 17:16:38.808 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-04-28 17:16:38.816 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://bachld.id.vn/api/class/v1/student
+2026-04-28 17:16:38.816 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-04-28 17:16:38.966 [SwingWorker-pool-1-thread-3] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-04-28 17:16:38.967 [SwingWorker-pool-1-thread-3] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
+2026-04-28 17:16:39.012 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
+2026-04-28 17:16:39.025 [SwingWorker-pool-1-thread-2] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-04-28 17:16:39.028 [SwingWorker-pool-1-thread-2] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
+2026-04-28 17:16:39.036 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-28 17:16:39.037 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
+2026-04-28 17:16:39.074 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
+2026-04-28 17:16:42.206 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:16:42.207 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:16:43.417 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 17:16:43.417 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 17:16:46.864 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: New Tab - Brave
+2026-04-28 17:16:46.864 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: New Tab - Brave
+2026-04-28 17:16:48.958 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Facebook - Brave
+2026-04-28 17:16:48.958 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Facebook - Brave
+2026-04-28 17:16:49.974 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: (1) Facebook - Brave
+2026-04-28 17:16:49.975 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: (1) Facebook - Brave
+2026-04-28 17:16:54.158 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 17:16:54.158 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 17:17:12.711 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Save password?
+2026-04-28 17:17:12.711 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Save password?
+2026-04-28 17:17:12.866 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 17:17:12.866 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 17:17:13.426 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:17:13.426 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:17:13.548 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-28 17:17:13.549 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
+2026-04-28 17:17:13.860 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 17:17:13.860 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 17:17:15.680 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:17:15.680 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:17:16.782 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – application.properties
+2026-04-28 17:17:16.782 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: desktop – application.properties
+2026-04-28 17:17:17.307 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:17:17.307 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:17:17.508 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 17:17:17.508 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 17:17:21.984 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:17:21.985 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:17:22.168 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – application.properties
+2026-04-28 17:17:22.169 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: desktop – application.properties
+2026-04-28 17:17:22.835 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:17:22.835 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:17:22.977 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 17:17:22.977 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 17:17:26.647 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:17:26.647 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:17:27.128 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – application.properties
+2026-04-28 17:17:27.129 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: desktop – application.properties
+2026-04-28 17:17:27.612 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:17:27.612 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:17:28.702 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: root@tlu-lab-mornitoring: ~
+2026-04-28 17:17:28.702 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: root@tlu-lab-mornitoring: ~
+2026-04-28 17:17:35.358 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – application.properties
+2026-04-28 17:17:35.358 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: desktop – application.properties
+2026-04-28 17:17:47.219 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:17:47.219 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:17:47.452 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: root@tlu-lab-mornitoring: ~
+2026-04-28 17:17:47.452 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: root@tlu-lab-mornitoring: ~
+2026-04-28 17:17:47.841 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:17:47.842 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:17:48.415 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 17:17:48.415 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 17:17:59.157 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:17:59.157 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:18:00.165 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-28 17:18:00.166 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
+2026-04-28 17:18:02.734 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:18:02.734 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:18:02.952 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 17:18:02.953 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 17:18:05.017 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: (2) Facebook - Brave
+2026-04-28 17:18:05.017 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: (2) Facebook - Brave
+2026-04-28 17:18:05.404 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: (1) Facebook - Brave
+2026-04-28 17:18:05.404 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: (1) Facebook - Brave
+2026-04-28 17:18:05.574 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 17:18:05.575 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 17:18:06.581 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:18:06.582 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:18:07.416 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-28 17:18:07.416 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
+2026-04-28 17:18:08.778 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:18:08.779 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:18:10.236 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – application.properties
+2026-04-28 17:18:10.236 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: desktop – application.properties
+2026-04-28 17:18:12.594 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:18:12.594 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:18:13.388 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: root@tlu-lab-mornitoring: ~
+2026-04-28 17:18:13.388 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: root@tlu-lab-mornitoring: ~
+2026-04-28 17:18:36.136 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – application.properties
+2026-04-28 17:18:36.137 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: desktop – application.properties
+2026-04-28 17:18:36.661 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:18:36.661 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:18:37.437 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 17:18:37.437 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 17:18:39.367 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 17:18:39.367 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 17:19:07.922 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:19:07.922 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:19:08.059 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – application.properties
+2026-04-28 17:19:08.060 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: desktop – application.properties
+2026-04-28 17:19:13.806 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:19:13.806 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:19:13.948 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 17:19:13.948 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 17:19:40.931 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:19:40.931 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:19:41.057 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – application.properties
+2026-04-28 17:19:41.057 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: desktop – application.properties
+2026-04-28 17:19:41.414 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:19:41.415 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:19:41.541 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 17:19:41.541 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 17:19:49.113 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:19:49.113 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:19:50.060 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: MySQL Workbench
+2026-04-28 17:19:50.060 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: MySQL Workbench
+2026-04-28 17:19:50.293 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:19:50.294 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:19:50.604 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 17:19:50.605 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 17:19:50.995 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:19:50.995 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:19:51.802 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-28 17:19:51.802 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
+2026-04-28 17:19:52.207 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:19:52.207 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:19:52.349 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 17:19:52.349 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 17:19:53.140 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: (1) Facebook - Brave
+2026-04-28 17:19:53.140 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: (1) Facebook - Brave
+2026-04-28 17:20:02.926 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 17:20:02.927 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 17:20:06.406 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:20:06.406 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:20:06.578 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-28 17:20:06.578 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
+2026-04-28 17:20:06.794 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:20:06.794 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:20:06.902 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 17:20:06.902 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 17:20:08.222 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:20:08.222 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:20:08.550 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-28 17:20:08.550 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
+2026-04-28 17:20:08.891 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:20:08.892 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:20:09.621 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – application.properties
+2026-04-28 17:20:09.622 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: desktop – application.properties
+2026-04-28 17:20:10.008 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:20:10.009 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:20:12.561 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 17:20:12.561 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 17:20:17.366 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: DevTools
+2026-04-28 17:20:17.366 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: DevTools
+2026-04-28 17:20:17.706 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: DevTools - bachld.id.vn/teacher/class/2/tracking
+2026-04-28 17:20:17.706 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: DevTools - bachld.id.vn/teacher/class/2/tracking
+2026-04-28 17:20:42.993 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Snipping Tool Overlay
+2026-04-28 17:20:42.993 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Snipping Tool Overlay
+2026-04-28 17:20:44.657 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: DevTools - bachld.id.vn/teacher/class/2/tracking
+2026-04-28 17:20:44.657 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: DevTools - bachld.id.vn/teacher/class/2/tracking
+2026-04-28 17:20:45.075 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:20:45.075 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:20:45.219 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 17:20:45.220 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 17:20:49.346 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 17:20:49.346 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 17:22:36.874 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:22:36.875 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:22:38.228 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: root@tlu-lab-mornitoring: ~
+2026-04-28 17:22:38.228 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: root@tlu-lab-mornitoring: ~
+2026-04-28 17:22:42.560 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 17:22:42.560 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 17:22:44.793 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:22:44.793 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:22:44.919 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: root@tlu-lab-mornitoring: ~
+2026-04-28 17:22:44.919 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: root@tlu-lab-mornitoring: ~
+2026-04-28 17:23:24.606 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Apple iPhone - File Explorer
+2026-04-28 17:23:24.606 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Apple iPhone - File Explorer
+2026-04-28 17:23:25.009 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: root@tlu-lab-mornitoring: ~
+2026-04-28 17:23:25.009 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: root@tlu-lab-mornitoring: ~
+2026-04-28 17:24:13.934 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:24:13.934 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:24:14.042 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Apple iPhone - File Explorer
+2026-04-28 17:24:14.042 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Apple iPhone - File Explorer
+2026-04-28 17:24:14.780 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: explorer.exe
+2026-04-28 17:24:14.780 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: explorer.exe
+2026-04-28 17:24:14.904 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:24:14.904 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:24:15.246 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 17:24:15.246 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 17:24:19.507 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:24:19.507 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:24:19.633 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: root@tlu-lab-mornitoring: ~
+2026-04-28 17:24:19.633 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: root@tlu-lab-mornitoring: ~
+2026-04-28 17:24:48.168 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 17:24:48.168 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 17:24:51.054 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:24:51.054 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:24:52.445 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-28 17:24:52.445 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
+2026-04-28 17:24:54.021 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Xác nhận đăng xuất
+2026-04-28 17:24:54.021 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Xác nhận đăng xuất
+2026-04-28 17:24:54.997 [AWT-EventQueue-0] INFO  c.b.service.WindowsTrackingService - Windows Event Hooks removed.
+2026-04-28 17:24:55.002 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@4194406[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@27c30594[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000019ec039b9d8@26904617]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@65829644[Shutting down, pool size = 1, active threads = 0, queued tasks = 1, completed tasks = 228]
+2026-04-28 17:24:55.054 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@16126b20[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@d466812[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000019ec039b9d8@3216238b]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@65829644[Shutting down, pool size = 1, active threads = 0, queued tasks = 1, completed tasks = 228]
+2026-04-28 17:24:55.109 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-28 17:24:55.109 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
+2026-04-28 17:25:10.201 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172245@e.tlu.edu.vn
+2026-04-28 17:25:10.202 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: https://bachld.id.vn/api/auth/v1/login
+2026-04-28 17:25:10.202 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST https://bachld.id.vn/api/auth/v1/login
+2026-04-28 17:25:10.365 [SwingWorker-pool-1-thread-4] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-04-28 17:25:10.366 [SwingWorker-pool-1-thread-4] INFO  com.bachld.client.AuthApiClient - API response status: 200
+2026-04-28 17:25:10.402 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172245@e.tlu.edu.vn
+2026-04-28 17:25:10.407 [AWT-EventQueue-0] INFO  com.bachld.service.WebSocketService - Connecting to WebSocket at: ws://https://bachld.id.vn/ws
+2026-04-28 17:25:17.673 [SimpleAsyncTaskExecutor-2] WARN  com.bachld.service.WebSocketService - WebSocket transport error. Session may be lost: java.nio.channels.UnresolvedAddressException
+2026-04-28 17:25:17.673 [AWT-EventQueue-0] ERROR com.bachld.service.WebSocketService - Could not connect to WebSocket: java.nio.channels.UnresolvedAddressException
+2026-04-28 17:25:17.675 [WindowsTrackingThread] INFO  c.b.service.WindowsTrackingService - Starting Windows Event Hook for foreground tracking...
+2026-04-28 17:25:17.682 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
+2026-04-28 17:25:17.682 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: https://bachld.id.vn/api/class/v1/student
+2026-04-28 17:25:17.683 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://bachld.id.vn/api/class/v1/student
+2026-04-28 17:25:17.683 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-04-28 17:25:17.684 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
+2026-04-28 17:25:17.684 [SwingWorker-pool-1-thread-6] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: https://bachld.id.vn/api/personal-computer/v1/me
+2026-04-28 17:25:17.685 [SwingWorker-pool-1-thread-6] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://bachld.id.vn/api/personal-computer/v1/me
+2026-04-28 17:25:17.686 [SwingWorker-pool-1-thread-6] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-04-28 17:25:17.778 [SwingWorker-pool-1-thread-5] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-04-28 17:25:17.779 [SwingWorker-pool-1-thread-5] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
+2026-04-28 17:25:17.786 [SwingWorker-pool-1-thread-6] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-04-28 17:25:17.786 [SwingWorker-pool-1-thread-6] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
+2026-04-28 17:25:17.811 [pool-4-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-28 17:25:17.813 [pool-4-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
+2026-04-28 17:25:17.827 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
+2026-04-28 17:25:17.854 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
+2026-04-28 17:25:19.583 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@6554ac4d[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@58652490[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000019ec039b9d8@665dd176]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@65829644[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 229]
+2026-04-28 17:25:19.594 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@19f4dca9[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@609a80ac[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000019ec039b9d8@11aa798b]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@65829644[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 229]
+2026-04-28 17:25:19.708 [pool-4-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 17:25:19.708 [pool-4-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 17:25:20.213 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@2f0d136d[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@59022d1e[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000019ec039b9d8@6da94972]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@65829644[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 229]
+2026-04-28 17:25:20.217 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@7f4406cd[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@10a393b1[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000019ec039b9d8@58013666]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@65829644[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 229]
+2026-04-28 17:25:20.222 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@65c4746f[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@3895f433[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000019ec039b9d8@3427c68b]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@65829644[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 229]
+2026-04-28 17:25:20.332 [pool-4-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 17:25:20.332 [pool-4-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 17:25:22.021 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@2753b3da[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@3a696474[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000019ec039b9d8@2d4a2b66]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@65829644[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 229]
+2026-04-28 17:25:22.122 [pool-4-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: DevTools - bachld.id.vn/teacher/class/2/tracking
+2026-04-28 17:25:22.122 [pool-4-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: DevTools - bachld.id.vn/teacher/class/2/tracking
+2026-04-28 17:25:27.463 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@6c2456a9[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@6172cc53[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000019ec039b9d8@10c95ecd]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@65829644[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 229]
+2026-04-28 17:25:27.566 [pool-4-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 17:25:27.566 [pool-4-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 17:25:27.804 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@7bd1a684[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@56d3e594[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000019ec039b9d8@21b4bb49]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@65829644[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 229]
+2026-04-28 17:25:27.905 [pool-4-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-28 17:25:27.906 [pool-4-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
+2026-04-28 17:25:28.455 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@78521814[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@358e3649[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000019ec039b9d8@7c388a29]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@65829644[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 229]
+2026-04-28 18:57:14.664 [main] INFO  com.bachld.config.AppConfig - Configuration loaded successfully.
+2026-04-28 18:57:14.665 [main] INFO  com.bachld.LabMonitorApp - Starting TLU Lab Monitor v1.0.0
+2026-04-28 18:57:14.665 [main] INFO  com.bachld.LabMonitorApp - Server API: https://bachld.id.vn
+2026-04-28 18:57:14.980 [main] INFO  com.bachld.LabMonitorApp - Initialized RestClient, TokenManager, and SessionManager
+2026-04-28 18:57:14.980 [main] INFO  com.bachld.LabMonitorApp - Created AuthApiClient
+2026-04-28 18:57:14.980 [main] INFO  com.bachld.LabMonitorApp - Created AuthService
+2026-04-28 18:57:14.984 [AWT-EventQueue-0] INFO  com.bachld.LabMonitorApp - Launching Login screen...
+2026-04-28 18:58:55.072 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172245@e.tlu.edu.vn
+2026-04-28 18:58:55.093 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: https://bachld.id.vn/api/auth/v1/login
+2026-04-28 18:58:55.273 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST https://bachld.id.vn/api/auth/v1/login
+2026-04-28 18:58:56.122 [SwingWorker-pool-1-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-04-28 18:58:56.142 [SwingWorker-pool-1-thread-1] INFO  com.bachld.client.AuthApiClient - API response status: 200
+2026-04-28 18:58:56.180 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172245@e.tlu.edu.vn
+2026-04-28 18:58:56.240 [AWT-EventQueue-0] INFO  com.bachld.service.WebSocketService - Connecting to WebSocket at: ws://https://bachld.id.vn/ws
+2026-04-28 18:59:03.585 [SimpleAsyncTaskExecutor-1] WARN  com.bachld.service.WebSocketService - WebSocket transport error. Session may be lost: java.nio.channels.UnresolvedAddressException
+2026-04-28 18:59:03.585 [AWT-EventQueue-0] ERROR com.bachld.service.WebSocketService - Could not connect to WebSocket: java.nio.channels.UnresolvedAddressException
+2026-04-28 18:59:03.589 [WindowsTrackingThread] INFO  c.b.service.WindowsTrackingService - Starting Windows Event Hook for foreground tracking...
+2026-04-28 18:59:03.796 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
+2026-04-28 18:59:03.804 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
+2026-04-28 18:59:03.860 [SwingWorker-pool-1-thread-3] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: https://bachld.id.vn/api/personal-computer/v1/me
+2026-04-28 18:59:03.860 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: https://bachld.id.vn/api/class/v1/student
+2026-04-28 18:59:03.872 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://bachld.id.vn/api/class/v1/student
+2026-04-28 18:59:03.873 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://bachld.id.vn/api/personal-computer/v1/me
+2026-04-28 18:59:03.874 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-04-28 18:59:03.874 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-04-28 18:59:03.998 [SwingWorker-pool-1-thread-3] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-04-28 18:59:04.001 [SwingWorker-pool-1-thread-3] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
+2026-04-28 18:59:04.007 [SwingWorker-pool-1-thread-2] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-04-28 18:59:04.010 [SwingWorker-pool-1-thread-2] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
+2026-04-28 18:59:04.021 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
+2026-04-28 18:59:04.026 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
+2026-04-28 18:59:04.108 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-28 18:59:04.108 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
+2026-04-28 18:59:05.486 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: explorer.exe
+2026-04-28 18:59:05.487 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: explorer.exe
+2026-04-28 18:59:05.594 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 18:59:05.595 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 18:59:08.914 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-28 18:59:08.916 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
+2026-04-28 18:59:09.491 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 18:59:09.491 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 18:59:11.304 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: DevTools - bachld.id.vn/teacher/class/2/tracking
+2026-04-28 18:59:11.304 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: DevTools - bachld.id.vn/teacher/class/2/tracking
+2026-04-28 18:59:22.111 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 18:59:22.111 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 18:59:22.455 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 18:59:22.455 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 18:59:24.532 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: RamMap - Sysinternals: www.sysinternals.com
+2026-04-28 18:59:24.533 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: RamMap - Sysinternals: www.sysinternals.com
+2026-04-28 18:59:29.693 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 18:59:29.695 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 18:59:31.287 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-28 18:59:31.288 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
+2026-04-28 18:59:31.736 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 18:59:31.736 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 18:59:32.353 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 18:59:32.353 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 18:59:49.987 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: DevTools - bachld.id.vn/teacher/class/2/tracking
+2026-04-28 18:59:49.987 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: DevTools - bachld.id.vn/teacher/class/2/tracking
+2026-04-28 18:59:50.809 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 18:59:50.809 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 18:59:50.932 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 18:59:50.933 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 18:59:51.410 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 18:59:51.410 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 18:59:51.978 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-28 18:59:51.978 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
+2026-04-28 18:59:52.408 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 18:59:52.409 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 19:00:15.343 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: DevTools - bachld.id.vn/ban-application
+2026-04-28 19:00:15.344 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: DevTools - bachld.id.vn/ban-application
+2026-04-28 19:00:22.904 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:00:22.905 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 19:00:30.282 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: New Tab - Brave
+2026-04-28 19:00:30.283 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: New Tab - Brave
+2026-04-28 19:00:31.368 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: SEC - Brave
+2026-04-28 19:00:31.368 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: SEC - Brave
+2026-04-28 19:00:31.725 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Danh sách lớp học - Brave
+2026-04-28 19:00:31.725 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Danh sách lớp học - Brave
+2026-04-28 19:00:31.864 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Dashboard - Brave
+2026-04-28 19:00:31.865 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Dashboard - Brave
+2026-04-28 19:00:34.766 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: SEC - Brave
+2026-04-28 19:00:34.766 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: SEC - Brave
+2026-04-28 19:00:35.148 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Dashboard - Brave
+2026-04-28 19:00:35.149 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Dashboard - Brave
+2026-04-28 19:00:37.312 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: DevTools
+2026-04-28 19:00:37.312 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: DevTools
+2026-04-28 19:00:37.703 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: DevTools - lms.erp-smb.com/dashboard/advisor
+2026-04-28 19:00:37.704 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: DevTools - lms.erp-smb.com/dashboard/advisor
+2026-04-28 19:00:49.758 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Dashboard - Brave
+2026-04-28 19:00:49.758 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Dashboard - Brave
+2026-04-28 19:00:50.378 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Tham gia từ ứng dụng Zoom Workplace - Zoom - Brave
+2026-04-28 19:00:50.378 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Tham gia từ ứng dụng Zoom Workplace - Zoom - Brave
+2026-04-28 19:00:51.243 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: nginx config websocket - Tìm trên Google - Brave
+2026-04-28 19:00:51.243 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: nginx config websocket - Tìm trên Google - Brave
+2026-04-28 19:00:51.525 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:00:51.526 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 19:00:52.702 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: DevTools - bachld.id.vn/ban-application
+2026-04-28 19:00:52.702 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: DevTools - bachld.id.vn/ban-application
+2026-04-28 19:00:57.186 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: DevTools - bachld.id.vn/dashboard/teacher
+2026-04-28 19:00:57.186 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: DevTools - bachld.id.vn/dashboard/teacher
+2026-04-28 19:00:59.826 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:00:59.826 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 19:00:59.996 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:00:59.996 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 19:01:01.340 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:01:01.341 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 19:01:01.573 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: DevTools - bachld.id.vn/dashboard/teacher
+2026-04-28 19:01:01.573 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: DevTools - bachld.id.vn/dashboard/teacher
+2026-04-28 19:01:05.082 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:01:05.082 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 19:01:05.205 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:01:05.205 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 19:01:09.020 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:01:09.020 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 19:01:12.560 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – application.properties
+2026-04-28 19:01:12.560 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: desktop – application.properties
+2026-04-28 19:01:14.593 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:01:14.593 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 19:01:17.778 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: root@tlu-lab-mornitoring: ~
+2026-04-28 19:01:17.778 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: root@tlu-lab-mornitoring: ~
+2026-04-28 19:01:35.163 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:01:35.164 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 19:01:39.995 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:01:39.995 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 19:01:41.673 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – application.properties
+2026-04-28 19:01:41.673 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: desktop – application.properties
+2026-04-28 19:01:42.458 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: explorer.exe
+2026-04-28 19:01:42.459 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: explorer.exe
+2026-04-28 19:01:50.075 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:01:50.075 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 19:01:50.230 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – application.properties
+2026-04-28 19:01:50.241 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: desktop – application.properties
+2026-04-28 19:01:50.449 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:01:50.450 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 19:01:50.604 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:01:50.604 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 19:01:51.848 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:01:51.848 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 19:01:52.018 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – application.properties
+2026-04-28 19:01:52.019 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: desktop – application.properties
+2026-04-28 19:01:54.083 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:01:54.084 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 19:01:56.007 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – application.properties
+2026-04-28 19:01:56.007 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: desktop – application.properties
+2026-04-28 19:01:56.499 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:01:56.499 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 19:02:00.012 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:02:00.012 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 19:02:00.456 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:02:00.456 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 19:02:00.968 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: backend – WebSocketConfig.java
+2026-04-28 19:02:00.968 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: backend – WebSocketConfig.java
+2026-04-28 19:02:05.155 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:02:05.155 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 19:02:09.510 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - .env
+2026-04-28 19:02:09.510 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: frontend - Antigravity - .env
+2026-04-28 19:02:10.725 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:02:10.725 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 19:02:11.895 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - .env
+2026-04-28 19:02:11.895 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: frontend - Antigravity - .env
+2026-04-28 19:02:20.576 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - lab-monitor.log (Working Tree) (lab-monitor.log)
+2026-04-28 19:02:20.578 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: frontend - Antigravity - lab-monitor.log (Working Tree) (lab-monitor.log)
+2026-04-28 19:02:22.408 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - AppConfig.java (Working Tree) (AppConfig.java)
+2026-04-28 19:02:22.408 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: frontend - Antigravity - AppConfig.java (Working Tree) (AppConfig.java)
+2026-04-28 19:02:35.072 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - frontend.zip
+2026-04-28 19:02:35.073 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: frontend - Antigravity - frontend.zip
+2026-04-28 19:02:37.570 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - .env
+2026-04-28 19:02:37.570 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: frontend - Antigravity - .env
+2026-04-28 19:02:39.437 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - application.properties (Working Tree) (application.properties)
+2026-04-28 19:02:39.437 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: frontend - Antigravity - application.properties (Working Tree) (application.properties)
+2026-04-28 19:02:47.702 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - lab-monitor.log (Working Tree) (lab-monitor.log)
+2026-04-28 19:02:47.703 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: frontend - Antigravity - lab-monitor.log (Working Tree) (lab-monitor.log)
+2026-04-28 19:02:51.173 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:02:51.173 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 19:02:51.700 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:02:51.701 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
+2026-04-28 19:02:52.030 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - lab-monitor.log (Working Tree) (lab-monitor.log)
+2026-04-28 19:02:52.031 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: frontend - Antigravity - lab-monitor.log (Working Tree) (lab-monitor.log)
+2026-04-28 19:02:54.990 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:02:54.990 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 19:02:55.989 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - lab-monitor.log (Working Tree) (lab-monitor.log)
+2026-04-28 19:02:55.989 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: frontend - Antigravity - lab-monitor.log (Working Tree) (lab-monitor.log)
+2026-04-28 19:03:00.412 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:03:00.413 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 19:03:02.236 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: backend – WebSocketConfig.java
+2026-04-28 19:03:02.237 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: backend – WebSocketConfig.java
+2026-04-28 19:03:03.483 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:03:03.484 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
+2026-04-28 19:03:04.199 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Untitled - Brave
+2026-04-28 19:03:04.199 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Untitled - Brave
+2026-04-28 19:03:08.317 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – application.properties
+2026-04-28 19:03:08.317 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: desktop – application.properties
+2026-04-28 19:35:02.373 [main] INFO  com.bachld.config.AppConfig - Configuration loaded successfully.
+2026-04-28 19:35:02.376 [main] INFO  com.bachld.LabMonitorApp - Starting TLU Lab Monitor v1.0.0
+2026-04-28 19:35:02.377 [main] INFO  com.bachld.LabMonitorApp - Server API: https://bachld.id.vn
+2026-04-28 19:35:02.658 [main] INFO  com.bachld.LabMonitorApp - Initialized RestClient, TokenManager, and SessionManager
+2026-04-28 19:35:02.658 [main] INFO  com.bachld.LabMonitorApp - Created AuthApiClient
+2026-04-28 19:35:02.658 [main] INFO  com.bachld.LabMonitorApp - Created AuthService
+2026-04-28 19:35:02.663 [AWT-EventQueue-0] INFO  com.bachld.LabMonitorApp - Launching Login screen...
+2026-04-28 19:35:15.635 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172245@e.tlu.edu.vn
+2026-04-28 19:35:15.643 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: https://bachld.id.vn/api/auth/v1/login
+2026-04-28 19:35:15.728 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST https://bachld.id.vn/api/auth/v1/login
+2026-04-28 19:35:16.401 [SwingWorker-pool-1-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-04-28 19:35:16.417 [SwingWorker-pool-1-thread-1] INFO  com.bachld.client.AuthApiClient - API response status: 200
+2026-04-28 19:35:16.451 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172245@e.tlu.edu.vn
+2026-04-28 19:35:16.490 [AWT-EventQueue-0] INFO  com.bachld.service.WebSocketService - Connecting to WebSocket at: wss://bachld.id.vn/ws
+2026-04-28 19:35:16.751 [WebSocketClient-SecureIO-2] INFO  com.bachld.service.WebSocketService - STOMP connection successful. SessionID: df4d32a5-6800-8f8c-ea6d-4581d4010010
+2026-04-28 19:35:16.751 [AWT-EventQueue-0] INFO  com.bachld.service.WebSocketService - WebSocket connection established.
+2026-04-28 19:35:16.756 [WindowsTrackingThread] INFO  c.b.service.WindowsTrackingService - Starting Windows Event Hook for foreground tracking...
+2026-04-28 19:35:16.992 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
+2026-04-28 19:35:16.999 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
+2026-04-28 19:35:17.077 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: https://bachld.id.vn/api/class/v1/student
+2026-04-28 19:35:17.077 [SwingWorker-pool-1-thread-3] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: https://bachld.id.vn/api/personal-computer/v1/me
+2026-04-28 19:35:17.091 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://bachld.id.vn/api/class/v1/student
+2026-04-28 19:35:17.091 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-04-28 19:35:17.091 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://bachld.id.vn/api/personal-computer/v1/me
+2026-04-28 19:35:17.091 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-04-28 19:35:17.144 [SwingWorker-pool-1-thread-2] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-04-28 19:35:17.147 [SwingWorker-pool-1-thread-2] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
+2026-04-28 19:35:17.189 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
+2026-04-28 19:35:17.194 [SwingWorker-pool-1-thread-3] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-04-28 19:35:17.196 [SwingWorker-pool-1-thread-3] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
+2026-04-28 19:35:17.498 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
+2026-04-28 19:35:18.171 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – nginx-config-server.md
+2026-04-28 19:35:18.175 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop – nginx-config-server.md
+2026-04-28 19:35:18.572 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:35:18.574 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:35:18.696 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:35:18.698 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:35:19.336 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:35:19.337 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:35:20.067 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Workplace
+2026-04-28 19:35:20.067 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Workplace
+2026-04-28 19:35:20.501 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:35:20.502 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:35:21.672 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: DevTools - localhost:3000/teacher/class/2/tracking
+2026-04-28 19:35:21.674 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: DevTools - localhost:3000/teacher/class/2/tracking
+2026-04-28 19:35:22.711 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:35:22.712 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:35:26.048 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 19:35:26.050 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 19:35:26.970 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:35:26.971 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 19:35:29.528 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Workplace
+2026-04-28 19:35:29.529 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Workplace
+2026-04-28 19:35:34.837 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:35:34.839 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 19:35:35.571 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Workplace
+2026-04-28 19:35:35.573 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Workplace
+2026-04-28 19:35:41.663 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:35:41.664 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:35:43.977 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:35:43.978 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:35:44.645 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:35:44.647 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:35:44.770 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Workplace
+2026-04-28 19:35:44.771 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Workplace
+2026-04-28 19:35:45.203 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:35:45.204 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:35:45.995 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:35:45.996 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 19:35:48.762 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: New Tab - Brave
+2026-04-28 19:35:48.764 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: New Tab - Brave
+2026-04-28 19:35:50.433 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Facebook - Brave
+2026-04-28 19:35:50.434 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Facebook - Brave
+2026-04-28 19:35:51.868 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: (2) Facebook - Brave
+2026-04-28 19:35:51.870 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: (2) Facebook - Brave
+2026-04-28 19:35:56.659 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: (1) Facebook - Brave
+2026-04-28 19:35:56.661 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: (1) Facebook - Brave
+2026-04-28 19:36:31.925 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:36:31.927 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 19:36:38.436 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: (1) Facebook - Brave
+2026-04-28 19:36:38.438 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: (1) Facebook - Brave
+2026-04-28 19:36:48.191 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:36:48.192 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 19:36:58.650 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:36:58.651 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:36:59.443 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:36:59.445 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:36:59.939 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:36:59.941 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 19:37:01.547 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:37:01.548 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:37:01.670 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:37:01.671 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:37:02.039 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:37:02.040 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:37:02.161 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:37:02.162 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 19:37:03.286 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Chat - Brave
+2026-04-28 19:37:03.287 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Chat - Brave
+2026-04-28 19:37:04.850 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:37:04.851 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 19:37:05.609 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: nginx config websocket - Tìm trên Google - Brave
+2026-04-28 19:37:05.611 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: nginx config websocket - Tìm trên Google - Brave
+2026-04-28 19:37:06.367 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:37:06.368 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 19:37:06.690 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: (1) Facebook - Brave
+2026-04-28 19:37:06.690 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: (1) Facebook - Brave
+2026-04-28 19:37:09.404 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:37:09.405 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:37:09.528 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:37:09.530 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:37:10.039 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:37:10.040 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:37:10.303 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Workplace
+2026-04-28 19:37:10.304 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Workplace
+2026-04-28 19:37:10.780 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:37:10.781 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:37:10.917 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:37:10.918 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:37:11.116 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:37:11.117 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:37:12.591 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:37:12.591 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:37:12.883 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:37:12.884 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:37:13.735 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: (1) Facebook - Brave
+2026-04-28 19:37:13.737 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: (1) Facebook - Brave
+2026-04-28 19:37:14.613 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:37:14.615 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 19:37:25.991 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:37:25.993 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:37:26.115 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:37:26.116 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:37:26.390 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:37:26.391 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 19:37:29.025 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: (1) Facebook - Brave
+2026-04-28 19:37:29.027 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: (1) Facebook - Brave
+2026-04-28 19:37:29.379 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:37:29.381 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 19:37:35.132 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:37:35.134 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:37:35.270 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:37:35.271 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:37:35.708 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:37:35.709 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 19:37:37.573 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: (1) Facebook - Brave
+2026-04-28 19:37:37.574 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: (1) Facebook - Brave
+2026-04-28 19:37:57.936 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Workplace
+2026-04-28 19:37:57.938 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Workplace
+2026-04-28 19:37:58.076 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Meeting
+2026-04-28 19:37:58.078 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Meeting
+2026-04-28 19:38:21.858 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: (1) Facebook - Brave
+2026-04-28 19:38:21.859 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: (1) Facebook - Brave
+2026-04-28 19:38:26.443 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Meeting
+2026-04-28 19:38:26.444 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Meeting
+2026-04-28 19:38:46.846 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:38:46.847 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 19:38:51.870 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zalo
+2026-04-28 19:38:51.871 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zalo
+2026-04-28 19:39:01.783 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:39:01.784 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:39:02.601 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:39:02.602 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:39:03.096 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:39:03.098 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:39:04.320 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:39:04.322 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:39:04.723 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:39:04.726 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:39:05.703 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – nginx-config-server.md
+2026-04-28 19:39:05.705 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop – nginx-config-server.md
+2026-04-28 19:39:39.483 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Delete
+2026-04-28 19:39:39.485 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Delete
+2026-04-28 19:39:40.305 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – nginx-config-server.md
+2026-04-28 19:39:40.305 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop – nginx-config-server.md
+2026-04-28 19:39:52.035 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:39:52.037 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:39:52.192 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:39:52.193 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:39:52.644 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:39:52.645 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:39:53.671 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-28 19:39:53.674 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-28 19:39:54.991 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 19:39:54.992 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 19:40:15.143 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:40:15.144 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:40:16.172 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Meeting
+2026-04-28 19:40:16.173 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Meeting
+2026-04-28 19:40:17.910 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:40:17.911 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:40:18.034 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 19:40:18.035 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 19:40:36.201 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:40:36.202 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:40:36.342 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Meeting
+2026-04-28 19:40:36.343 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Meeting
+2026-04-28 19:40:36.794 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:40:36.796 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:40:39.522 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Meeting
+2026-04-28 19:40:39.524 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Meeting
+2026-04-28 19:40:46.179 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:40:46.181 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:40:47.239 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:40:47.240 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:40:47.878 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:40:47.880 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:40:49.209 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – nginx-config-server.md
+2026-04-28 19:40:49.211 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop – nginx-config-server.md
+2026-04-28 19:40:57.081 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zalo
+2026-04-28 19:40:57.081 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zalo
+2026-04-28 19:41:02.980 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:41:02.981 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:41:03.134 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – nginx-config-server.md
+2026-04-28 19:41:03.135 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop – nginx-config-server.md
+2026-04-28 19:41:03.458 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:41:03.459 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:41:04.063 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zalo
+2026-04-28 19:41:04.063 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zalo
+2026-04-28 19:41:06.686 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:41:06.687 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:41:08.004 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 19:41:08.005 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 19:41:33.445 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:41:33.445 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:41:33.570 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zalo
+2026-04-28 19:41:33.571 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zalo
+2026-04-28 19:41:34.023 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:41:34.024 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:41:34.147 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 19:41:34.149 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 19:41:34.286 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:41:34.287 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:41:35.074 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Meeting
+2026-04-28 19:41:35.075 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Meeting
+2026-04-28 19:42:05.452 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:42:05.453 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:42:05.578 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 19:42:05.578 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 19:42:10.378 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:42:10.380 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:42:11.046 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Meeting
+2026-04-28 19:42:11.047 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Meeting
+2026-04-28 19:42:11.292 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 19:42:11.293 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 19:42:12.310 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:42:12.311 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:42:13.164 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – nginx-config-server.md
+2026-04-28 19:42:13.164 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop – nginx-config-server.md
+2026-04-28 19:42:29.053 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:42:29.054 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:42:29.760 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Meeting
+2026-04-28 19:42:29.760 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Meeting
+2026-04-28 19:42:30.785 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:42:30.787 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:42:30.956 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – nginx-config-server.md
+2026-04-28 19:42:30.958 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop – nginx-config-server.md
+2026-04-28 19:42:31.297 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:42:31.298 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:42:31.421 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Meeting
+2026-04-28 19:42:31.422 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Meeting
+2026-04-28 19:42:33.603 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:42:33.603 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:42:33.758 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – nginx-config-server.md
+2026-04-28 19:42:33.759 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop – nginx-config-server.md
+2026-04-28 19:42:34.641 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:42:34.643 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:42:34.845 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Meeting
+2026-04-28 19:42:34.846 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Meeting
+2026-04-28 19:42:35.090 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:42:35.092 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:42:35.275 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – nginx-config-server.md
+2026-04-28 19:42:35.277 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop – nginx-config-server.md
+2026-04-28 19:42:36.160 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:42:36.160 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:42:36.348 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Meeting
+2026-04-28 19:42:36.349 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Meeting
+2026-04-28 19:42:36.627 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Meeting
+2026-04-28 19:42:36.629 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Meeting
+2026-04-28 19:42:36.794 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:42:36.796 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:42:36.949 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – nginx-config-server.md
+2026-04-28 19:42:36.951 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop – nginx-config-server.md
+2026-04-28 19:42:37.350 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Meeting
+2026-04-28 19:42:37.352 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Meeting
+2026-04-28 19:42:38.575 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Meeting
+2026-04-28 19:42:38.576 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Meeting
+2026-04-28 19:42:43.151 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:42:43.152 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:42:43.305 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – nginx-config-server.md
+2026-04-28 19:42:43.306 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop – nginx-config-server.md
+2026-04-28 19:42:43.833 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:42:43.834 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:42:44.005 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Meeting
+2026-04-28 19:42:44.006 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Meeting
+2026-04-28 19:42:45.296 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:42:45.298 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:42:45.481 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – nginx-config-server.md
+2026-04-28 19:42:45.481 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop – nginx-config-server.md
+2026-04-28 19:42:47.443 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:42:47.444 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:42:47.585 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Meeting
+2026-04-28 19:42:47.587 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Meeting
+2026-04-28 19:42:47.789 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: explorer.exe
+2026-04-28 19:42:47.790 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: explorer.exe
+2026-04-28 19:42:47.897 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – nginx-config-server.md
+2026-04-28 19:42:47.898 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop – nginx-config-server.md
+2026-04-28 19:42:50.384 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Meeting
+2026-04-28 19:42:50.385 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Meeting
+2026-04-28 19:42:52.843 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – nginx-config-server.md
+2026-04-28 19:42:52.843 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop – nginx-config-server.md
+2026-04-28 19:42:56.248 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Personal Data (E:) - File Explorer
+2026-04-28 19:42:56.248 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Personal Data (E:) - File Explorer
+2026-04-28 19:43:02.576 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: lab_supervise - File Explorer
+2026-04-28 19:43:02.577 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: lab_supervise - File Explorer
+2026-04-28 19:43:03.673 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop - File Explorer
+2026-04-28 19:43:03.673 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop - File Explorer
+2026-04-28 19:43:04.930 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: build-app - File Explorer
+2026-04-28 19:43:04.931 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: build-app - File Explorer
+2026-04-28 19:43:05.946 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Windows Installer
+2026-04-28 19:43:05.947 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Windows Installer
+2026-04-28 19:43:06.103 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLULabMonitoring
+2026-04-28 19:43:06.104 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: TLULabMonitoring
+2026-04-28 19:43:06.209 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLULabMonitoring Setup
+2026-04-28 19:43:06.210 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: TLULabMonitoring Setup
+2026-04-28 19:43:40.425 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLULabMonitoring Setup
+2026-04-28 19:43:40.425 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: TLULabMonitoring Setup
+2026-04-28 19:43:45.788 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: build-app - File Explorer
+2026-04-28 19:43:45.789 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: build-app - File Explorer
+2026-04-28 19:43:48.565 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – nginx-config-server.md
+2026-04-28 19:43:48.565 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop – nginx-config-server.md
+2026-04-28 19:43:48.859 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 19:43:48.861 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: CloudFly: Dịch vụ hạ tầng đám mây - Google Gemini - Brave
+2026-04-28 19:43:48.986 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: build-app - File Explorer
+2026-04-28 19:43:48.986 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: build-app - File Explorer
+2026-04-28 19:43:49.263 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zalo
+2026-04-28 19:43:49.264 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zalo
+2026-04-28 19:43:49.731 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:43:49.734 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: frontend - Antigravity - .env (Working Tree) (.env)
+2026-04-28 19:43:49.854 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zalo
+2026-04-28 19:43:49.855 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zalo
+2026-04-28 19:43:50.819 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: backend – WebSocketConfig.java
+2026-04-28 19:43:50.820 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: backend – WebSocketConfig.java
+2026-04-28 19:43:52.602 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Meeting
+2026-04-28 19:43:52.602 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Meeting
+2026-04-28 19:43:53.750 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Workplace
+2026-04-28 19:43:53.751 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Workplace
+2026-04-28 19:43:54.306 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: build-app - File Explorer
+2026-04-28 19:43:54.307 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: build-app - File Explorer
+2026-04-28 19:43:55.312 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Workplace
+2026-04-28 19:43:55.314 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Workplace
+2026-04-28 19:43:56.635 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: build-app - File Explorer
+2026-04-28 19:43:56.636 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: build-app - File Explorer
+2026-04-28 19:43:56.759 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Zoom Workplace
+2026-04-28 19:43:56.761 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Zoom Workplace
+2026-04-28 19:43:57.787 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: root@tlu-lab-mornitoring: ~
+2026-04-28 19:43:57.789 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: root@tlu-lab-mornitoring: ~
+2026-04-28 19:44:02.614 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Program Manager
+2026-04-28 19:44:02.615 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Program Manager
+2026-04-28 19:44:03.908 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-28 19:44:03.908 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: TLU Lab Monitor v1.0.0
+2026-04-28 19:44:18.505 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:44:18.506 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-28 19:44:19.975 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-28 19:44:19.977 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: TLU Lab Monitor v1.0.0
+2026-04-28 19:44:20.515 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-28 19:44:20.516 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching

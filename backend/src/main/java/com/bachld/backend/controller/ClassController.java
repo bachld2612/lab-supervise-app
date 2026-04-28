@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/api/class")
 @RequiredArgsConstructor
@@ -74,8 +76,11 @@ public class ClassController {
 
     @GetMapping("/v1/{classId}/tracking")
     @AuthFilter(role = "TEACHER")
-    public ResponseEntity<?> getTrackingByClassId(@PathVariable int classId) {
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), classService.getTrackingByClassId(classId)));
+    public ResponseEntity<?> getTrackingByClassId(
+            @PathVariable int classId
+    ) {
+        LocalDate targetDate = LocalDate.now();
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), classService.getTrackingByClassId(classId, targetDate)));
     }
 
     @GetMapping("/v1/{classId}/student")
