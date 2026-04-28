@@ -3,9 +3,9 @@ import { DefaultConfigProps } from 'types/config';
 
 // ==============================|| THEME CONSTANT ||============================== //
 
-export const APP_DEFAULT_PATH = '/sample-page';
+export const APP_DEFAULT_PATH = '/change-password';
 export const HORIZONTAL_MAX_ITEM = 8;
-export const DRAWER_WIDTH = 300;
+export const DRAWER_WIDTH = 320;
 export const MINI_DRAWER_WIDTH = 90;
 export const HEADER_HEIGHT = 74;
 
@@ -35,11 +35,16 @@ export enum NavActionType {
   LINK = 'link'
 }
 
+export enum Gender {
+  MALE = 'Male',
+  FEMALE = 'Female'
+}
+
 // ==============================|| THEME CONFIG ||============================== //
 
 const config: DefaultConfigProps = {
   fontFamily: `Inter var`,
-  i18n: 'en',
+  i18n: 'vi',
   menuOrientation: MenuOrientation.VERTICAL,
   menuCaption: true,
   miniDrawer: false,
