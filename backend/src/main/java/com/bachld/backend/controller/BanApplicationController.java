@@ -27,9 +27,10 @@ public class BanApplicationController {
     @AuthFilter(role = "TEACHER")
     public ResponseEntity<?> getList(
             @PageableDefault Pageable pageable,
-            @RequestParam(required = false) String keyword
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer status
     ) {
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), banApplicationService.getList(pageable, keyword)));
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), banApplicationService.getList(pageable, keyword, status)));
     }
 
     @GetMapping("/v1/{id}")

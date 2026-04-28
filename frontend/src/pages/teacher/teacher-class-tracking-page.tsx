@@ -1,5 +1,6 @@
-import { Box, Card, CardContent, Chip, CircularProgress, Divider, Grid, Stack, Typography } from '@mui/material';
+import { Alert, Box, Card, CardContent, Chip, CircularProgress, Divider, Grid, Snackbar, Stack, Typography } from '@mui/material';
 import MainCard from 'components/MainCard';
+import { useState } from 'react';
 import { useClassTracking } from 'hooks/useClassTracking';
 import { ArrowLeft, Monitor, Timer1, Wifi } from 'iconsax-reactjs';
 import { useLocation, useNavigate, useParams } from 'react-router';
@@ -35,7 +36,11 @@ export default function TeacherClassTrackingPage() {
   const studyStatus: number | undefined = location.state?.studyStatus;
   const chip = useConnectionChip(studyStatus);
 
-  const { students, loading } = useClassTracking(classId);
+  const [alert, setAlert] = useState({ open: false, message: '', severity: 'error' as 'success' | 'error' | 'info' | 'warning' });
+
+  const { students, loading } = useClassTracking(classId, (message) => {
+    setAlert({ open: true, message, severity: 'error' });
+  });
 
   if (loading) {
     return (
@@ -47,6 +52,16 @@ export default function TeacherClassTrackingPage() {
 
   return (
     <Stack sx={{ p: 0 }}>
+      <Snackbar
+        open={alert.open}
+        autoHideDuration={3000}
+        onClose={() => setAlert((prev) => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert severity={alert.severity} variant="filled" sx={{ width: '100%', borderRadius: 2, fontSize: 15 }}>
+          {alert.message}
+        </Alert>
+      </Snackbar>
       <Stack direction={{ xs: 'column', sm: 'row' }} sx={{ gap: 2, justifyContent: 'space-between', pb: 3, alignItems: 'center' }}>
         <Stack direction="row" spacing={2} alignItems="center">
           <Box
@@ -141,8 +156,8 @@ export default function TeacherClassTrackingPage() {
                                       sx={{
                                         flex: 1,
                                         whiteSpace: 'nowrap',
-                                        color: idx === 0 ? 'primary.main' : 'text.secondary',
-                                        fontWeight: idx === 0 ? 'medium' : 'normal'
+                                        color: entry.banApplication ? 'error.main' : idx === 0 ? 'primary.main' : 'text.secondary',
+                                        fontWeight: entry.banApplication ? 'bold' : idx === 0 ? 'medium' : 'normal'
                                       }}
                                     >
                                       {entry.applicationName}

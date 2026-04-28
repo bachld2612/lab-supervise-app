@@ -20,4 +20,7 @@ public class StudentClassInfo extends BaseEntity {
 
     @Column(name = "application_name")
     String applicationName;
+
+    @Column(name = "is_ban_application", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    boolean isBanApplication;
 }

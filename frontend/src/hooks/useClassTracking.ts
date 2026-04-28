@@ -9,6 +9,7 @@ const WS_URL = `${import.meta.env.VITE_APP_API_URL || 'http://localhost:8080/'}w
 export interface AppUsageEntry {
   applicationName: string;
   createdAt: string;
+  banApplication: boolean;
 }
 
 export interface StudentTrackingState {
@@ -26,8 +27,10 @@ interface StudentClassInfoResponse {
   classId: number;
   studentId: number;
   studentName: string;
+  studentCode: string;
   applicationName: string;
   createdAt: string;
+  banApplication: boolean;
 }
 
 interface ClassStudentTrackingResponse {
@@ -41,7 +44,7 @@ interface ClassStudentTrackingResponse {
   applicationsToday: AppUsageEntry[];
 }
 
-export function useClassTracking(classId: number | null) {
+export function useClassTracking(classId: number | null, onBanDetected?: (message: string) => void) {
   const [students, setStudents] = useState<StudentTrackingState[]>([]);
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -63,7 +66,7 @@ export function useClassTracking(classId: number | null) {
               phone: s.phone,
               manageClassId: s.manageClassId,
               manageClassName: s.manageClassName,
-              appHistory: [...s.applicationsToday].reverse(),
+              appHistory: [...s.applicationsToday].reverse()
             }))
           );
         }
@@ -89,10 +92,21 @@ export function useClassTracking(classId: number | null) {
             setStudents((prev) =>
               prev.map((s) =>
                 s.studentId === data.studentId
-                  ? { ...s, appHistory: [{ applicationName: data.applicationName, createdAt: data.createdAt }, ...s.appHistory] }
+                  ? {
+                      ...s,
+                      appHistory: [
+                        { applicationName: data.applicationName, createdAt: data.createdAt, banApplication: data.banApplication },
+                        ...s.appHistory
+                      ]
+                    }
                   : s
               )
             );
+            if (data.banApplication) {
+              onBanDetected?.(
+                `Sinh viên ${data.studentName} mã sinh viên ${data.studentCode} vừa truy cập ứng dụng ${data.applicationName} bị cấm`
+              );
+            }
           } catch {
             console.error('[WS] Failed to parse message');
           }

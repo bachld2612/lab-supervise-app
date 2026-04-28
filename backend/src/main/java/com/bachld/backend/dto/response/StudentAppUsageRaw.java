@@ -16,4 +16,6 @@ public class StudentAppUsageRaw {
     String applicationName;
 
     LocalDateTime createdAt;
+
+    boolean isBanApplication;
 }

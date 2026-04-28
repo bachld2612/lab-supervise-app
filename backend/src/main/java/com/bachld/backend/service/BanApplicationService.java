@@ -30,14 +30,14 @@ public class BanApplicationService {
 
     Util util;
 
-    public Page<BanApplicationResponse> getList(Pageable pageable, String keyword) {
+    public Page<BanApplicationResponse> getList(Pageable pageable, String keyword, Integer status) {
         Teacher teacher = getCurrentTeacher();
         if (keyword != null) {
             keyword = "%" + keyword.trim().toLowerCase() + "%";
         } else {
             keyword = "%%";
         }
-        return banApplicationRepository.findByKeywordAndTeacherId(pageable, keyword, teacher.getId());
+        return banApplicationRepository.findByKeywordAndTeacherId(pageable, keyword, teacher.getId(), status);
     }
 
     public BanApplicationResponse getById(int id) {
@@ -83,7 +83,7 @@ public class BanApplicationService {
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy ứng dụng cấm có id: " + id));
 
         if (!entity.getTeacherId().equals(teacher.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền xoá ứng dụng này");
+            throw new IllegalArgumentException("Bạn không có quyền xoá ứng dụng này");
         }
 
         entity.setStatus(Status.INACTIVE.getValue());

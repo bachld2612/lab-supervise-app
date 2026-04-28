@@ -18,7 +18,11 @@ public class StudentClassInfoResponse {
 
     String studentName;
 
+    String studentCode;
+
     String applicationName;
 
     LocalDateTime createdAt;
+
+    boolean isBanApplication;
 }

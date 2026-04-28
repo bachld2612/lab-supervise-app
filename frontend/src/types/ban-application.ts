@@ -1,4 +1,4 @@
-export interface BanApplication {
+export interface isBanApplication {
   id: number;
   teacherId: number;
   applicationName: string;

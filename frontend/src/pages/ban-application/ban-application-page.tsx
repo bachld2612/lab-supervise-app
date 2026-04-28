@@ -39,7 +39,7 @@ import { EmptyTable, HeaderSort } from 'components/third-party/react-table';
 import useAuth from 'hooks/useAuth';
 import { Add, Edit2, Trash } from 'iconsax-reactjs';
 import { HttpStatusCode } from 'axios';
-import { BanApplication } from 'types/ban-application';
+import { isBanApplication } from 'types/ban-application';
 import { DEFAULT_PAGE_SIZE, PageRequest } from 'types/paging';
 import {
   ColumnDef,
@@ -65,7 +65,7 @@ function BanApplicationFormDialog({
 }: {
   open: boolean;
   onClose: () => void;
-  item: BanApplication | null;
+  item: isBanApplication | null;
   reload: boolean;
   setReload: (v: boolean) => void;
   setAlert: React.Dispatch<React.SetStateAction<{ open: boolean; message: string; severity: 'success' | 'error' | 'info' | 'warning' }>>;
@@ -99,7 +99,7 @@ function BanApplicationFormDialog({
     if (!validate()) return;
     setSubmitting(true);
     try {
-      const payload = { applicationName: applicationName.trim(), imageUrl: imageUrl.trim() || null } as BanApplication;
+      const payload = { applicationName: applicationName.trim(), imageUrl: imageUrl.trim() || null } as isBanApplication;
       const response = isEdit ? await update(item!.id, payload) : await create(payload);
 
       if (response.statusCode === HttpStatusCode.Ok) {
@@ -179,11 +179,11 @@ function EditAction({
   setAlert,
   onEdit
 }: {
-  row: Row<BanApplication>;
+  row: Row<isBanApplication>;
   reload: boolean;
   setReload: (v: boolean) => void;
   setAlert: React.Dispatch<React.SetStateAction<{ open: boolean; message: string; severity: 'success' | 'error' | 'info' | 'warning' }>>;
-  onEdit: (item: BanApplication) => void;
+  onEdit: (item: isBanApplication) => void;
 }) {
   const { logout } = useAuth();
   const [openDelete, setOpenDelete] = useState(false);
@@ -242,16 +242,16 @@ export default function BanApplicationPage() {
 
   const [reload, setReload] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<BanApplication | null>(null);
+  const [editingItem, setEditingItem] = useState<isBanApplication | null>(null);
 
-  const [data, setData] = useState<BanApplication[]>([]);
+  const [data, setData] = useState<isBanApplication[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [pageNumber, setPageNumber] = useState(0);
   const [globalFilter, setGlobalFilter] = useState('');
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [pageRequest, setPageRequest] = useState<PageRequest>({ page: 0, size: DEFAULT_PAGE_SIZE, sort: '', keyword: '' });
+  const [pageRequest, setPageRequest] = useState<PageRequest>({ page: 0, size: DEFAULT_PAGE_SIZE, sort: '', keyword: '', status: '' });
   const [alert, setAlert] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' | 'info' | 'warning' });
 
   const handleOpenAdd = () => {
@@ -259,7 +259,7 @@ export default function BanApplicationPage() {
     setFormOpen(true);
   };
 
-  const handleOpenEdit = (item: BanApplication) => {
+  const handleOpenEdit = (item: isBanApplication) => {
     setEditingItem(item);
     setFormOpen(true);
   };
@@ -281,7 +281,7 @@ export default function BanApplicationPage() {
     fetchData();
   }, [pageRequest, reload, logout]);
 
-  const columns = useMemo<ColumnDef<BanApplication>[]>(
+  const columns = useMemo<ColumnDef<isBanApplication>[]>(
     () => [
       {
         id: 'stt',
@@ -327,7 +327,7 @@ export default function BanApplicationPage() {
     [pageNumber, pageRequest.size, reload]
   );
 
-  const tableInstance = useReactTable<BanApplication>({
+  const tableInstance = useReactTable<isBanApplication>({
     data,
     columns,
     manualPagination: true,
@@ -394,6 +394,16 @@ export default function BanApplicationPage() {
               placeholder="Tìm kiếm tên ứng dụng"
               sx={{ minWidth: 200 }}
             />
+            <Select
+              value={pageRequest.status as string || ''}
+              onChange={(event) => setPageRequest({ ...pageRequest, page: 0, status: event.target.value })}
+              displayEmpty
+              input={<OutlinedInput />}
+            >
+              <MenuItem value="">Trạng thái</MenuItem>
+              <MenuItem value="1">Hoạt động</MenuItem>
+              <MenuItem value="0">Dừng hoạt động</MenuItem>
+            </Select>
           </Stack>
           <Typography variant="caption" color="secondary" sx={{ display: 'flex', alignItems: 'center' }}>
             Tổng cộng: {totalElements} bản ghi

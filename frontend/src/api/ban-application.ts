@@ -1,4 +1,4 @@
-import { BanApplication } from 'types/ban-application';
+import { isBanApplication } from 'types/ban-application';
 import { PageRequest } from 'types/paging';
 import axiosServices from 'utils/axios';
 
@@ -11,7 +11,7 @@ const getList = async (pageRequest: PageRequest) => {
   }
 };
 
-const create = async (data: BanApplication) => {
+const create = async (data: isBanApplication) => {
   try {
     const response = await axiosServices.post('/api/ban-application/v1', data);
     return response.data;
@@ -20,7 +20,7 @@ const create = async (data: BanApplication) => {
   }
 };
 
-const update = async (id: number, data: BanApplication) => {
+const update = async (id: number, data: isBanApplication) => {
   try {
     const response = await axiosServices.put(`/api/ban-application/v1/${id}`, data);
     return response.data;

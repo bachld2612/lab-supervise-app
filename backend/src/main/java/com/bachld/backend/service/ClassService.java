@@ -256,6 +256,7 @@ public class ClassService {
                                 r -> AppUsageItem.builder()
                                         .applicationName(r.getApplicationName())
                                         .createdAt(r.getCreatedAt())
+                                        .isBanApplication(r.isBanApplication())
                                         .build(),
                                 Collectors.toList()
                         )

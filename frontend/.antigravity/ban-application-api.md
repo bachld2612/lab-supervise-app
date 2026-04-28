@@ -12,7 +12,7 @@ Teacher quản lý danh sách ứng dụng bị cấm trong lớp học của m�
 ## TypeScript Types
 
 ```typescript
-export interface BanApplicationResponse {
+export interface isBanApplicationResponse {
   id: number;
   teacherId: number;
   applicationName: string;
@@ -20,12 +20,12 @@ export interface BanApplicationResponse {
   status: number; // 1 = active
 }
 
-export interface BanApplicationCreateRequest {
+export interface isBanApplicationCreateRequest {
   applicationName: string; // required
-  imageUrl?: string;        // optional
+  imageUrl?: string; // optional
 }
 
-export interface BanApplicationUpdateRequest {
+export interface isBanApplicationUpdateRequest {
   applicationName?: string;
   imageUrl?: string;
 }
@@ -38,36 +38,27 @@ export interface BanApplicationUpdateRequest {
 ```typescript
 import axios from 'src/utils/axios';
 
-export const getBanApplicationList = async (
-  page = 0,
-  size = 20,
-  keyword?: string
-): Promise<PageResponse<BanApplicationResponse>> => {
+export const getisBanApplicationList = async (page = 0, size = 20, keyword?: string): Promise<PageResponse<isBanApplicationResponse>> => {
   const res = await axios.get('/api/ban-application/v1', {
-    params: { page, size, keyword },
+    params: { page, size, keyword }
   });
   return res.data.data;
 };
 
-export const getBanApplicationById = async (id: number): Promise<BanApplicationResponse> => {
+export const getisBanApplicationById = async (id: number): Promise<isBanApplicationResponse> => {
   const res = await axios.get(`/api/ban-application/v1/${id}`);
   return res.data.data;
 };
 
-export const createBanApplication = async (
-  data: BanApplicationCreateRequest
-): Promise<void> => {
+export const createisBanApplication = async (data: isBanApplicationCreateRequest): Promise<void> => {
   await axios.post('/api/ban-application/v1', data);
 };
 
-export const updateBanApplication = async (
-  id: number,
-  data: BanApplicationUpdateRequest
-): Promise<void> => {
+export const updateisBanApplication = async (id: number, data: isBanApplicationUpdateRequest): Promise<void> => {
   await axios.put(`/api/ban-application/v1/${id}`, data);
 };
 
-export const deleteBanApplication = async (id: number): Promise<void> => {
+export const deleteisBanApplication = async (id: number): Promise<void> => {
   await axios.delete(`/api/ban-application/v1/${id}`);
 };
 ```
@@ -84,11 +75,11 @@ export const deleteBanApplication = async (id: number): Promise<void> => {
 
 **Query params:**
 
-| Param | Type | Required | Mô tả |
-|---|---|---|---|
-| `keyword` | `string` | ❌ | Tìm theo `applicationName` (không phân biệt hoa thường) |
-| `page` | `number` | ❌ | Số trang, mặc định `0` |
-| `size` | `number` | ❌ | Số bản ghi mỗi trang, mặc định `20` |
+| Param     | Type     | Required | Mô tả                                                   |
+| --------- | -------- | -------- | ------------------------------------------------------- |
+| `keyword` | `string` | ❌       | Tìm theo `applicationName` (không phân biệt hoa thường) |
+| `page`    | `number` | ❌       | Số trang, mặc định `0`                                  |
+| `size`    | `number` | ❌       | Số bản ghi mỗi trang, mặc định `20`                     |
 
 **Response 200:**
 
@@ -156,10 +147,10 @@ export const deleteBanApplication = async (id: number): Promise<void> => {
 }
 ```
 
-| Field | Type | Required | Mô tả |
-|---|---|---|---|
-| `applicationName` | `string` | ✅ | Tên ứng dụng cần cấm |
-| `imageUrl` | `string` | ❌ | URL ảnh đại diện của ứng dụng |
+| Field             | Type     | Required | Mô tả                         |
+| ----------------- | -------- | -------- | ----------------------------- |
+| `applicationName` | `string` | ✅       | Tên ứng dụng cần cấm          |
+| `imageUrl`        | `string` | ❌       | URL ảnh đại diện của ứng dụng |
 
 **Response 200:**
 

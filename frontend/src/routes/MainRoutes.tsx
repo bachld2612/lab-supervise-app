@@ -61,7 +61,7 @@ const AdminDashboardPage = Loadable(lazy(() => import('pages/dashboard/admin-das
 const TeacherDashboardPage = Loadable(lazy(() => import('pages/dashboard/teacher-dashboard-page')));
 const ItCenterDashboardPage = Loadable(lazy(() => import('pages/dashboard/it-center-dashboard-page')));
 const TeacherClassTrackingPage = Loadable(lazy(() => import('pages/teacher/teacher-class-tracking-page')));
-const BanApplicationPage = Loadable(lazy(() => import('pages/teacher/ban-application-page')));
+const BanApplicationPage = Loadable(lazy(() => import('pages/ban-application/ban-application-page')));
 
 // ==============================|| MAIN ROUTES ||============================== //
 

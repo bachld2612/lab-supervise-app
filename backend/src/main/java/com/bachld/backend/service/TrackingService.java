@@ -36,6 +36,8 @@ public class TrackingService {
 
     UserRepository userRepository;
 
+    BanApplicationRepository banApplicationRepository;
+
     @Transactional
     public StudentClassInfoResponse processTracking(Integer userId, StudentClassInfoCreateRequest request) {
         Student student = studentRepository.findByUserId(userId).orElse(null);
@@ -87,9 +89,15 @@ public class TrackingService {
             return null;
         }
 
+        List<String> bannedApps = banApplicationRepository.findActiveAppNamesByClassId(activeClass.getId());
+        String appName = request.getApplicationName();
+        boolean isBanApplication = bannedApps.stream()
+                .anyMatch(banned -> appName.toLowerCase().contains(banned.toLowerCase()));
+
         StudentClassInfo info = new StudentClassInfo();
         info.setStudentClassId(studentClass.getId());
-        info.setApplicationName(request.getApplicationName());
+        info.setApplicationName(appName);
+        info.setBanApplication(isBanApplication);
         info.setStatus(Status.ACTIVE.getValue());
         studentClassInfoRepository.save(info);
 
@@ -97,8 +105,10 @@ public class TrackingService {
                 .classId(activeClass.getId())
                 .studentId(student.getId())
                 .studentName(studentName)
-                .applicationName(request.getApplicationName())
+                .studentCode(student.getCode())
+                .applicationName(appName)
                 .createdAt(LocalDateTime.now())
+                .isBanApplication(isBanApplication)
                 .build();
     }
 }

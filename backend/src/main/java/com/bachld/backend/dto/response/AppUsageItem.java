@@ -15,4 +15,6 @@ public class AppUsageItem {
     String applicationName;
 
     LocalDateTime createdAt;
+
+    boolean isBanApplication;
 }
