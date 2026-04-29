@@ -1224,3 +1224,132 @@
 2026-04-29 16:10:00.152 [AWT-EventQueue-0] INFO  com.bachld.service.WebSocketService - WebSocket session closed.
 2026-04-29 16:10:00.155 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@503acbe5[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@18bb92c5[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000021d01313610@5db90fb6]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7512c962[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 27]
 2026-04-29 16:10:00.155 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@9b4a2f9[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@362fe982[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000021d01313610@1ae67ef2]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@4217ef20[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 83]
+2026-04-29 16:28:04.453 [main] INFO  com.bachld.config.AppConfig - Configuration loaded successfully.
+2026-04-29 16:28:04.455 [main] INFO  com.bachld.LabMonitorApp - Starting TLU Lab Monitor v1.0.0
+2026-04-29 16:28:04.456 [main] INFO  com.bachld.LabMonitorApp - Server API: http://localhost:8080
+2026-04-29 16:28:04.890 [main] INFO  com.bachld.LabMonitorApp - Initialized RestClient, TokenManager, and SessionManager
+2026-04-29 16:28:04.890 [main] INFO  com.bachld.LabMonitorApp - Created AuthApiClient
+2026-04-29 16:28:04.892 [main] INFO  com.bachld.LabMonitorApp - Created AuthService
+2026-04-29 16:28:04.899 [AWT-EventQueue-0] INFO  com.bachld.LabMonitorApp - Launching Login screen...
+2026-04-29 16:28:34.547 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172245@e.tlu.edu.vn
+2026-04-29 16:28:34.556 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: http://localhost:8080/api/auth/v1/login
+2026-04-29 16:28:34.646 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/auth/v1/login
+2026-04-29 16:28:35.210 [SwingWorker-pool-1-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-04-29 16:28:35.224 [SwingWorker-pool-1-thread-1] INFO  com.bachld.client.AuthApiClient - API response status: 200
+2026-04-29 16:28:35.265 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172245@e.tlu.edu.vn
+2026-04-29 16:28:35.297 [AWT-EventQueue-0] INFO  com.bachld.service.WebSocketService - Connecting to WebSocket at: ws://localhost:8080/ws
+2026-04-29 16:28:35.473 [WebSocketClient-AsyncIO-2] INFO  com.bachld.service.WebSocketService - STOMP connection successful. SessionID: abc811e4-b9cf-9ea5-c8df-afcabd9ce347
+2026-04-29 16:28:35.473 [AWT-EventQueue-0] INFO  com.bachld.service.WebSocketService - WebSocket connection established.
+2026-04-29 16:28:35.478 [WindowsTrackingThread] INFO  c.b.service.WindowsTrackingService - Starting Windows Event Hook for foreground tracking...
+2026-04-29 16:28:35.921 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
+2026-04-29 16:28:35.925 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: http://localhost:8080/api/class/v1/student
+2026-04-29 16:28:35.938 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/class/v1/student
+2026-04-29 16:28:35.938 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-04-29 16:28:35.942 [AWT-EventQueue-0] INFO  com.bachld.util.VpnUtil - VPN detected (Tailscale CGNAT): iftype53_32770 -> 100.124.227.3
+2026-04-29 16:28:35.943 [AWT-EventQueue-0] ERROR com.bachld.ui.LoginPanel - ------------------------------------------------------------------
+2026-04-29 16:28:35.943 [AWT-EventQueue-0] ERROR com.bachld.ui.LoginPanel - 100.124.227.3
+2026-04-29 16:28:35.943 [AWT-EventQueue-0] ERROR com.bachld.ui.LoginPanel - ------------------------------------------------------------------
+2026-04-29 16:28:35.943 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Updating personal computer IP to: 100.124.227.3
+2026-04-29 16:28:35.945 [SwingWorker-pool-1-thread-3] DEBUG c.b.client.PersonalComputerApiClient - Sending POST request to: http://localhost:8080/api/personal-computer/v1/update
+2026-04-29 16:28:35.952 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/personal-computer/v1/update
+2026-04-29 16:28:35.953 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-04-29 16:28:36.021 [SwingWorker-pool-1-thread-2] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-04-29 16:28:36.023 [SwingWorker-pool-1-thread-3] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-04-29 16:28:36.024 [SwingWorker-pool-1-thread-3] INFO  c.b.client.PersonalComputerApiClient - POST /update response status: 200
+2026-04-29 16:28:36.024 [SwingWorker-pool-1-thread-2] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
+2026-04-29 16:28:36.063 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully updated personal computer IP
+2026-04-29 16:28:36.064 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
+2026-04-29 16:28:41.801 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-29 16:28:41.805 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-29 16:28:42.560 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: New Tab - Brave
+2026-04-29 16:28:42.560 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: New Tab - Brave
+2026-04-29 16:28:43.908 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-29 16:28:43.909 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-29 16:28:55.999 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-29 16:28:56.000 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: TLU Lab Monitor v1.0.0
+2026-04-29 16:28:56.261 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-29 16:28:56.263 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-29 16:28:56.371 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-29 16:28:56.372 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-29 16:28:57.207 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-29 16:28:57.209 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-29 16:28:57.347 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-29 16:28:57.348 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: TLU Lab Monitor v1.0.0
+2026-04-29 16:28:57.674 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-29 16:28:57.676 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-29 16:29:00.183 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: replicate api - Tìm trên Google - Brave
+2026-04-29 16:29:00.184 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: replicate api - Tìm trên Google - Brave
+2026-04-29 16:29:00.633 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-29 16:29:00.635 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-29 16:29:02.109 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Bạn hãy tìm cho tôi cách để giải quyết bài toán sau: tôi có 1 app desktop, để... - Brave
+2026-04-29 16:29:02.109 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Bạn hãy tìm cho tôi cách để giải quyết bài toán sau: tôi có 1 app desktop, để... - Brave
+2026-04-29 16:29:02.481 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-29 16:29:02.482 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-29 16:29:08.901 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: New Tab - Brave
+2026-04-29 16:29:08.902 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: New Tab - Brave
+2026-04-29 16:29:11.596 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-29 16:29:11.597 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-29 16:29:15.691 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: (4) Facebook - Brave
+2026-04-29 16:29:15.692 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: (4) Facebook - Brave
+2026-04-29 16:29:16.077 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-29 16:29:16.079 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-29 16:29:28.848 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: New Tab - Brave
+2026-04-29 16:29:28.849 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: New Tab - Brave
+2026-04-29 16:29:30.988 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Facebook - Brave
+2026-04-29 16:29:30.989 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Facebook - Brave
+2026-04-29 16:29:31.346 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-29 16:29:31.347 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-29 16:29:35.105 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: (4) Facebook - Brave
+2026-04-29 16:29:35.107 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: (4) Facebook - Brave
+2026-04-29 16:29:35.567 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-29 16:29:35.568 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-29 16:29:48.889 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: replicate api - Tìm trên Google - Brave
+2026-04-29 16:29:48.890 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: replicate api - Tìm trên Google - Brave
+2026-04-29 16:29:50.484 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-29 16:29:50.485 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-29 16:30:02.122 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-29 16:30:02.124 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-29 16:30:02.246 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-29 16:30:02.246 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: TLU Lab Monitor v1.0.0
+2026-04-29 16:30:02.621 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-29 16:30:02.622 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-29 16:30:02.806 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Lab Supervision System - TLU - Brave
+2026-04-29 16:30:02.807 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Lab Supervision System - TLU - Brave
+2026-04-29 16:30:03.007 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-29 16:30:03.008 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-29 16:30:03.925 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: backend – ClassController.java
+2026-04-29 16:30:03.926 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: backend – ClassController.java
+2026-04-29 16:30:08.369 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-29 16:30:08.369 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-29 16:30:10.841 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – LoginPanel.java
+2026-04-29 16:30:10.842 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop – LoginPanel.java
+2026-04-29 16:30:23.962 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-29 16:30:23.963 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-29 16:30:24.766 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: TLU Lab Monitor v1.0.0
+2026-04-29 16:30:24.766 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: TLU Lab Monitor v1.0.0
+2026-04-29 16:30:25.538 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
+2026-04-29 16:30:25.540 [SwingWorker-pool-1-thread-4] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: http://localhost:8080/api/personal-computer/v1/me
+2026-04-29 16:30:25.541 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/personal-computer/v1/me
+2026-04-29 16:30:25.541 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-04-29 16:30:25.557 [SwingWorker-pool-1-thread-4] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-04-29 16:30:25.558 [SwingWorker-pool-1-thread-4] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
+2026-04-29 16:30:25.618 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
+2026-04-29 16:30:26.387 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
+2026-04-29 16:30:26.389 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: http://localhost:8080/api/class/v1/student
+2026-04-29 16:30:26.389 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/class/v1/student
+2026-04-29 16:30:26.389 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-04-29 16:30:26.404 [SwingWorker-pool-1-thread-5] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-04-29 16:30:26.404 [SwingWorker-pool-1-thread-5] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
+2026-04-29 16:30:26.433 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
+2026-04-29 16:30:29.342 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – LoginPanel.java
+2026-04-29 16:30:29.343 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop – LoginPanel.java
+2026-04-29 16:30:30.291 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: Task Switching
+2026-04-29 16:30:30.292 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: Task Switching
+2026-04-29 16:30:31.678 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: backend – ClassController.java
+2026-04-29 16:30:31.678 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: backend – ClassController.java
+2026-04-29 16:30:32.147 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – LoginPanel.java
+2026-04-29 16:30:32.148 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop – LoginPanel.java
+2026-04-29 16:30:34.716 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: New notification
+2026-04-29 16:30:34.718 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: New notification
+2026-04-29 16:30:34.938 [pool-2-thread-1] INFO  c.b.service.WindowsTrackingService - Application Focus Change: desktop – LoginPanel.java
+2026-04-29 16:30:34.940 [pool-2-thread-1] INFO  com.bachld.service.WebSocketService - Sent PC info update: desktop – LoginPanel.java

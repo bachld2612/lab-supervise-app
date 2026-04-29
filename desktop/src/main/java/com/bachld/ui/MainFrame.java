@@ -17,7 +17,7 @@ public class MainFrame extends JFrame {
     private final PersonalComputerService pcService;
     private final com.bachld.service.ClassService classService;
     private final com.bachld.service.WebSocketService webSocketService;
-    private com.bachld.service.WindowsTrackingService windowsTrackingService;
+    private com.bachld.service.TrackingService trackingService;
     private JPanel contentArea;
     private CardLayout cardLayout;
     private SidebarPanel sidebarPanel;
@@ -31,9 +31,14 @@ public class MainFrame extends JFrame {
         this.classService = classService;
         this.webSocketService = webSocketService;
 
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {
-            this.windowsTrackingService = new com.bachld.service.WindowsTrackingService(webSocketService);
-            this.windowsTrackingService.start();
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("win")) {
+            this.trackingService = new com.bachld.service.WindowsTrackingService(webSocketService);
+        } else if (os.contains("linux")) {
+            this.trackingService = new com.bachld.service.LinuxX11TrackingService(webSocketService);
+        }
+        if (this.trackingService != null) {
+            this.trackingService.start();
         }
 
         initFrame();
@@ -130,8 +135,8 @@ public class MainFrame extends JFrame {
     }
 
     private void exitApplication() {
-        if (windowsTrackingService != null) {
-            windowsTrackingService.stop();
+        if (trackingService != null) {
+            trackingService.stop();
         }
         if (webSocketService != null) {
             webSocketService.disconnect();
@@ -229,8 +234,8 @@ public class MainFrame extends JFrame {
         );
 
         if (confirm == JOptionPane.YES_OPTION) {
-            if (windowsTrackingService != null) {
-                windowsTrackingService.stop();
+            if (trackingService != null) {
+                trackingService.stop();
             }
             if (webSocketService != null) {
                 webSocketService.disconnect();

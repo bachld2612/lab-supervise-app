@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * 
  * Performance: Event-driven approach ensures near 0% CPU usage.
  */
-public class WindowsTrackingService {
+public class WindowsTrackingService implements TrackingService {
     private static final Logger log = LoggerFactory.getLogger(WindowsTrackingService.class);
     
     // Windows constants for hook
