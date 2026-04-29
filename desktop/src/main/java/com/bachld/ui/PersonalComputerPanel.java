@@ -39,13 +39,10 @@ public class PersonalComputerPanel extends JPanel {
     public PersonalComputerPanel(PersonalComputerService pcService) {
         this.pcService = pcService;
         initUI();
-        loadData();
-        
-        // Clear messages when tab is switched to this panel
-        addComponentListener(new java.awt.event.ComponentAdapter() {
-            @Override
-            public void componentShown(java.awt.event.ComponentEvent e) {
-                clearMessages();
+
+        addHierarchyListener(e -> {
+            if ((e.getChangeFlags() & java.awt.event.HierarchyEvent.SHOWING_CHANGED) != 0 && isShowing()) {
+                loadData();
             }
         });
     }
@@ -233,6 +230,7 @@ public class PersonalComputerPanel extends JPanel {
      * Loads existing personal computer data from API on startup.
      */
     private void loadData() {
+        clearMessages();
         setFormEnabled(false);
         statusLabel.setText("Đang tải dữ liệu...");
         statusLabel.setForeground(LABEL_COLOR);

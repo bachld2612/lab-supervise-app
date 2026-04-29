@@ -56,4 +56,27 @@ const resetPassword = async (userId: number) => {
   }
 };
 
-export { getList, getById, create, update, deleteById, resetPassword };
+const downloadStudentImportTemplate = async () => {
+  try {
+    const response = await axiosServices.get('/api/student/v1/template/download', { responseType: 'blob' });
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+const importStudent = async (formData: FormData) => {
+  try {
+    const response = await axiosServices.post(`/api/student/v1/import`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+export { getList, getById, create, update, deleteById, resetPassword, downloadStudentImportTemplate, importStudent };

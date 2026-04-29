@@ -21,9 +21,17 @@ public class ClassManagementPanel extends JPanel {
         this.classService = classService;
         setLayout(new BorderLayout());
         setOpaque(false);
-        
+
         initUI();
-        loadData();
+
+        // HierarchyListener fires when any ancestor changes visibility (e.g. CardLayout wrapper).
+        // componentShown would not work here because ClassManagementPanel is wrapped inside
+        // wrapInPageWrapper() — CardLayout shows/hides the wrapper, not this panel directly.
+        addHierarchyListener(e -> {
+            if ((e.getChangeFlags() & java.awt.event.HierarchyEvent.SHOWING_CHANGED) != 0 && isShowing()) {
+                loadData();
+            }
+        });
     }
 
     private void initUI() {

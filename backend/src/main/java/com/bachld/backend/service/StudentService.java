@@ -15,11 +15,16 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 
 @Service
@@ -136,5 +141,15 @@ public class StudentService {
 
         user.setStatus(Status.INACTIVE.getValue());
         userRepository.save(user);
+    }
+
+    public ResponseEntity<InputStreamResource> downloadStudentImportTemplate() throws IOException {
+        org.springframework.core.io.ClassPathResource file =
+                new org.springframework.core.io.ClassPathResource("template/download/student_import_template.xlsx");
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=form_reward_penalty.xlsx")
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(new InputStreamResource(file.getInputStream()));
     }
 }

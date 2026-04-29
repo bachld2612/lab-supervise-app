@@ -1,4 +1,4 @@
-import { CSSProperties, Fragment, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, CSSProperties, Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 // material-ui
@@ -65,7 +65,7 @@ import IconButton from 'components/@extended/IconButton';
 import { EmptyTable, HeaderSort, RowEditable } from 'components/third-party/react-table';
 
 // assets
-import { Add, ArrowDown2, ArrowRight2, Command, Edit2, Eye, Lock, TableDocument, Trash } from 'iconsax-reactjs';
+import { Add, ArrowDown2, ArrowRight2, Command, Edit2, ExportCurve, Eye, ImportCurve, Lock, TableDocument, Trash } from 'iconsax-reactjs';
 import {
   Alert,
   Button,
@@ -83,7 +83,7 @@ import { useIntl } from 'react-intl';
 import { HttpStatusCode } from 'axios';
 import useAuth from 'hooks/useAuth';
 import { type Student } from 'types/student';
-import { getList, deleteById, resetPassword } from 'api/student';
+import { getList, deleteById, resetPassword, downloadStudentImportTemplate, importStudent } from 'api/student';
 import { getList as getManageClasses } from 'api/manageClass';
 import { ManageClass } from 'types/manageClass';
 import { DEFAULT_PAGE_SIZE, PageRequest } from 'types/paging';
@@ -369,6 +369,7 @@ export default function StudentPage() {
   const { logout, user } = useAuth();
   const intl = useIntl();
   const [reload, setReload] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const columns = useMemo<ColumnDef<Student>[]>(
     () => [
       {
@@ -613,6 +614,66 @@ export default function StudentPage() {
     }
   }, [user?.roleId]);
 
+  const handleImportButtonClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileImportChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
+
+    if (file) {
+      const fileTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
+
+      if (!fileTypes.includes(file.type)) {
+        setAlert({
+          open: true,
+          message: 'File lỗi định dạng. Vui lòng thử lại',
+          severity: 'error'
+        });
+
+        event.target.value = '';
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const response = await importStudent(formData);
+
+        if (response.statusCode === HttpStatusCode.Ok) {
+          setAlert({ open: true, message: 'Nhập từ Excel thành công', severity: 'success' });
+          setReload(!reload);
+        } else if (response.statusCode === HttpStatusCode.Unauthorized) {
+          logout();
+        } else if (response.statusCode === HttpStatusCode.UnprocessableEntity) {
+          setAlert({ open: true, message: response.message, severity: 'error' });
+        } else {
+          setAlert({ open: true, message: 'Lỗi hệ thống, vui lòng thử lại sau', severity: 'error' });
+        }
+      } catch {
+        setAlert({ open: true, message: 'Lỗi hệ thống, vui lòng thử lại sau', severity: 'error' });
+      }
+
+      event.target.value = '';
+    }
+  };
+
+  const handleDownloadExcelForm = async () => {
+    const blob = await downloadStudentImportTemplate();
+    const fileURL = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = fileURL;
+    link.download = 'Mẫu import sinh viên.xlsx';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(fileURL);
+  };
+
   return (
     <Stack sx={{ p: 0 }}>
       <Stack
@@ -629,14 +690,48 @@ export default function StudentPage() {
         </Typography>
 
         {hasAddPermission && (
-          <Button
-            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            variant="contained"
-            onClick={() => navigate('/student/add')}
-            startIcon={<Add />}
-          >
-            Thêm sinh viên
-          </Button>
+          <Stack direction="row" spacing={2}>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={(e) => handleFileImportChange(e)}
+              style={{ display: 'none' }}
+              accept=".xlsx, .xls"
+            />
+            <Button
+              sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1 }}
+              variant="contained"
+              color="primary"
+              onClick={() => handleImportButtonClick()}
+            >
+              <ImportCurve />
+              <Typography variant="h6">Nhập từ Excel</Typography>
+            </Button>
+
+            <Divider orientation="vertical" flexItem />
+
+            <Button
+              sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1 }}
+              variant="contained"
+              onClick={() => handleDownloadExcelForm()}
+              color="primary"
+              size="medium"
+            >
+              <ExportCurve />
+              Xuất file mẫu
+            </Button>
+
+            <Divider orientation="vertical" flexItem />
+
+            <Button
+              sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              variant="contained"
+              onClick={() => navigate('/student/add')}
+              startIcon={<Add />}
+            >
+              Thêm sinh viên
+            </Button>
+          </Stack>
         )}
       </Stack>
 

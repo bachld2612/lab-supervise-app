@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/class")
 @RequiredArgsConstructor
@@ -65,6 +67,7 @@ public class ClassController {
     @GetMapping("/v1/student")
     @AuthFilter(role = "STUDENT")
     public ResponseEntity<?> getListByStudentUserId() {
+        log.error("get class info");
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), classService.getListByStudentUserId()));
     }
 
