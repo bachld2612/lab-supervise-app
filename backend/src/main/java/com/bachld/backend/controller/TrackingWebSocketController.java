@@ -38,8 +38,6 @@ public class TrackingWebSocketController {
 
             if (response != null && response.getClassId() != null) {
                 messagingTemplate.convertAndSend("/topic/class/" + response.getClassId(), response);
-            } else {
-                log.error("!!! [WS-TEST] Sinh viên đang sử dụng: {} vào lúc {}", appName, LocalTime.now());
             }
         } catch (Exception e) {
             log.error("!!! [WS-TEST] LỖI XỬ LÝ MESSAGE: {}", e.getMessage(), e);

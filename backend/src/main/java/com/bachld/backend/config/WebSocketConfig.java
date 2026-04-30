@@ -90,8 +90,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         Classes clazz = classRepository.findById(classId).orElse(null);
                         
                         if (teacher == null || clazz == null || !clazz.getTeacherId().equals(teacher.getId())) {
-                            log.warn("Teacher {} tried to unauthorized subscription to class {}", userId, classId);
-                            throw new IllegalArgumentException("You are not the lecturer of this class");
+                            throw new IllegalArgumentException("Bạn không được phép truy cập lớp này");
                         }
                     }
                 }
