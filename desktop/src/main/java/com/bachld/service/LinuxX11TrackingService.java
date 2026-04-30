@@ -202,8 +202,6 @@ public class LinuxX11TrackingService implements TrackingService {
             x11.XSelectInput(display, root, new NativeLong(PROPERTY_CHANGE_MASK));
             x11.XFlush(display);
 
-            log.info("Linux X11 tracking started (event-driven)");
-
             long subscribedWindowId = 0L;
             XEvent event = new XEvent();
 
@@ -253,7 +251,6 @@ public class LinuxX11TrackingService implements TrackingService {
 
         } finally {
             x11.XCloseDisplay(display);
-            log.info("Linux X11 tracking stopped");
         }
     }
 
@@ -274,7 +271,6 @@ public class LinuxX11TrackingService implements TrackingService {
         // 100 ms debounce: only dispatch if still the latest change
         scheduler.schedule(() -> {
             if (appInfo.equals(lastApp.get())) {
-                log.info("Application Focus Change: {}", appInfo);
                 webSocketService.sendPCInfo(appInfo);
             }
         }, 100, TimeUnit.MILLISECONDS);

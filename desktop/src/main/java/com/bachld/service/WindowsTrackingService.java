@@ -45,8 +45,7 @@ public class WindowsTrackingService implements TrackingService {
      */
     public void start() {
         Thread hookThread = new Thread(() -> {
-            log.info("Starting Windows Event Hook for foreground tracking...");
-            
+
             // Define the event processor
             listener = new WinEventProc() {
                 @Override
@@ -96,7 +95,6 @@ public class WindowsTrackingService implements TrackingService {
                 User32.INSTANCE.DispatchMessage(msg);
             }
             
-            log.info("Windows Event Hook thread exiting.");
         }, "WindowsTrackingThread");
         
         hookThread.setDaemon(true);
@@ -132,7 +130,6 @@ public class WindowsTrackingService implements TrackingService {
                         : activeProc;
                 
                 if (currentAppInfo.equals(activeAppInfo)) {
-                    log.info("Application Focus Change: {}", currentAppInfo);
                     webSocketService.sendPCInfo(currentAppInfo);
                 }
             }, 100, TimeUnit.MILLISECONDS);
@@ -190,7 +187,6 @@ public class WindowsTrackingService implements TrackingService {
             User32.INSTANCE.UnhookWinEvent(hNameChangeHook);
             hNameChangeHook = null;
         }
-        log.info("Windows Event Hooks removed.");
         scheduler.shutdown();
     }
 }

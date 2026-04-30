@@ -64,7 +64,6 @@ public class WebSocketService {
      */
     public synchronized void connect() {
         if (stompSession != null && stompSession.isConnected()) {
-            log.debug("WebSocket already connected.");
             return;
         }
 
@@ -83,11 +82,9 @@ public class WebSocketService {
         StompSessionHandler sessionHandler = new MyStompSessionHandler();
 
         try {
-            log.info("Connecting to WebSocket at: {}", wsUrl);
             // Connect asynchronously with timeout
             stompSession = stompClient.connectAsync(wsUrl, handshakeHeaders, connectHeaders, sessionHandler)
                     .get(10, TimeUnit.SECONDS);
-            log.info("WebSocket connection established.");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log.error("WebSocket connection interrupted.");
@@ -105,7 +102,6 @@ public class WebSocketService {
             PCInfoPayload payload = new PCInfoPayload(applicationName);
             // Sending to /app prefix triggers @MessageMapping in Spring controller
             stompSession.send("/app/pc-info", payload);
-            log.info("Sent PC info update: {}", applicationName);
         } else {
             log.warn("WebSocket disconnected. PC info update lost: {}", applicationName);
             // Attempt to reconnect in background if allowed by business logic
@@ -127,7 +123,6 @@ public class WebSocketService {
     public void disconnect() {
         if (stompSession != null && stompSession.isConnected()) {
             stompSession.disconnect();
-            log.info("WebSocket session closed.");
         }
     }
 

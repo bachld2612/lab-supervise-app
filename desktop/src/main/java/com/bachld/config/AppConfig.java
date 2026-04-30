@@ -20,7 +20,6 @@ public class AppConfig {
                 .getResourceAsStream("application.properties")) {
             if (is != null) {
                 properties.load(is);
-                log.info("Configuration loaded successfully.");
             } else {
                 log.warn("application.properties not found on classpath. Using defaults.");
             }

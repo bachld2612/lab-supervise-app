@@ -387,9 +387,6 @@ public class LoginPanel extends JPanel {
 
                     // Update VPN IP in background (fire-and-forget; skip if no VPN detected)
                     String vpnIp = VpnUtil.getActiveVpnIp();
-                    log.error("------------------------------------------------------------------");
-                    log.error(vpnIp);
-                    log.error("------------------------------------------------------------------");
                     if (vpnIp != null) {
                         pcService.updateComputerAsync(vpnIp, new com.bachld.service.PersonalComputerService.UpdateCallback() {
                             @Override public void onSuccess() {}
