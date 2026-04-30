@@ -14,6 +14,8 @@ public class ClassStudentTrackingResponse {
 
     Integer studentId;
 
+    Integer userId;
+
     String fullName;
 
     String code;
@@ -28,8 +30,9 @@ public class ClassStudentTrackingResponse {
 
     List<AppUsageItem> applicationsToday;
 
-    public ClassStudentTrackingResponse(Integer studentId, String fullName, String code, String email, String phone, Integer manageClassId, String manageClassName) {
+    public ClassStudentTrackingResponse(Integer studentId, Integer userId, String fullName, String code, String email, String phone, Integer manageClassId, String manageClassName) {
         this.studentId = studentId;
+        this.userId = userId;
         this.fullName = fullName;
         this.code = code;
         this.email = email;

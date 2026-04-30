@@ -13,7 +13,7 @@ import java.util.List;
 public interface StudentClassInfoRepository extends JpaRepository<StudentClassInfo,Integer> {
 
     @Query("""
-        SELECT new com.bachld.backend.dto.response.ClassStudentTrackingResponse(s.id, u.fullName, s.code, u.email, u.phone, mc.id, mc.name)
+        SELECT new com.bachld.backend.dto.response.ClassStudentTrackingResponse(s.id, s.userId, u.fullName, s.code, u.email, u.phone, mc.id, mc.name)
         FROM StudentClass stc
             JOIN Student s ON s.id = stc.studentId
             JOIN User u ON u.id = s.userId

@@ -14,6 +14,7 @@ export interface AppUsageEntry {
 
 export interface StudentTrackingState {
   studentId: number;
+  userId: number;
   fullName: string;
   code: string;
   email: string;
@@ -35,6 +36,7 @@ interface StudentClassInfoResponse {
 
 interface ClassStudentTrackingResponse {
   studentId: number;
+  userId: number;
   fullName: string;
   code: string;
   email: string;
@@ -60,6 +62,7 @@ export function useClassTracking(classId: number | null, onBanDetected?: (messag
           setStudents(
             data.map((s) => ({
               studentId: s.studentId,
+              userId: s.userId,
               fullName: s.fullName,
               code: s.code,
               email: s.email,
