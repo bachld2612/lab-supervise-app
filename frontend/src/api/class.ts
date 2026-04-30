@@ -47,4 +47,31 @@ const deleteById = async (id: number) => {
   }
 };
 
-export { getList, getById, create, update, deleteById };
+const getTeacherClasses = async () => {
+  try {
+    const response = await axiosServices.get('/api/class/v1/teacher');
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+const getStudentsByClassId = async (classId: number, pageRequest: PageRequest) => {
+  try {
+    const response = await axiosServices.get(`/api/class/v1/${classId}/student`, { params: pageRequest });
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+const getClassStudentTracking = async (classId: number) => {
+  try {
+    const response = await axiosServices.get(`/api/class/v1/${classId}/tracking`);
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+export { getList, getById, create, update, deleteById, getTeacherClasses, getStudentsByClassId, getClassStudentTracking };

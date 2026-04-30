@@ -20,7 +20,6 @@ public class AppConfig {
                 .getResourceAsStream("application.properties")) {
             if (is != null) {
                 properties.load(is);
-                log.info("Configuration loaded successfully.");
             } else {
                 log.warn("application.properties not found on classpath. Using defaults.");
             }
@@ -40,6 +39,10 @@ public class AppConfig {
 
     public String getServerApiUrl() {
         return properties.getProperty("server.api.url", "http://localhost:8080/api");
+    }
+
+    public String getServerWsUrl() {
+        return properties.getProperty("server.ws.url", "ws://localhost:8080/ws");
     }
 
     public int getMonitoringInterval() {

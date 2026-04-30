@@ -6,6 +6,8 @@ import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+
 @AllArgsConstructor
 @Getter
 @Setter
@@ -31,4 +33,19 @@ public class Classes extends BaseEntity {
 
     @Column(name = "schedule_id")
     Integer scheduleId;
+
+    @Column(name = "semester_id")
+    Integer semesterId;
+
+    @Column(name = "start_date")
+    LocalDate startDate;
+
+    @Column(name = "end_date")
+    LocalDate endDate;
+
+    @Column(name = "veyon_key", columnDefinition = "TEXT")
+    String veyonKey;
+
+    @Column(name = "veyon_key_name", columnDefinition = "TEXT")
+    String veyonKeyName;
 }

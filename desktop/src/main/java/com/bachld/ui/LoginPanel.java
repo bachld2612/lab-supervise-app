@@ -5,6 +5,8 @@ import com.bachld.service.AuthService;
 import com.bachld.util.EmailValidator;
 import com.bachld.util.PasswordValidator;
 import com.bachld.util.ValidationResult;
+import com.bachld.util.VpnUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -18,6 +20,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.awt.Window;
 
+@Slf4j
 public class LoginPanel extends JPanel {
 
     // ── Colours ──────────────────────────────────────────────────────────────
@@ -357,22 +360,38 @@ public class LoginPanel extends JPanel {
         authService.loginAsync(email, password, new AuthService.AuthCallback() {
             @Override public void onSuccess(AuthResponse response) {
                 setLoginEnabled(true);
-                // Transition to MainFrame
                 SwingUtilities.invokeLater(() -> {
-                    // Create PersonalComputer dependencies
+                    com.bachld.config.RestClient restClient = com.bachld.config.RestClient.getInstance();
+
                     com.bachld.client.PersonalComputerApiClient pcApiClient =
-                            new com.bachld.client.PersonalComputerApiClient(
-                                    com.bachld.config.RestClient.getInstance());
+                            new com.bachld.client.PersonalComputerApiClient(restClient);
                     com.bachld.service.PersonalComputerService pcService =
                             new com.bachld.service.PersonalComputerService(pcApiClient);
 
-                    MainFrame mainFrame = new MainFrame(authService, pcService);
+                    com.bachld.client.ClassApiClient classApiClient =
+                            new com.bachld.client.ClassApiClient(restClient);
+                    com.bachld.service.ClassService classService =
+                            new com.bachld.service.ClassService(classApiClient);
+
+                    com.bachld.service.WebSocketService wsService =
+                            com.bachld.service.WebSocketService.getInstance(com.bachld.service.TokenManager.getInstance());
+                    wsService.connect();
+
+                    MainFrame mainFrame = new MainFrame(authService, pcService, classService, wsService);
                     mainFrame.setVisible(true);
-                    
-                    // Close the login frame
+
                     Window ancestor = SwingUtilities.getWindowAncestor(LoginPanel.this);
                     if (ancestor != null) {
                         ancestor.dispose();
+                    }
+
+                    // Update VPN IP in background (fire-and-forget; skip if no VPN detected)
+                    String vpnIp = VpnUtil.getActiveVpnIp();
+                    if (vpnIp != null) {
+                        pcService.updateComputerAsync(vpnIp, new com.bachld.service.PersonalComputerService.UpdateCallback() {
+                            @Override public void onSuccess() {}
+                            @Override public void onError(String errorMessage) {}
+                        });
                     }
                 });
             }

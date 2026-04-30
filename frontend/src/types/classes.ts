@@ -3,11 +3,17 @@ export interface Classes {
   name: string;
   currentStudent: number;
   maxStudent: number;
+  sessionNumber?: number;
+  status: number;
   subjectId: number;
   subjectName: string;
   teacherId: number;
   teacherName: string;
-  status: number;
   scheduleId: number;
   scheduleName: string;
+  startDate: string;
+  endDate: string;
+  semesterId: number;
+  semesterName: string;
+  studyStatus?: number;
 }

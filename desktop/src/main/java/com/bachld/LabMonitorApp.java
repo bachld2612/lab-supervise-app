@@ -24,8 +24,6 @@ public class LabMonitorApp {
 
     public static void main(String[] args) {
         AppConfig config = AppConfig.getInstance();
-        log.info("Starting {} v{}", config.getAppName(), config.getAppVersion());
-        log.info("Server API: {}", config.getServerApiUrl());
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -38,19 +36,14 @@ public class LabMonitorApp {
         TokenManager tokenManager = TokenManager.getInstance();
         SessionManager sessionManager = SessionManager.getInstance();
         
-        log.info("Initialized RestClient, TokenManager, and SessionManager");
-        
         // Create AuthApiClient with RestClient
         AuthApiClient authApiClient = new AuthApiClient(restClient);
-        log.info("Created AuthApiClient");
-        
+
         // Create AuthService with dependencies
         AuthService authService = new AuthService(authApiClient, tokenManager, sessionManager);
-        log.info("Created AuthService");
 
         // Display LoginFrame on EDT using SwingUtilities.invokeLater()
         SwingUtilities.invokeLater(() -> {
-            log.info("Launching Login screen...");
             new LoginFrame(authService);
         });
     }

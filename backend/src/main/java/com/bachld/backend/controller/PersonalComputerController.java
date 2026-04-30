@@ -2,7 +2,6 @@ package com.bachld.backend.controller;
 
 import com.bachld.backend.dto.request.PersonalComputerUpdateRequest;
 import com.bachld.backend.dto.response.BaseResponse;
-import com.bachld.backend.dto.response.PersonalComputerResponse;
 import com.bachld.backend.service.PersonalComputerService;
 import com.bachld.backend.util.auth.AuthFilter;
 import jakarta.validation.Valid;

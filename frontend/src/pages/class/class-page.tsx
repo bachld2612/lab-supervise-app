@@ -84,6 +84,26 @@ import useAuth from 'hooks/useAuth';
 import { type Classes } from 'types/classes';
 import { deleteById, getList } from 'api/class';
 import { DEFAULT_PAGE_SIZE, PageRequest } from 'types/paging';
+import StudentListDialog from 'sections/extra-pages/class/max-student-dialog';
+
+function StudentCountCell({ row }: { row: Row<Classes> }) {
+  const [open, setOpen] = useState(false);
+  const currentCount = row.original.currentStudent ?? 0;
+  const maxCount = row.original.maxStudent ?? 0;
+  const isFull = currentCount >= maxCount && maxCount > 0;
+
+  return (
+    <>
+      <Typography
+        onClick={() => setOpen(true)}
+        sx={{ color: isFull ? 'error.main' : 'text.primary', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+      >
+        {currentCount}/{maxCount}
+      </Typography>
+      <StudentListDialog open={open} onClose={() => setOpen(false)} classItem={row.original} />
+    </>
+  );
+}
 
 const fuzzyFilter: FilterFn<Classes> = (row, columnId, value, addMeta) => {
   // rank the item
@@ -357,13 +377,37 @@ export default function ClassPage() {
         accessorKey: 'scheduleName',
         dataType: 'text',
         enableGrouping: false,
-        meta: { width: '20%' }
+        meta: { width: '15%' }
+      },
+      {
+        id: 'semesterName',
+        header: 'Học kì',
+        accessorKey: 'semesterName',
+        dataType: 'text',
+        enableGrouping: false,
+        meta: { width: '10%' }
+      },
+      {
+        id: 'startDate',
+        header: 'Ngày bắt đầu',
+        accessorKey: 'startDate',
+        dataType: 'text',
+        enableGrouping: false,
+        meta: { width: '10%' }
+      },
+      {
+        id: 'endDate',
+        header: 'Ngày kết thúc',
+        accessorKey: 'endDate',
+        dataType: 'text',
+        enableGrouping: false,
+        meta: { width: '10%' }
       },
       {
         id: 'studentCount',
         header: 'Sĩ số',
         accessorKey: 'currentStudent',
-        cell: (cell) => `${cell.row.original.currentStudent}/${cell.row.original.maxStudent}`,
+        cell: ({ row }) => <StudentCountCell row={row} />,
         dataType: 'text',
         enableGrouping: false,
         meta: { width: '10%', className: 'cell-center' }

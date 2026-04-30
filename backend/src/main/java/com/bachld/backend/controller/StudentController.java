@@ -9,11 +9,14 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/student")
@@ -59,5 +62,11 @@ public class StudentController {
     public ResponseEntity<?> delete(@PathVariable int id) {
         studentService.delete(id);
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+    }
+
+    @GetMapping("v1/template/download")
+    @AuthFilter(role = "ADMIN")
+    public ResponseEntity<InputStreamResource> downloadStudentImportTemplate() throws IOException {
+        return studentService.downloadStudentImportTemplate();
     }
 }

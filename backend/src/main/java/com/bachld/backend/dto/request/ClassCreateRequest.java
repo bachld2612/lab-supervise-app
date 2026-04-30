@@ -3,6 +3,7 @@ package com.bachld.backend.dto.request;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,4 +31,21 @@ public class ClassCreateRequest {
 
     @NotNull(message = "Lịch học không được phép bỏ trống")
     Integer scheduleId;
+
+    @Pattern(
+            regexp = "^$|^\\d{4}-\\d{2}-\\d{2}$",
+            message = "Ngày bắt đầu phải có định dạng yyyy-MM-dd"
+    )
+    @NotEmpty(message = "Ngày bắt đầu không được phép bỏ trống")
+    String startDate;
+
+    @Pattern(
+            regexp = "^$|^\\d{4}-\\d{2}-\\d{2}$",
+            message = "Ngày kết thúc phải có định dạng yyyy-MM-dd"
+    )
+    @NotEmpty(message = "Ngày kết thúc không được phép bỏ trống")
+    String endDate;
+
+    @NotNull(message = "Học kỳ không được phép bỏ trống")
+    Integer semesterId;
 }

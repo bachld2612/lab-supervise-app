@@ -7,7 +7,7 @@ export type FontFamily =
   | `'Roboto', sans-serif`
   | `'Public Sans', sans-serif`;
 export type PresetColor = 'default' | 'theme1' | 'theme2' | 'theme3' | 'theme4' | 'theme5' | 'theme6' | 'theme7' | 'theme8';
-export type I18n = 'en' | 'fr' | 'ro' | 'zh'; // 'en' - English, 'fr' - French, 'ro' - Romanian, 'zh' - Chinese
+export type I18n = 'en' | 'fr' | 'ro' | 'zh' | 'vi'; // 'en' - English, 'fr' - French, 'ro' - Romanian, 'zh' - Chinese
 
 // ==============================|| TYPES - CONFIG ||============================== //
 
