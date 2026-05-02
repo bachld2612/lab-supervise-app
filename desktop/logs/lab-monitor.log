@@ -3110,3 +3110,87 @@ Caused by: java.net.UnknownHostException: api.example.com
 2026-05-02 17:04:24.013 [SwingWorker-pool-1-thread-6] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
 2026-05-02 17:04:24.040 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
 2026-05-02 17:04:35.041 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@726f6d41[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@66e1e479[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x000001bf87318f18@34771e68]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@40ca9ab6[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 9]
+2026-05-02 17:38:34.456 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172245@e.tlu.edu.vn
+2026-05-02 17:38:34.468 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: http://localhost:8080/api/auth/v1/login
+2026-05-02 17:38:34.572 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/auth/v1/login
+2026-05-02 17:38:34.836 [SwingWorker-pool-1-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-02 17:38:34.867 [SwingWorker-pool-1-thread-1] INFO  com.bachld.client.AuthApiClient - API response status: 200
+2026-05-02 17:38:34.909 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172245@e.tlu.edu.vn
+2026-05-02 17:38:35.107 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - STOMP connection successful. SessionID: 981de1eb-3826-06fe-04c6-a5877ac694c1
+2026-05-02 17:38:35.488 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
+2026-05-02 17:38:35.490 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: http://localhost:8080/api/class/v1/student
+2026-05-02 17:38:35.507 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/class/v1/student
+2026-05-02 17:38:35.507 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-02 17:38:35.525 [AWT-EventQueue-0] INFO  com.bachld.util.VpnUtil - VPN detected (Tailscale CGNAT): iftype53_32770 -> 100.124.227.3
+2026-05-02 17:38:35.526 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Updating personal computer IP to: 100.124.227.3
+2026-05-02 17:38:35.529 [SwingWorker-pool-1-thread-3] DEBUG c.b.client.PersonalComputerApiClient - Sending POST request to: http://localhost:8080/api/personal-computer/v1/update
+2026-05-02 17:38:35.538 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/personal-computer/v1/update
+2026-05-02 17:38:35.539 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-02 17:38:35.548 [SwingWorker-pool-1-thread-2] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-02 17:38:35.552 [SwingWorker-pool-1-thread-2] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
+2026-05-02 17:38:35.571 [SwingWorker-pool-1-thread-3] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-02 17:38:35.572 [SwingWorker-pool-1-thread-3] INFO  c.b.client.PersonalComputerApiClient - POST /update response status: 200
+2026-05-02 17:38:35.578 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
+2026-05-02 17:38:35.777 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully updated personal computer IP
+2026-05-02 17:38:35.777 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
+2026-05-02 17:38:35.778 [SwingWorker-pool-1-thread-4] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: http://localhost:8080/api/personal-computer/v1/me
+2026-05-02 17:38:35.779 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/personal-computer/v1/me
+2026-05-02 17:38:35.780 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-02 17:38:35.798 [SwingWorker-pool-1-thread-4] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-02 17:38:35.799 [SwingWorker-pool-1-thread-4] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
+2026-05-02 17:38:35.848 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
+2026-05-02 17:40:01.084 [WebSocketClient-AsyncIO-12] WARN  com.bachld.service.WebSocketService - WebSocket transport error. Session may be lost: Connection closed
+2026-05-02 17:40:01.962 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: May highlights are calling – Microsoft Rewards and 1 more page - Profile 1 - Microsoft​ Edge
+2026-05-02 17:40:03.690 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: New notification
+2026-05-02 17:40:05.244 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Search
+2026-05-02 17:40:06.285 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Start
+2026-05-02 17:42:44.931 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172245@e.tlu.edu.vn
+2026-05-02 17:42:44.942 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: http://localhost:8080/api/auth/v1/login
+2026-05-02 17:42:45.047 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/auth/v1/login
+2026-05-02 17:42:45.648 [SwingWorker-pool-1-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-02 17:42:45.675 [SwingWorker-pool-1-thread-1] INFO  com.bachld.client.AuthApiClient - API response status: 200
+2026-05-02 17:42:45.714 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172245@e.tlu.edu.vn
+2026-05-02 17:42:46.028 [WebSocketClient-AsyncIO-2] INFO  com.bachld.service.WebSocketService - STOMP connection successful. SessionID: 31f9f192-d311-530c-f0e2-a76e974e6d0d
+2026-05-02 17:42:46.514 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
+2026-05-02 17:42:46.516 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: http://localhost:8080/api/class/v1/student
+2026-05-02 17:42:46.532 [AWT-EventQueue-0] INFO  com.bachld.util.VpnUtil - VPN detected (by name): iftype53_32770 (Tailscale Tunnel) -> 169.254.83.107
+2026-05-02 17:42:46.534 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Updating personal computer IP to: 169.254.83.107
+2026-05-02 17:42:46.538 [SwingWorker-pool-1-thread-3] DEBUG c.b.client.PersonalComputerApiClient - Sending POST request to: http://localhost:8080/api/personal-computer/v1/update
+2026-05-02 17:42:46.541 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/class/v1/student
+2026-05-02 17:42:46.541 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-02 17:42:46.563 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/personal-computer/v1/update
+2026-05-02 17:42:46.563 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-02 17:42:46.657 [SwingWorker-pool-1-thread-2] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-02 17:42:46.663 [SwingWorker-pool-1-thread-2] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
+2026-05-02 17:42:46.711 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
+2026-05-02 17:42:46.725 [SwingWorker-pool-1-thread-3] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-02 17:42:46.727 [SwingWorker-pool-1-thread-3] INFO  c.b.client.PersonalComputerApiClient - POST /update response status: 200
+2026-05-02 17:42:46.967 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully updated personal computer IP
+2026-05-02 17:42:46.968 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
+2026-05-02 17:42:46.969 [SwingWorker-pool-1-thread-4] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: http://localhost:8080/api/personal-computer/v1/me
+2026-05-02 17:42:46.971 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/personal-computer/v1/me
+2026-05-02 17:42:46.972 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-02 17:42:46.998 [SwingWorker-pool-1-thread-4] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-02 17:42:47.002 [SwingWorker-pool-1-thread-4] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
+2026-05-02 17:42:47.057 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
+2026-05-02 17:42:58.002 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
+2026-05-02 17:42:58.004 [SwingWorker-pool-1-thread-5] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: http://localhost:8080/api/personal-computer/v1/me
+2026-05-02 17:42:58.005 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/personal-computer/v1/me
+2026-05-02 17:42:58.006 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-02 17:42:58.028 [SwingWorker-pool-1-thread-5] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-02 17:42:58.029 [SwingWorker-pool-1-thread-5] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
+2026-05-02 17:42:58.062 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
+2026-05-02 17:43:33.778 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Updating personal computer IP to: 100.124.227.3
+2026-05-02 17:43:33.779 [SwingWorker-pool-1-thread-6] DEBUG c.b.client.PersonalComputerApiClient - Sending POST request to: http://localhost:8080/api/personal-computer/v1/update
+2026-05-02 17:43:33.779 [SwingWorker-pool-1-thread-6] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/personal-computer/v1/update
+2026-05-02 17:43:33.779 [SwingWorker-pool-1-thread-6] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-02 17:43:33.814 [SwingWorker-pool-1-thread-6] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-02 17:43:33.815 [SwingWorker-pool-1-thread-6] INFO  c.b.client.PersonalComputerApiClient - POST /update response status: 200
+2026-05-02 17:43:33.821 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully updated personal computer IP
+2026-05-02 17:43:35.061 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
+2026-05-02 17:43:35.061 [SwingWorker-pool-1-thread-7] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: http://localhost:8080/api/class/v1/student
+2026-05-02 17:43:35.062 [SwingWorker-pool-1-thread-7] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/class/v1/student
+2026-05-02 17:43:35.062 [SwingWorker-pool-1-thread-7] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-02 17:43:35.081 [SwingWorker-pool-1-thread-7] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-02 17:43:35.082 [SwingWorker-pool-1-thread-7] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
+2026-05-02 17:43:35.107 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes

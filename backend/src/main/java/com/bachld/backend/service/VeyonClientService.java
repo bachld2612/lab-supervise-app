@@ -41,6 +41,10 @@ public class VeyonClientService {
     int screenshotRetryDelayMs;
 
     @NonFinal
+    @Value("${veyon.screenshot.min-valid-size-bytes}")
+    int minValidScreenshotSizeBytes;
+
+    @NonFinal
     RestTemplate restTemplate;
 
     @NonFinal
@@ -105,6 +109,7 @@ public class VeyonClientService {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         for (int attempt = 1; attempt <= screenshotMaxRetries; attempt++) {
+            boolean needRetry = false;
             try {
                 ResponseEntity<byte[]> response = screenshotRestTemplate.exchange(
                         url, HttpMethod.GET, entity, byte[].class
@@ -113,9 +118,18 @@ public class VeyonClientService {
                 if (body == null) {
                     throw new RuntimeException("Không nhận được dữ liệu ảnh từ Veyon");
                 }
-                return body;
+                // Ảnh hợp lệ — trả về ngay
+                if (body.length >= minValidScreenshotSizeBytes) {
+                    return body;
+                }
+                // Veyon trả 200 OK nhưng ảnh quá nhỏ = black frame (VNC chưa capture kịp màn hình)
+                needRetry = true;
             } catch (HttpServerErrorException.ServiceUnavailable e) {
                 // Framebuffer chưa sẵn sàng — Veyon cần thêm thời gian sau khi auth
+                needRetry = true;
+            }
+
+            if (needRetry) {
                 if (attempt == screenshotMaxRetries) {
                     throw new RuntimeException(
                             "Veyon framebuffer chưa sẵn sàng sau " + screenshotMaxRetries + " lần thử"
