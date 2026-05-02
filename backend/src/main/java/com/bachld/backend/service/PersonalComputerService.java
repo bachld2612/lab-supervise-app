@@ -29,7 +29,7 @@ public class PersonalComputerService {
 
         Integer userId = currentUser.getId();
         
-        util.validateIpAddress(request.getIpAddress(), userId);
+        util.validateIpAddress(request.getIpAddress(), userId, currentUser.getRoleId());
 
         PersonalComputer pc = personalComputerRepository.findByUserId(userId)
                 .orElseGet(() -> {

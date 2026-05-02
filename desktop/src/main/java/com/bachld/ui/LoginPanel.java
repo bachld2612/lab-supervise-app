@@ -385,13 +385,15 @@ public class LoginPanel extends JPanel {
                         ancestor.dispose();
                     }
 
-                    // Update VPN IP in background (fire-and-forget; skip if no VPN detected)
+                    // Auto-detect VPN IP, update on server, then show IP dialog
                     String vpnIp = VpnUtil.getActiveVpnIp();
                     if (vpnIp != null) {
                         pcService.updateComputerAsync(vpnIp, new com.bachld.service.PersonalComputerService.UpdateCallback() {
-                            @Override public void onSuccess() {}
-                            @Override public void onError(String errorMessage) {}
+                            @Override public void onSuccess() { mainFrame.checkIpOnStartup(); }
+                            @Override public void onError(String errorMessage) { mainFrame.checkIpOnStartup(); }
                         });
+                    } else {
+                        mainFrame.checkIpOnStartup();
                     }
                 });
             }

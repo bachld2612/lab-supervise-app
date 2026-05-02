@@ -98,8 +98,8 @@ public class Util {
         }
     }
 
-    public void validateIpAddress(String ipAddress, Integer userId) {
-        Optional<PersonalComputer> pc = personalComputerRepository.findByIpAddress(ipAddress);
+    public void validateIpAddress(String ipAddress, Integer userId, Integer roleId) {
+        Optional<PersonalComputer> pc = personalComputerRepository.findByIpAddressAndRoleId(ipAddress, roleId);
         
         if (pc.isPresent()) {
             if (userId == null || !pc.get().getUserId().equals(userId)) {

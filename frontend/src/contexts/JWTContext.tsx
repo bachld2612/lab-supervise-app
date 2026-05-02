@@ -12,6 +12,7 @@ import authReducer from 'contexts/auth-reducer/auth';
 import Loader from 'components/Loader';
 import axios from 'utils/axios';
 import { openSnackbar } from 'api/snackbar';
+import { TEACHER_IP_NOTICE_KEY } from 'components/TeacherIPNoticeDialog';
 
 // types
 import { AuthProps, JWTContextType } from 'types/auth';
@@ -159,6 +160,7 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
 
   const logout = useCallback(() => {
     setSession(null);
+    localStorage.removeItem(TEACHER_IP_NOTICE_KEY);
     dispatch({ type: LOGOUT });
   }, []);
 
