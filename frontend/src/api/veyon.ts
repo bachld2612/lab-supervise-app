@@ -19,7 +19,7 @@ export const lockScreen = async (classId: number, studentUserId: number, active:
   return response.data;
 };
 
-export const getScreenshot = async (classId: number): Promise<{ statusCode: number; data: string }> => {
-  const response = await axiosServices.get('/api/class/screenshot', { params: { classId } });
+export const getScreenshot = async (classId: number, studentUserId: number): Promise<{ statusCode: number; data: string }> => {
+  const response = await axiosServices.get('/api/class/screenshot', { params: { classId, studentUserId } });
   return response.data;
 };

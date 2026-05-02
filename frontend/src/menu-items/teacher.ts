@@ -1,5 +1,5 @@
 // assets
-import { CalendarTick, ElementPlus, Profile, Teacher, Danger, Monitor, Stop } from 'iconsax-reactjs';
+import { CalendarTick, ElementPlus, Profile, Teacher, Danger, Monitor, Stop, Cpu } from 'iconsax-reactjs';
 
 // types
 import { NavItemType } from 'types/menu';
@@ -12,7 +12,8 @@ const icons = {
   teacher: Teacher,
   danger: Danger,
   monitor: Monitor,
-  stop: Stop
+  stop: Stop,
+  cpu: Cpu
 };
 
 // ==============================|| MENU ITEMS - TEACHER ||============================== //
@@ -35,6 +36,13 @@ const teacherMenu: NavItemType = {
       type: 'item',
       url: 'ban-application',
       icon: icons.stop
+    },
+    {
+      id: 'personal-computer',
+      title: 'Máy tính cá nhân',
+      type: 'item',
+      url: 'teacher/personal-computer',
+      icon: icons.cpu
     }
   ]
 };

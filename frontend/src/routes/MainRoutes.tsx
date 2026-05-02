@@ -62,6 +62,7 @@ const TeacherDashboardPage = Loadable(lazy(() => import('pages/dashboard/teacher
 const ItCenterDashboardPage = Loadable(lazy(() => import('pages/dashboard/it-center-dashboard-page')));
 const TeacherClassTrackingPage = Loadable(lazy(() => import('pages/teacher/teacher-class-tracking-page')));
 const BanApplicationPage = Loadable(lazy(() => import('pages/ban-application/ban-application-page')));
+const PersonalComputerPage = Loadable(lazy(() => import('pages/teacher/personal-computer-page')));
 
 // ==============================|| MAIN ROUTES ||============================== //
 
@@ -231,6 +232,10 @@ const MainRoutes = {
         {
           path: 'ban-application',
           element: <BanApplicationPage />
+        },
+        {
+          path: 'teacher/personal-computer',
+          element: <PersonalComputerPage />
         }
       ]
     },

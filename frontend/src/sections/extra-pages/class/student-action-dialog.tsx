@@ -95,7 +95,7 @@ export default function StudentActionDialog({ open, onClose, student, classId, i
   const handleScreenshot = async () => {
     setScreenshotLoading(true);
     try {
-      const res = await getScreenshot(classId);
+      const res = await getScreenshot(classId, student.userId);
       if (res.statusCode === HttpStatusCode.Ok && res.data) {
         setScreenshotData(res.data);
         setScreenshotOpen(true);

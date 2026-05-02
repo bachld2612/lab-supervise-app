@@ -41,6 +41,10 @@ public class VeyonClientService {
     int screenshotRetryDelayMs;
 
     @NonFinal
+    @Value("${veyon.screenshot.min-valid-size-bytes}")
+    int minValidScreenshotSizeBytes;
+
+    @NonFinal
     RestTemplate restTemplate;
 
     @NonFinal
@@ -60,10 +64,14 @@ public class VeyonClientService {
     }
 
     /**
-     * Calls Veyon auth API and returns the connection-uid.
-     * The uid is valid for 30 seconds per Veyon's spec.
+     * Calls Veyon auth API on the teacher's PC (teacherIp) to authenticate
+     * against the student's PC (studentIp). Returns the connection-uid valid for 30s.
      */
-    public String getConnectionUid(String keyName, String privateKeyContent) {
+    public String getConnectionUid(String keyName, String privateKeyContent, String teacherIp, String studentIp) {
+        String url = loginUrl
+                .replace("{{teacher_ip}}", teacherIp)
+                .replace("{{student_ip}}", studentIp);
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -72,7 +80,7 @@ public class VeyonClientService {
                 "credentials", Map.of("keyname", keyName, "keydata", privateKeyContent)
         );
 
-        ResponseEntity<Map> response = restTemplate.postForEntity(loginUrl, new HttpEntity<>(body, headers), Map.class);
+        ResponseEntity<Map> response = restTemplate.postForEntity(url, new HttpEntity<>(body, headers), Map.class);
         Map<?, ?> responseBody = response.getBody();
 
         if (responseBody == null || responseBody.get("connection-uid") == null) {
@@ -82,32 +90,46 @@ public class VeyonClientService {
         return responseBody.get("connection-uid").toString();
     }
 
-    public void lockScreen(String connectionUid, boolean active) {
+    public void lockScreen(String connectionUid, boolean active, String teacherIp) {
+        String url = lockScreenUrl.replace("{{teacher_ip}}", teacherIp);
+
         HttpHeaders headers = new HttpHeaders();
         headers.set("connection-uid", connectionUid);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         Map<String, Object> body = Map.of("active", active, "arguments", Map.of());
-        restTemplate.exchange(lockScreenUrl, HttpMethod.PUT, new HttpEntity<>(body, headers), String.class);
+        restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(body, headers), String.class);
     }
 
-    public byte[] getScreenshot(String connectionUid) {
+    public byte[] getScreenshot(String connectionUid, String teacherIp) {
+        String url = screenshotUrl.replace("{{teacher_ip}}", teacherIp);
+
         HttpHeaders headers = new HttpHeaders();
         headers.set("connection-uid", connectionUid);
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         for (int attempt = 1; attempt <= screenshotMaxRetries; attempt++) {
+            boolean needRetry = false;
             try {
                 ResponseEntity<byte[]> response = screenshotRestTemplate.exchange(
-                        screenshotUrl, HttpMethod.GET, entity, byte[].class
+                        url, HttpMethod.GET, entity, byte[].class
                 );
                 byte[] body = response.getBody();
                 if (body == null) {
                     throw new RuntimeException("Không nhận được dữ liệu ảnh từ Veyon");
                 }
-                return body;
+                // Ảnh hợp lệ — trả về ngay
+                if (body.length >= minValidScreenshotSizeBytes) {
+                    return body;
+                }
+                // Veyon trả 200 OK nhưng ảnh quá nhỏ = black frame (VNC chưa capture kịp màn hình)
+                needRetry = true;
             } catch (HttpServerErrorException.ServiceUnavailable e) {
                 // Framebuffer chưa sẵn sàng — Veyon cần thêm thời gian sau khi auth
+                needRetry = true;
+            }
+
+            if (needRetry) {
                 if (attempt == screenshotMaxRetries) {
                     throw new RuntimeException(
                             "Veyon framebuffer chưa sẵn sàng sau " + screenshotMaxRetries + " lần thử"

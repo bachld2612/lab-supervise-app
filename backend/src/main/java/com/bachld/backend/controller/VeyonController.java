@@ -42,7 +42,7 @@ public class VeyonController {
 
     @GetMapping("/api/class/screenshot")
     @AuthFilter(role = "TEACHER")
-    public ResponseEntity<?> getScreenshot(@RequestParam Integer classId) {
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), veyonService.getScreenshot(classId)));
+    public ResponseEntity<?> getScreenshot(@RequestParam Integer classId, @RequestParam Integer studentUserId) {
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), veyonService.getScreenshot(classId, studentUserId)));
     }
 }

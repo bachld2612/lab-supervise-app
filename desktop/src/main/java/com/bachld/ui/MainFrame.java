@@ -1,6 +1,7 @@
 package com.bachld.ui;
 
 import com.bachld.config.AppConfig;
+import com.bachld.model.response.PersonalComputerResponse;
 import com.bachld.service.AuthService;
 import com.bachld.service.PersonalComputerService;
 
@@ -22,6 +23,7 @@ public class MainFrame extends JFrame {
     private CardLayout cardLayout;
     private SidebarPanel sidebarPanel;
     private TrayIcon trayIcon;
+    private PersonalComputerPanel pcPanel;
 
     public MainFrame(AuthService authService, PersonalComputerService pcService,
                      com.bachld.service.ClassService classService,
@@ -71,7 +73,8 @@ public class MainFrame extends JFrame {
         contentArea.setBorder(new EmptyBorder(0, 30, 30, 30));
 
         contentArea.add(wrapInPageWrapper(new ClassManagementPanel(classService), "Quản lý lớp học"), "CLASS_MGMT");
-        contentArea.add(new PersonalComputerPanel(pcService), "PC_MGMT");
+        pcPanel = new PersonalComputerPanel(pcService);
+        contentArea.add(pcPanel, "PC_MGMT");
 
         mainWrapper.add(contentArea, BorderLayout.CENTER);
         add(mainWrapper, BorderLayout.CENTER);
@@ -278,6 +281,50 @@ public class MainFrame extends JFrame {
         panel.add(body, BorderLayout.CENTER);
 
         return panel;
+    }
+
+    // ── IP Check on Startup ───────────────────────────────────────────────────
+
+    public void checkIpOnStartup() {
+        pcService.fetchMyComputerAsync(new PersonalComputerService.FetchCallback() {
+            @Override
+            public void onSuccess(PersonalComputerResponse response) {
+                String storedIp = (response.getData() != null) ? response.getData().getIpAddress() : null;
+                if (storedIp != null && !storedIp.isBlank()) {
+                    showIpExistsDialog(storedIp);
+                } else {
+                    showIpMissingDialog();
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                // Silent fail — do not disrupt user if server is unreachable
+            }
+        });
+    }
+
+    private void showIpExistsDialog(String storedIp) {
+        int choice = JOptionPane.showConfirmDialog(
+                this,
+                "Thông tin địa chỉ IP hiện tại của bạn là: " + storedIp + "\nBạn có muốn cập nhật không?",
+                "Thông tin địa chỉ IP",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.INFORMATION_MESSAGE
+        );
+        if (choice == JOptionPane.YES_OPTION) {
+            showPage("PC_MGMT");
+        }
+    }
+
+    private void showIpMissingDialog() {
+        JOptionPane.showMessageDialog(
+                this,
+                "Bạn chưa cập nhật địa chỉ IP, vui lòng cập nhật ngay.",
+                "Chưa có địa chỉ IP",
+                JOptionPane.WARNING_MESSAGE
+        );
+        showPage("PC_MGMT");
     }
 
     public void showPage(String pageId) {
