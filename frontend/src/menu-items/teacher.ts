@@ -32,14 +32,14 @@ const teacherMenu: NavItemType = {
     },
     {
       id: 'ban-application',
-      title: 'Ứng dụng cấm',
+      title: 'Quản lý ứng dụng cấm',
       type: 'item',
       url: 'ban-application',
       icon: icons.stop
     },
     {
       id: 'personal-computer',
-      title: 'Máy tính cá nhân',
+      title: 'Quản lý máy tính cá nhân',
       type: 'item',
       url: 'teacher/personal-computer',
       icon: icons.cpu

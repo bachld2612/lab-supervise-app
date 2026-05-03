@@ -29,83 +29,83 @@ const adminMenu: NavItemType = {
     },
     {
       id: 'user-management',
-      title: 'Danh sách nhân viên',
+      title: 'Quản lý nhân viên',
       type: 'item',
       url: '/user',
       icon: icons.profile
     },
     {
       id: 'manage-users',
-      title: 'Danh sách giảng viên',
+      title: 'Quản lý giảng viên',
       type: 'item',
       url: '/teacher',
       icon: icons.profile
     },
     {
       id: 'manage-students',
-      title: 'Danh sách sinh viên',
+      title: 'Quản lý sinh viên',
       type: 'item',
       url: '/student',
       icon: icons.profile
     },
     {
       id: 'manage-subjects',
-      title: 'Danh sách môn học',
+      title: 'Quản lý môn học',
       type: 'item',
       url: '/subject',
       icon: icons.table
     },
     {
       id: 'manage-classes',
-      title: 'Danh sách lớp quản lý',
+      title: 'Quản lý lớp',
       type: 'item',
       url: '/manage-class',
       icon: icons.table
     },
     {
       id: 'manage-subject-classes',
-      title: 'Danh sách lớp học phần',
+      title: 'Quản lý lớp học phần',
       type: 'item',
       url: '/class',
       icon: icons.table
     },
     {
       id: 'department-management',
-      title: 'Danh sách thông tin trường',
+      title: 'Quản lý thông tin trường',
       type: 'collapse',
       icon: icons.box,
       children: [
         {
           id: 'manage-departments',
-          title: 'Danh sách khoa',
+          title: 'Quản lý khoa',
           type: 'item',
           url: '/department',
           icon: icons.box
         },
         {
           id: 'manage-sections',
-          title: 'Danh sách bộ môn',
+          title: 'Quản lý bộ môn',
           type: 'item',
           url: '/section',
           icon: icons.box
         },
         {
           id: 'manage-majors',
-          title: 'Danh sách ngành',
+          title: 'Quản lý ngành',
           type: 'item',
           url: '/major',
           icon: icons.box
         },
         {
           id: 'manage-semesters',
-          title: 'Danh sách học kỳ',
+          title: 'Quản lý học kỳ',
           type: 'item',
           url: '/semester',
           icon: icons.box
         },
         {
           id: 'manage-schedules',
-          title: 'Danh sách ca học',
+          title: 'Quản lý ca học',
           type: 'item',
           url: '/schedule',
           icon: icons.box
