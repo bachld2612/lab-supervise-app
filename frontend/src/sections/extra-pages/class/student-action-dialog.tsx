@@ -13,7 +13,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import { Camera, CloseCircle, Lock1, Monitor, Unlock } from 'iconsax-reactjs';
+import { Camera, CloseCircle, Lock1, Monitor, Unlock, Wifi } from 'iconsax-reactjs';
 import { useEffect, useState } from 'react';
 import { AppUsageEntry, StudentTrackingState } from 'hooks/useClassTracking';
 import { getScreenshot, lockScreen } from 'api/veyon';
@@ -54,10 +54,19 @@ interface StudentActionDialogProps {
   student: StudentTrackingState;
   classId: number;
   isLocked: boolean;
+  isOnline: boolean;
   onLockChange: (userId: number, locked: boolean) => void;
 }
 
-export default function StudentActionDialog({ open, onClose, student, classId, isLocked, onLockChange }: StudentActionDialogProps) {
+export default function StudentActionDialog({
+  open,
+  onClose,
+  student,
+  classId,
+  isLocked,
+  isOnline,
+  onLockChange
+}: StudentActionDialogProps) {
   const [lockLoading, setLockLoading] = useState(false);
   const [screenshotLoading, setScreenshotLoading] = useState(false);
   const [screenshotData, setScreenshotData] = useState<string | null>(null);
@@ -137,9 +146,16 @@ export default function StudentActionDialog({ open, onClose, student, classId, i
               {getInitials(student.fullName)}
             </Avatar>
             <Stack spacing={0.3} sx={{ minWidth: 0 }}>
-              <Typography variant="h6" fontWeight="bold" noWrap>
-                {student.fullName}
-              </Typography>
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <Typography variant="h6" fontWeight="bold" noWrap sx={{ minWidth: 0 }}>
+                  {student.fullName}
+                </Typography>
+                <Tooltip title={isOnline ? 'Đã kết nối' : 'Mất kết nối'} arrow>
+                  <Box sx={{ color: isOnline ? 'success.main' : 'text.disabled', display: 'flex', alignItems: 'center' }}>
+                    <Wifi size={16} />
+                  </Box>
+                </Tooltip>
+              </Stack>
               <Typography variant="body2" color="text.secondary">
                 {student.code} · {student.manageClassName}
               </Typography>
