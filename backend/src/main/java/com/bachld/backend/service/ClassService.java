@@ -10,13 +10,24 @@ import com.bachld.backend.util.enums.Status;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -41,6 +52,8 @@ public class ClassService {
     StudentRepository studentRepository;
 
     StudentClassInfoRepository studentClassInfoRepository;
+
+    StudentClassRepository studentClassRepository;
 
     Util util;
 
@@ -282,5 +295,84 @@ public class ClassService {
 
         cs.setStatus(Status.INACTIVE.getValue());
         classRepository.save(cs);
+    }
+
+    public ResponseEntity<InputStreamResource> downloadClassStudentImportTemplate() throws IOException {
+        org.springframework.core.io.ClassPathResource file =
+                new org.springframework.core.io.ClassPathResource("templates/download/checkin_import_student_template.xlsx");
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=checkin_import_student_template.xlsx")
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(new InputStreamResource(file.getInputStream()));
+    }
+
+    @Transactional
+    public void importStudentsToClass(Integer classId, MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("File import không được để trống");
+        }
+
+        Classes classes = classRepository.findById(classId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp học phần có id: " + classId));
+
+        if (classes.getStatus() != Status.ACTIVE.getValue()) {
+            throw new IllegalArgumentException("Lớp học phần không còn hoạt động");
+        }
+
+        try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
+            Sheet sheet = workbook.getSheetAt(0);
+
+            List<Student> studentsToEnroll = new ArrayList<>();
+
+            // Template bắt đầu từ dòng 10 (index 9), cột 1 (index 0) là mã sinh viên
+            for (int i = 9; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+                if (row == null || !isValidDataRow(row, 5)) {
+                    continue;
+                }
+
+                int rowNum = i + 1;
+                String studentCode = util.getCellStringValue(row.getCell(1));
+                if (studentCode == null || studentCode.isBlank()) {
+                    continue;
+                }
+
+                Student student = studentRepository.findByCodeAndStatus(studentCode, Status.ACTIVE.getValue())
+                        .orElseThrow(() -> new IllegalArgumentException(
+                                "Dòng " + rowNum + ": Không tìm thấy sinh viên với mã: " + studentCode));
+
+                boolean alreadyEnrolled = studentClassRepository
+                        .findByStudentIdAndClassId(student.getId(), classId)
+                        .isPresent();
+
+                if (!alreadyEnrolled) {
+                    studentsToEnroll.add(student);
+                }
+            }
+
+            long currentCount = studentClassRepository.countByClassId(classId);
+            if (currentCount + studentsToEnroll.size() > classes.getMaxStudent()) {
+                throw new IllegalArgumentException(
+                        "Vượt quá sĩ số tối đa. Hiện tại: " + currentCount
+                        + ", thêm mới: " + studentsToEnroll.size()
+                        + ", tối đa: " + classes.getMaxStudent());
+            }
+
+            for (Student student : studentsToEnroll) {
+                StudentClass studentClass = new StudentClass();
+                studentClass.setClassId(classId);
+                studentClass.setStudentId(student.getId());
+                studentClassRepository.save(studentClass);
+            }
+        }
+    }
+
+    private boolean isValidDataRow(Row row, int requiredColumnCount) {
+        for (int c = 0; c < requiredColumnCount; c++) {
+            String val = util.getCellStringValue(row.getCell(c));
+            if (val == null || val.isBlank()) return false;
+        }
+        return true;
     }
 }

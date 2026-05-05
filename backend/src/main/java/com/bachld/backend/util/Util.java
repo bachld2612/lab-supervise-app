@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -151,7 +152,16 @@ public class Util {
 
     public String getCellStringValue(Cell cell) {
         if (cell == null) return null;
-        String value = cell.toString().trim();
+        String value;
+        if (cell.getCellType() == CellType.STRING) {
+            value = cell.getStringCellValue().trim();
+        } else if (cell.getCellType() == CellType.NUMERIC) {
+            value = BigDecimal.valueOf(cell.getNumericCellValue())
+                    .stripTrailingZeros()
+                    .toPlainString();
+        } else {
+            value = cell.toString().trim();
+        }
         return value.isEmpty() ? null : value;
     }
 

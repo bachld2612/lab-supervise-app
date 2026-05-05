@@ -21,4 +21,6 @@ public interface StudentClassRepository extends JpaRepository<StudentClass, Inte
     List<Classes> findActiveClassesByStudentId(Integer studentId, LocalDate now);
 
     Optional<StudentClass> findByStudentIdAndClassId(Integer studentId, Integer classId);
+
+    long countByClassId(Integer classId);
 }

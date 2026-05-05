@@ -9,12 +9,15 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 
 @RestController
@@ -91,5 +94,21 @@ public class ClassController {
             @RequestParam(required = false) String keyword
     ) {
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), classService.getStudentsByClassId(classId, pageable, keyword)));
+    }
+
+    @GetMapping("v1/template/download")
+    @AuthFilter(role = "ADMIN,TEACHER")
+    public ResponseEntity<InputStreamResource> downloadClassStudentImportTemplate() throws IOException {
+        return classService.downloadClassStudentImportTemplate();
+    }
+
+    @PostMapping("/v1/{classId}/student/import")
+    @AuthFilter(role = "ADMIN,TEACHER")
+    public ResponseEntity<?> importStudentsToClass(
+            @PathVariable int classId,
+            @RequestParam("file") MultipartFile file
+    ) throws IOException {
+        classService.importStudentsToClass(classId, file);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
     }
 }

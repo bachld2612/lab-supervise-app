@@ -74,4 +74,37 @@ const getClassStudentTracking = async (classId: number) => {
   }
 };
 
-export { getList, getById, create, update, deleteById, getTeacherClasses, getStudentsByClassId, getClassStudentTracking };
+const downloadClassStudentImportTemplate = async () => {
+  try {
+    const response = await axiosServices.get('/api/class/v1/template/download', { responseType: 'blob' });
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+const importStudentIntoClass = async (classId: number, formData: FormData) => {
+  try {
+    const response = await axiosServices.post(`/api/class/v1/${classId}/student/import`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+export {
+  getList,
+  getById,
+  create,
+  update,
+  deleteById,
+  getTeacherClasses,
+  getStudentsByClassId,
+  getClassStudentTracking,
+  downloadClassStudentImportTemplate,
+  importStudentIntoClass
+};
