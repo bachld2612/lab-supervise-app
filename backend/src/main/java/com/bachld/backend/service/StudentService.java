@@ -3,6 +3,7 @@ package com.bachld.backend.service;
 import com.bachld.backend.dto.request.StudentCreateRequest;
 import com.bachld.backend.dto.request.StudentUpdateRequest;
 import com.bachld.backend.dto.response.StudentResponse;
+import com.bachld.backend.model.ManageClass;
 import com.bachld.backend.model.Student;
 import com.bachld.backend.model.User;
 import com.bachld.backend.repository.ManageClassRepository;
@@ -15,6 +16,10 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -145,11 +151,60 @@ public class StudentService {
 
     public ResponseEntity<InputStreamResource> downloadStudentImportTemplate() throws IOException {
         org.springframework.core.io.ClassPathResource file =
-                new org.springframework.core.io.ClassPathResource("template/download/student_import_template.xlsx");
+                new org.springframework.core.io.ClassPathResource("templates/download/student_import_template.xlsx");
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=form_reward_penalty.xlsx")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=student_import_template.xlsx")
                 .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                 .body(new InputStreamResource(file.getInputStream()));
     }
+
+    @Transactional
+    public void importStudents(MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("File import không được để trống");
+        }
+
+        try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
+            Sheet sheet = workbook.getSheetAt(0);
+            String[] headers = new String[]{"STT", "Mã Sinh Viên", "Họ Tên", "Lớp quản lý", "Email", "Số điện thoại", "Ngày sinh", "Quê quán"};
+            util.validateImportTemplate(sheet, headers);
+
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+                if (row == null || util.isRowEmpty(row)) {
+                    continue;
+                }
+
+                int rowNum = i + 1;
+                try {
+                    String manageClassName = util.getCellStringValue(row.getCell(3));
+                    if (manageClassName == null || manageClassName.isEmpty()) {
+                        throw new IllegalArgumentException("Tên lớp quản lý không được để trống");
+                    }
+
+                    ManageClass manageClass = manageClassRepository
+                            .findClassByNameAndStatus(manageClassName, Status.ACTIVE.getValue())
+                            .orElseThrow(() -> new IllegalArgumentException(
+                                    "Không tìm thấy lớp quản lý: " + manageClassName));
+
+                    StudentCreateRequest request = new StudentCreateRequest();
+                    request.setCode(util.getCellStringValue(row.getCell(1)));
+                    request.setFullName(util.getCellStringValue(row.getCell(2)));
+                    request.setManageClassId(manageClass.getId());
+                    request.setEmail(util.getCellStringValue(row.getCell(4)));
+                    request.setPhone(util.getCellStringValue(row.getCell(5)));
+                    String birthDay = util.getCellStringValue(row.getCell(6));
+                    request.setBirthday(util.getStringDate(birthDay));
+                    request.setHometown(util.getCellStringValue(row.getCell(7)));
+
+                    util.validateBean(request);
+                    create(request);
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException("Dòng " + rowNum + ": " + e.getMessage());
+                }
+            }
+        }
+    }
+
 }

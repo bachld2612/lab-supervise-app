@@ -44,4 +44,11 @@ public interface ManageClassRepository extends JpaRepository<ManageClass,Integer
         WHERE mc.id = :id AND mc.status = :status
     """)
     Optional<ManageClass> findClassByIdAndStatus(Integer id, Integer status);
+
+    @Query("""
+        SELECT mc
+        FROM ManageClass mc
+        WHERE LOWER(mc.name) = LOWER(:name) AND mc.status = :status
+    """)
+    Optional<ManageClass> findClassByNameAndStatus(String name, Integer status);
 }
