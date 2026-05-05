@@ -14,12 +14,15 @@ import {
   Typography
 } from '@mui/material';
 import MainCard from 'components/MainCard';
-import { useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import { useClassTracking, StudentTrackingState } from 'hooks/useClassTracking';
-import { ArrowLeft, Key, Lock1, Monitor, Timer1, Wifi } from 'iconsax-reactjs';
+import { ArrowLeft, ExportCurve, ImportCurve, Key, Lock1, Monitor, Timer1, Wifi } from 'iconsax-reactjs';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import StudentActionDialog from 'sections/extra-pages/class/student-action-dialog';
 import ImportVeyonKeyDialog from 'sections/extra-pages/class/import-veyon-key-dialog';
+import { importStudentIntoClass, downloadClassStudentImportTemplate } from 'api/class';
+import { HttpStatusCode } from 'axios';
+import useAuth from 'hooks/useAuth';
 
 function formatTime(isoString: string): string {
   try {
@@ -56,10 +59,13 @@ export default function TeacherClassTrackingPage() {
   const [selectedStudent, setSelectedStudent] = useState<StudentTrackingState | null>(null);
   const [lockedStudents, setLockedStudents] = useState<Set<number>>(new Set());
   const [importKeyOpen, setImportKeyOpen] = useState(false);
+  const [reload, setReload] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { logout } = useAuth();
 
   const { students, loading } = useClassTracking(classId, (message) => {
     setAlert({ open: true, message, severity: 'error' });
-  });
+  }, reload);
 
   const handleCardClick = (student: StudentTrackingState) => {
     setSelectedStudent(student);
@@ -80,6 +86,52 @@ export default function TeacherClassTrackingPage() {
 
   // Keep selectedStudent in sync with live WS data
   const liveSelectedStudent = selectedStudent ? (students.find((s) => s.studentId === selectedStudent.studentId) ?? selectedStudent) : null;
+
+  const handleFileImportChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    if (file) {
+      const fileTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
+      if (!fileTypes.includes(file.type)) {
+        setAlert({ open: true, message: 'File lỗi định dạng. Vui lòng thử lại', severity: 'error' });
+        event.target.value = '';
+        return;
+      }
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const response = await importStudentIntoClass(classId!, formData);
+        if (response.statusCode === HttpStatusCode.Ok) {
+          setAlert({ open: true, message: 'Import sinh viên vào lớp thành công', severity: 'success' });
+          setReload(!reload);
+        } else if (response.statusCode === HttpStatusCode.Unauthorized) {
+          logout();
+        } else if (response.statusCode === HttpStatusCode.UnprocessableEntity) {
+          setAlert({ open: true, message: response.message, severity: 'error' });
+        } else {
+          setAlert({ open: true, message: 'Lỗi hệ thống, vui lòng thử lại sau', severity: 'error' });
+        }
+      } catch {
+        setAlert({ open: true, message: 'Lỗi hệ thống, vui lòng thử lại sau', severity: 'error' });
+      }
+      event.target.value = '';
+    }
+  };
+
+  const handleDownloadExcelForm = async () => {
+    const response = await downloadClassStudentImportTemplate();
+    const blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const fileURL = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = fileURL;
+    link.download = 'Mẫu import sinh viên vào lớp.xlsx';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(fileURL);
+  };
 
   if (loading) {
     return (
@@ -116,6 +168,33 @@ export default function TeacherClassTrackingPage() {
         </Stack>
 
         <Stack direction="row" spacing={1.5} alignItems="center">
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileImportChange}
+            style={{ display: 'none' }}
+            accept=".xlsx, .xls"
+          />
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<ExportCurve size={15} />}
+            onClick={handleDownloadExcelForm}
+            sx={{ whiteSpace: 'nowrap' }}
+          >
+            Xuất file mẫu
+          </Button>
+
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<ImportCurve size={15} />}
+            onClick={() => fileInputRef.current?.click()}
+            sx={{ whiteSpace: 'nowrap' }}
+          >
+            Import sinh viên
+          </Button>
+
           {classId && (
             <Button
               variant="outlined"

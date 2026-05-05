@@ -5,11 +5,21 @@ import com.bachld.backend.dto.response.SubjectResponse;
 import com.bachld.backend.model.*;
 import com.bachld.backend.repository.*;
 import com.bachld.backend.util.enums.Status;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import java.util.Set;
 
 @Component
 public class Util {
@@ -33,6 +43,9 @@ public class Util {
 
     @Autowired
     private PersonalComputerRepository personalComputerRepository;
+
+    @Autowired
+    private Validator validator;
 
     public User getCurrentUser() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -100,11 +113,66 @@ public class Util {
 
     public void validateIpAddress(String ipAddress, Integer userId, Integer roleId) {
         Optional<PersonalComputer> pc = personalComputerRepository.findByIpAddressAndRoleId(ipAddress, roleId);
-        
+
         if (pc.isPresent()) {
             if (userId == null || !pc.get().getUserId().equals(userId)) {
                 throw new IllegalArgumentException("Địa chỉ IP đã tồn tại ở thiết bị khác");
             }
         }
+    }
+
+    public String getStringDate(String dateStr) {
+        if (dateStr == null || dateStr.isEmpty()) return "";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        return LocalDate.parse(dateStr, formatter).format(DateTimeFormatter.ISO_LOCAL_DATE);
+    }
+
+    public <T> void validateBean(T bean) {
+        Set<ConstraintViolation<T>> violations = validator.validate(bean);
+        if (!violations.isEmpty()) {
+            throw new IllegalArgumentException(violations.iterator().next().getMessage());
+        }
+    }
+
+    public void validateImportTemplate(Sheet sheet, String[] expectedHeaders) {
+        Row headerRow = sheet.getRow(0);
+        if (headerRow == null) {
+            throw new IllegalArgumentException("File không đúng định dạng template: không tìm thấy hàng tiêu đề");
+        }
+        
+        for (int i = 0; i < expectedHeaders.length; i++) {
+            Cell cell = headerRow.getCell(i);
+            String value = cell != null ? cell.toString().trim() : "";
+            if (!expectedHeaders[i].equals(value)) {
+                throw new IllegalArgumentException(
+                        "File không đúng định dạng template: cột " + (i + 1) + " phải là '" + expectedHeaders[i] + "'");
+            }
+        }
+    }
+
+    public String getCellStringValue(Cell cell) {
+        if (cell == null) return null;
+        String value;
+        if (cell.getCellType() == CellType.STRING) {
+            value = cell.getStringCellValue().trim();
+        } else if (cell.getCellType() == CellType.NUMERIC) {
+            value = BigDecimal.valueOf(cell.getNumericCellValue())
+                    .stripTrailingZeros()
+                    .toPlainString();
+        } else {
+            value = cell.toString().trim();
+        }
+        return value.isEmpty() ? null : value;
+    }
+
+    public boolean isRowEmpty(Row row) {
+        for (int c = 1; c <= 7; c++) {
+            Cell cell = row.getCell(c);
+            if (cell != null && cell.getCellType() != CellType.BLANK
+                    && !cell.toString().trim().isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -1,4 +1,4 @@
-import { CSSProperties, Fragment, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, CSSProperties, Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 // material-ui
@@ -64,7 +64,7 @@ import IconButton from 'components/@extended/IconButton';
 import { EmptyTable, HeaderSort, RowEditable } from 'components/third-party/react-table';
 
 // assets
-import { Add, ArrowDown2, ArrowRight2, Command, Edit2, Eye, TableDocument, Trash } from 'iconsax-reactjs';
+import { Add, ArrowDown2, ArrowRight2, Command, Edit2, ExportCurve, Eye, ImportCurve, TableDocument, Trash } from 'iconsax-reactjs';
 import {
   Alert,
   Button,
@@ -82,7 +82,7 @@ import { useIntl } from 'react-intl';
 import { HttpStatusCode } from 'axios';
 import useAuth from 'hooks/useAuth';
 import { type Classes } from 'types/classes';
-import { deleteById, getList } from 'api/class';
+import { deleteById, getList, downloadClassStudentImportTemplate, importStudentIntoClass } from 'api/class';
 import { DEFAULT_PAGE_SIZE, PageRequest } from 'types/paging';
 import StudentListDialog from 'sections/extra-pages/class/max-student-dialog';
 
@@ -135,8 +135,39 @@ function EditAction({
     }>
   >;
 }) {
+  const importFileRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+
+  const handleImportStudentIntoClass = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    if (file) {
+      const fileTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
+      if (!fileTypes.includes(file.type)) {
+        setAlert({ open: true, message: 'File lỗi định dạng. Vui lòng thử lại', severity: 'error' });
+        event.target.value = '';
+        return;
+      }
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const response = await importStudentIntoClass(row.original.id, formData);
+        if (response.statusCode === HttpStatusCode.Ok) {
+          setAlert({ open: true, message: 'Import sinh viên vào lớp thành công', severity: 'success' });
+          setReload(!reload);
+        } else if (response.statusCode === HttpStatusCode.Unauthorized) {
+          logout();
+        } else if (response.statusCode === HttpStatusCode.UnprocessableEntity) {
+          setAlert({ open: true, message: response.message, severity: 'error' });
+        } else {
+          setAlert({ open: true, message: 'Lỗi hệ thống, vui lòng thử lại sau', severity: 'error' });
+        }
+      } catch {
+        setAlert({ open: true, message: 'Lỗi hệ thống, vui lòng thử lại sau', severity: 'error' });
+      }
+      event.target.value = '';
+    }
+  };
   const [hasDetailPermission, setHasDetailPermission] = useState(false);
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
@@ -195,6 +226,23 @@ function EditAction({
             <IconButton color="primary" onClick={() => setOpenDelete(true)} disabled={row.original.status == 0}>
               <Trash variant="Outline" />
             </IconButton>
+          </span>
+        </Tooltip>
+      )}
+
+      {hasEditPermission && (
+        <Tooltip title={row.original.status === 0 ? 'Không thể import khi lớp dừng hoạt động' : 'Import student'}>
+          <span>
+            <IconButton color="primary" onClick={() => importFileRef.current?.click()} disabled={row.original.status == 0}>
+              <ImportCurve variant="Outline" />
+            </IconButton>
+            <input
+              type="file"
+              ref={importFileRef}
+              onChange={handleImportStudentIntoClass}
+              style={{ display: 'none' }}
+              accept=".xlsx, .xls"
+            />
           </span>
         </Tooltip>
       )}
@@ -590,6 +638,21 @@ export default function ClassPage() {
     }
   }, [user?.roleId]);
 
+  const handleDownloadExcelForm = async () => {
+    const blob = await downloadClassStudentImportTemplate();
+    const fileURL = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = fileURL;
+    link.download = 'Mẫu import sinh viên vào lớp.xlsx';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(fileURL);
+  };
+
   return (
     <Stack sx={{ p: 0 }}>
       <Stack
@@ -606,14 +669,29 @@ export default function ClassPage() {
         </Typography>
 
         {hasAddPermission && (
-          <Button
-            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            variant="contained"
-            onClick={() => navigate('/class/add')}
-            startIcon={<Add />}
-          >
-            Thêm lớp
-          </Button>
+          <Stack direction="row" spacing={2}>
+            <Button
+              sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1 }}
+              variant="contained"
+              onClick={handleDownloadExcelForm}
+              color="primary"
+              size="medium"
+            >
+              <ExportCurve />
+              Xuất file mẫu
+            </Button>
+
+            <Divider orientation="vertical" flexItem />
+
+            <Button
+              sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              variant="contained"
+              onClick={() => navigate('/class/add')}
+              startIcon={<Add />}
+            >
+              Thêm lớp
+            </Button>
+          </Stack>
         )}
       </Stack>
 

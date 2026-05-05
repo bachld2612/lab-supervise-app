@@ -15,6 +15,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -68,5 +69,12 @@ public class StudentController {
     @AuthFilter(role = "ADMIN")
     public ResponseEntity<InputStreamResource> downloadStudentImportTemplate() throws IOException {
         return studentService.downloadStudentImportTemplate();
+    }
+
+    @PostMapping("/v1/import")
+    @AuthFilter(role = "ADMIN")
+    public ResponseEntity<?> importStudents(@RequestParam("file") MultipartFile file) throws IOException {
+        studentService.importStudents(file);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
     }
 }

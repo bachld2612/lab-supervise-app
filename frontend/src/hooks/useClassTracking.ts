@@ -46,7 +46,7 @@ interface ClassStudentTrackingResponse {
   applicationsToday: AppUsageEntry[];
 }
 
-export function useClassTracking(classId: number | null, onBanDetected?: (message: string) => void) {
+export function useClassTracking(classId: number | null, onBanDetected?: (message: string) => void, reload?: boolean) {
   const [students, setStudents] = useState<StudentTrackingState[]>([]);
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -75,7 +75,7 @@ export function useClassTracking(classId: number | null, onBanDetected?: (messag
         }
       })
       .finally(() => setLoading(false));
-  }, [classId]);
+  }, [classId, reload]);
 
   useEffect(() => {
     if (!classId) return;

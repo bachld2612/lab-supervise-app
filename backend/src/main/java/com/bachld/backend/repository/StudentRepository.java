@@ -65,4 +65,13 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
         ORDER BY s.code ASC
     """)
     Page<StudentResponse> findByClassId(Pageable pageable, Integer classId, String keyword);
+
+    @Query("""
+        SELECT COUNT(s)
+        FROM Student s
+            JOIN User u ON s.userId = u.id
+        WHERE s.manageClassId = :manageClassId
+            AND u.status = :status
+    """)
+    long countByManageClassIdAndStatus(Integer manageClassId, int status);
 }
