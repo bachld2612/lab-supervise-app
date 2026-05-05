@@ -32,6 +32,7 @@ interface StudentClassInfoResponse {
   applicationName: string;
   createdAt: string;
   banApplication: boolean;
+  type?: 'CONNECT' | 'DISCONNECT' | null;
 }
 
 interface ClassStudentTrackingResponse {
@@ -46,10 +47,17 @@ interface ClassStudentTrackingResponse {
   applicationsToday: AppUsageEntry[];
 }
 
-export function useClassTracking(classId: number | null, onBanDetected?: (message: string) => void, reload?: boolean) {
+export function useClassTracking(
+  classId: number | null,
+  onBanDetected?: (message: string) => void,
+  reload?: boolean,
+  onStudentConnect?: (studentName: string, studentCode: string) => void,
+  onStudentDisconnect?: (studentName: string, studentCode: string) => void
+) {
   const [students, setStudents] = useState<StudentTrackingState[]>([]);
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [connectedStudentIds, setConnectedStudentIds] = useState<Set<number>>(new Set());
   const clientRef = useRef<Client | null>(null);
 
   useEffect(() => {
@@ -92,6 +100,23 @@ export function useClassTracking(classId: number | null, onBanDetected?: (messag
         client.subscribe(`/topic/class/${classId}`, (message: IMessage) => {
           try {
             const data: StudentClassInfoResponse = JSON.parse(message.body);
+
+            if (data.type === 'CONNECT') {
+              setConnectedStudentIds((prev) => new Set(prev).add(data.studentId));
+              onStudentConnect?.(data.studentName, data.studentCode);
+              return;
+            }
+
+            if (data.type === 'DISCONNECT') {
+              setConnectedStudentIds((prev) => {
+                const next = new Set(prev);
+                next.delete(data.studentId);
+                return next;
+              });
+              onStudentDisconnect?.(data.studentName, data.studentCode);
+              return;
+            }
+
             setStudents((prev) =>
               prev.map((s) =>
                 s.studentId === data.studentId
@@ -130,5 +155,5 @@ export function useClassTracking(classId: number | null, onBanDetected?: (messag
     };
   }, [classId]);
 
-  return { students, connected, loading };
+  return { students, connected, loading, connectedStudentIds };
 }

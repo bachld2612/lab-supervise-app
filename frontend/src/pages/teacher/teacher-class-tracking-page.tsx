@@ -63,9 +63,18 @@ export default function TeacherClassTrackingPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { logout } = useAuth();
 
-  const { students, loading } = useClassTracking(classId, (message) => {
-    setAlert({ open: true, message, severity: 'error' });
-  }, reload);
+  const { students, loading, connectedStudentIds } = useClassTracking(
+    classId,
+    (message) => setAlert({ open: true, message, severity: 'error' }),
+    reload,
+    undefined,
+    (studentName, studentCode) =>
+      setAlert({
+        open: true,
+        message: `Sinh viên ${studentName} có mã sinh viên ${studentCode} đã mất kết nối với server`,
+        severity: 'warning'
+      })
+  );
 
   const handleCardClick = (student: StudentTrackingState) => {
     setSelectedStudent(student);
@@ -168,13 +177,7 @@ export default function TeacherClassTrackingPage() {
         </Stack>
 
         <Stack direction="row" spacing={1.5} alignItems="center">
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileImportChange}
-            style={{ display: 'none' }}
-            accept=".xlsx, .xls"
-          />
+          <input type="file" ref={fileInputRef} onChange={handleFileImportChange} style={{ display: 'none' }} accept=".xlsx, .xls" />
           <Button
             variant="outlined"
             size="small"
@@ -222,6 +225,7 @@ export default function TeacherClassTrackingPage() {
             <Grid container spacing={3}>
               {students.map((student) => {
                 const isLocked = lockedStudents.has(student.userId);
+                const isOnline = connectedStudentIds.has(student.studentId);
                 return (
                   <Grid key={student.studentId} size={{ xs: 12, sm: 6, md: 4 }}>
                     <Tooltip title="Bấm để xem chi tiết và điều khiển máy" placement="top" arrow>
@@ -251,16 +255,27 @@ export default function TeacherClassTrackingPage() {
                           <Stack spacing={1.5} sx={{ flex: 1, minHeight: 0 }}>
                             <Stack spacing={0.5}>
                               <Stack direction="row" alignItems="center" justifyContent="space-between">
-                                <Typography variant="h6" fontWeight="bold">
+                                <Typography
+                                  variant="h6"
+                                  fontWeight="bold"
+                                  sx={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', pr: 1 }}
+                                >
                                   {student.fullName}
                                 </Typography>
-                                {isLocked && (
-                                  <Tooltip title="Màn hình đang bị khoá" arrow>
-                                    <Box sx={{ color: 'error.main', display: 'flex', alignItems: 'center' }}>
-                                      <Lock1 size={16} />
+                                <Stack direction="row" spacing={0.75} alignItems="center" sx={{ flexShrink: 0 }}>
+                                  <Tooltip title={isOnline ? 'Kết nối' : 'Mất kết nối'} arrow>
+                                    <Box sx={{ color: isOnline ? 'success.main' : 'text.disabled', display: 'flex', alignItems: 'center' }}>
+                                      <Wifi size={16} />
                                     </Box>
                                   </Tooltip>
-                                )}
+                                  {isLocked && (
+                                    <Tooltip title="Màn hình đang bị khoá" arrow>
+                                      <Box sx={{ color: 'error.main', display: 'flex', alignItems: 'center' }}>
+                                        <Lock1 size={16} />
+                                      </Box>
+                                    </Tooltip>
+                                  )}
+                                </Stack>
                               </Stack>
                               <Stack direction="row" spacing={1}>
                                 <Typography variant="caption" color="text.secondary">
@@ -344,6 +359,7 @@ export default function TeacherClassTrackingPage() {
           student={liveSelectedStudent}
           classId={classId}
           isLocked={lockedStudents.has(liveSelectedStudent.userId)}
+          isOnline={connectedStudentIds.has(liveSelectedStudent.studentId)}
           onLockChange={handleLockChange}
         />
       )}

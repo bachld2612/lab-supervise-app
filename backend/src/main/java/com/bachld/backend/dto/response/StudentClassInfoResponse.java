@@ -25,4 +25,6 @@ public class StudentClassInfoResponse {
     LocalDateTime createdAt;
 
     boolean isBanApplication;
+
+    String type;
 }

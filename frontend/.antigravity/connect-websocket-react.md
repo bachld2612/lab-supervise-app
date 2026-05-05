@@ -92,13 +92,13 @@ export const getClassStudents = async (classId: number): Promise<ClassStudentTra
 
 ### Thông tin kết nối
 
-| Thông số | Giá trị |
-|---|---|
-| WebSocket endpoint | `http://localhost:8080/ws` (hoặc `VITE_APP_API_URL + "ws"`) |
-| Application prefix | `/app` |
-| Broadcast prefix | `/topic` |
-| Auth | JWT trong STOMP CONNECT header: `Authorization: Bearer <token>` |
-| Topic theo dõi lớp | `/topic/class/{classId}` |
+| Thông số           | Giá trị                                                         |
+| ------------------ | --------------------------------------------------------------- |
+| WebSocket endpoint | `http://localhost:8080/ws` (hoặc `VITE_APP_API_URL + "ws"`)     |
+| Application prefix | `/app`                                                          |
+| Broadcast prefix   | `/topic`                                                        |
+| Auth               | JWT trong STOMP CONNECT header: `Authorization: Bearer <token>` |
+| Topic theo dõi lớp | `/topic/class/{classId}`                                        |
 
 ### Thư viện cần cài
 
@@ -114,10 +114,10 @@ Mỗi khi sinh viên chuyển sang app khác, FE nhận:
 ```typescript
 export interface StudentClassInfoResponse {
   classId: number;
-  studentId: number;       // key để tìm và cập nhật trong state
+  studentId: number; // key để tìm và cập nhật trong state
   studentName: string;
   applicationName: string; // tên app đang mở trên máy sinh viên
-  createdAt: string;       // ISO 8601: "2026-04-27T10:30:00"
+  createdAt: string; // ISO 8601: "2026-04-27T10:30:00"
 }
 ```
 
@@ -187,7 +187,7 @@ export function useClassTracking(classId: number | null) {
     const client = new Client({
       webSocketFactory: () => new SockJS(WS_URL),
       connectHeaders: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
       reconnectDelay: 5000,
       onConnect: () => {
@@ -198,22 +198,15 @@ export function useClassTracking(classId: number | null) {
             const data: StudentClassInfoResponse = JSON.parse(message.body);
 
             // Bước 3: Tìm sinh viên theo studentId, cập nhật applicationName
-            setStudents((prev) =>
-              prev.map((s) =>
-                s.studentId === data.studentId
-                  ? { ...s, applicationName: data.applicationName }
-                  : s
-              )
-            );
+            setStudents((prev) => prev.map((s) => (s.studentId === data.studentId ? { ...s, applicationName: data.applicationName } : s)));
           } catch {
             console.error('[WS] Failed to parse message');
           }
         });
       },
       onDisconnect: () => setConnected(false),
-      onStompError: (frame) =>
-        console.error('[WS STOMP Error]', frame.headers['message']),
-      onWebSocketError: () => console.error('[WS] Connection error'),
+      onStompError: (frame) => console.error('[WS STOMP Error]', frame.headers['message']),
+      onWebSocketError: () => console.error('[WS] Connection error')
     });
 
     client.activate();
@@ -274,12 +267,13 @@ export default function ClassMonitorPage({ classId }: { classId: number }) {
 
 ## Authorization
 
-| Role | Quyền |
-|---|---|
-| **TEACHER** | Subscribe được `/topic/class/{classId}` nếu là giảng viên của class đó. Gọi REST `/tracking` để lấy danh sách. |
-| **Student / Desktop** | Gửi tới `/app/pc-info`, không subscribe topic. |
+| Role                  | Quyền                                                                                                          |
+| --------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **TEACHER**           | Subscribe được `/topic/class/{classId}` nếu là giảng viên của class đó. Gọi REST `/tracking` để lấy danh sách. |
+| **Student / Desktop** | Gửi tới `/app/pc-info`, không subscribe topic.                                                                 |
 
 Subscribe vào class không phải của mình → STOMP `ERROR` frame:
+
 ```
 "You are not the lecturer of this class"
 ```
