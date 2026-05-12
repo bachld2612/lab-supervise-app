@@ -16,10 +16,10 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import { Camera, CloseCircle, Global, Lock1, Monitor, Unlock, Wifi } from 'iconsax-reactjs';
+import { Camera, CloseCircle, Global, Lock1, MessageText, Monitor, Unlock, Wifi } from 'iconsax-reactjs';
 import { useEffect, useState } from 'react';
 import { AppUsageEntry, StudentTrackingState } from 'hooks/useClassTracking';
-import { getScreenshot, lockScreen, openWebsiteForStudent } from 'api/veyon';
+import { getScreenshot, lockScreen, openWebsiteForStudent, sendMessageToStudent } from 'api/veyon';
 import { HttpStatusCode } from 'axios';
 
 function formatTime(isoString: string): string {
@@ -77,6 +77,9 @@ export default function StudentActionDialog({
   const [openWebDialogOpen, setOpenWebDialogOpen] = useState(false);
   const [webUrlInput, setWebUrlInput] = useState('');
   const [webUrlLoading, setWebUrlLoading] = useState(false);
+  const [msgDialogOpen, setMsgDialogOpen] = useState(false);
+  const [msgInput, setMsgInput] = useState('');
+  const [msgLoading, setMsgLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -89,10 +92,27 @@ export default function StudentActionDialog({
       setScreenshotOpen(false);
       setOpenWebDialogOpen(false);
       setWebUrlInput('');
+      setMsgDialogOpen(false);
+      setMsgInput('');
     }
   }, [open, student.studentId]);
 
   const showSnackbar = (message: string, severity: 'success' | 'error') => setSnackbar({ open: true, message, severity });
+
+  const handleSendMessageToStudent = async () => {
+    if (!msgInput.trim()) return;
+    setMsgLoading(true);
+    try {
+      await sendMessageToStudent(classId, student.studentId, msgInput.trim());
+      showSnackbar('Đã gửi thông báo tới sinh viên', 'success');
+      setMsgDialogOpen(false);
+      setMsgInput('');
+    } catch (error: unknown) {
+      showSnackbar(extractApiErrorMessage(error, 'Lỗi hệ thống, vui lòng thử lại sau'), 'error');
+    } finally {
+      setMsgLoading(false);
+    }
+  };
 
   const handleOpenWebForStudent = async () => {
     if (!webUrlInput.trim()) return;
@@ -259,6 +279,34 @@ export default function StudentActionDialog({
               </Stack>
             </Tooltip>
 
+            <Tooltip title="Gửi thông báo" arrow>
+              <Stack alignItems="center" spacing={0.75}>
+                <IconButton
+                  onClick={() => setMsgDialogOpen(true)}
+                  sx={{
+                    width: 60,
+                    height: 60,
+                    border: '1.5px solid',
+                    borderColor: 'divider',
+                    borderRadius: 2,
+                    color: 'text.secondary',
+                    transition: 'all 0.2s',
+                    '&:hover': {
+                      bgcolor: 'primary.lighter',
+                      borderColor: 'primary.main',
+                      color: 'primary.main',
+                      transform: 'scale(1.05)'
+                    }
+                  }}
+                >
+                  <MessageText size={26} />
+                </IconButton>
+                <Typography variant="caption" fontWeight="medium" color="text.secondary">
+                  Thông báo
+                </Typography>
+              </Stack>
+            </Tooltip>
+
             <Tooltip title="Mở trang web" arrow>
               <Stack alignItems="center" spacing={0.75}>
                 <IconButton
@@ -336,6 +384,74 @@ export default function StudentActionDialog({
             </Box>
           </Stack>
         </DialogContent>
+      </Dialog>
+
+      {/* Send Message Dialog */}
+      <Dialog
+        open={msgDialogOpen}
+        onClose={() => {
+          setMsgDialogOpen(false);
+          setMsgInput('');
+        }}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{ paper: { sx: { borderRadius: 3 } } }}
+      >
+        <DialogTitle sx={{ pb: 1, pt: 2.5 }}>
+          <Stack direction="row" alignItems="center" justifyContent="space-between">
+            <Typography variant="h5">Gửi thông báo</Typography>
+            <IconButton
+              onClick={() => {
+                setMsgDialogOpen(false);
+                setMsgInput('');
+              }}
+              size="small"
+              sx={{ color: 'text.secondary' }}
+            >
+              <CloseCircle size={20} />
+            </IconButton>
+          </Stack>
+        </DialogTitle>
+        <DialogContent sx={{ pt: 1, pb: 1 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+            Gửi thông báo tới máy của <strong>{student.fullName}</strong>:
+          </Typography>
+          <TextField
+            autoFocus
+            fullWidth
+            multiline
+            rows={3}
+            label="Nội dung thông báo"
+            placeholder="Nhập nội dung thông báo..."
+            value={msgInput}
+            onChange={(e) => setMsgInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessageToStudent();
+              }
+            }}
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2.5 }}>
+          <Button
+            onClick={() => {
+              setMsgDialogOpen(false);
+              setMsgInput('');
+            }}
+            disabled={msgLoading}
+          >
+            Hủy
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleSendMessageToStudent}
+            disabled={msgLoading || !msgInput.trim()}
+            startIcon={msgLoading ? <CircularProgress size={14} color="inherit" /> : <MessageText size={15} />}
+          >
+            Gửi
+          </Button>
+        </DialogActions>
       </Dialog>
 
       {/* Open Website Dialog */}

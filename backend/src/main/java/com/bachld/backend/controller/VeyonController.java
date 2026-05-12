@@ -3,6 +3,7 @@ package com.bachld.backend.controller;
 import com.bachld.backend.dto.request.ImportVeyonKeyRequest;
 import com.bachld.backend.dto.request.LockScreenRequest;
 import com.bachld.backend.dto.request.OpenWebsiteRequest;
+import com.bachld.backend.dto.request.SendMessageRequest;
 import com.bachld.backend.dto.response.BaseResponse;
 import com.bachld.backend.service.VeyonService;
 import com.bachld.backend.util.auth.AuthFilter;
@@ -59,6 +60,20 @@ public class VeyonController {
     @AuthFilter(role = "TEACHER")
     public ResponseEntity<?> openWebsiteForStudent(@PathVariable Integer id, @PathVariable Integer classId, @RequestBody @Valid OpenWebsiteRequest request) {
         veyonService.openWebsiteForStudent(classId, id, request);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+    }
+
+    @PostMapping("/v1/class/{id}/text-message")
+    @AuthFilter(role = "TEACHER")
+    public ResponseEntity<?> sendMessageForClass(@PathVariable Integer id, @RequestBody @Valid SendMessageRequest request) {
+        veyonService.sendMessageForClass(id, request);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+    }
+
+    @PostMapping("/v1/class/{classId}/student/{id}/text-message")
+    @AuthFilter(role = "TEACHER")
+    public ResponseEntity<?> sendMessageForStudent(@PathVariable Integer id, @PathVariable Integer classId, @RequestBody @Valid SendMessageRequest request) {
+        veyonService.sendMessageForStudent(classId, id, request);
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
     }
 }

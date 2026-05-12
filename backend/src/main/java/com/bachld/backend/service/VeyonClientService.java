@@ -39,6 +39,10 @@ public class VeyonClientService {
     String openWebsiteUrl;
 
     @NonFinal
+    @Value("${veyon.api.text-message}")
+    String textMessageUrl;
+
+    @NonFinal
     @Value("${veyon.screenshot.max-retries}")
     int screenshotMaxRetries;
 
@@ -104,6 +108,17 @@ public class VeyonClientService {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         Map<String, Object> body = Map.of("active", true, "arguments", Map.of("websiteUrls", List.of(websiteUrl)));
+        restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(body, headers), String.class);
+    }
+
+    public void sendMessage(String connectionUid, String text, String teacherIp) {
+        String url = textMessageUrl.replace("{{teacher_ip}}", teacherIp);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("connection-uid", connectionUid);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, Object> body = Map.of("active", true, "arguments", Map.of("text", text));
         restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(body, headers), String.class);
     }
 

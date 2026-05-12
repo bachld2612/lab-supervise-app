@@ -37,3 +37,17 @@ export const openWebsiteForStudent = async (
   const response = await axiosServices.post(`/api/veyon/v1/class/${classId}/student/${studentId}/open-website`, { websiteUrl });
   return response.data;
 };
+
+export const sendMessageToClass = async (classId: number, text: string): Promise<{ statusCode: number; data: null }> => {
+  const response = await axiosServices.post(`/api/veyon/v1/class/${classId}/text-message`, { text });
+  return response.data;
+};
+
+export const sendMessageToStudent = async (
+  classId: number,
+  studentId: number,
+  text: string
+): Promise<{ statusCode: number; data: null }> => {
+  const response = await axiosServices.post(`/api/veyon/v1/class/${classId}/student/${studentId}/text-message`, { text });
+  return response.data;
+};

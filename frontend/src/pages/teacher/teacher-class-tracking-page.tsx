@@ -22,12 +22,12 @@ import {
 import MainCard from 'components/MainCard';
 import { ChangeEvent, useRef, useState } from 'react';
 import { useClassTracking, StudentTrackingState } from 'hooks/useClassTracking';
-import { ArrowLeft, ExportCurve, Global, ImportCurve, Key, Lock1, Monitor, Timer1, Wifi } from 'iconsax-reactjs';
+import { ArrowLeft, ExportCurve, Global, ImportCurve, Key, Lock1, MessageText, Monitor, Timer1, Wifi } from 'iconsax-reactjs';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import StudentActionDialog from 'sections/extra-pages/class/student-action-dialog';
 import ImportVeyonKeyDialog from 'sections/extra-pages/class/import-veyon-key-dialog';
 import { importStudentIntoClass, downloadClassStudentImportTemplate } from 'api/class';
-import { openWebsiteForClass } from 'api/veyon';
+import { openWebsiteForClass, sendMessageToClass } from 'api/veyon';
 import { HttpStatusCode } from 'axios';
 import useAuth from 'hooks/useAuth';
 
@@ -69,6 +69,9 @@ export default function TeacherClassTrackingPage() {
   const [openWebDialogOpen, setOpenWebDialogOpen] = useState(false);
   const [webUrlInput, setWebUrlInput] = useState('');
   const [webUrlLoading, setWebUrlLoading] = useState(false);
+  const [msgDialogOpen, setMsgDialogOpen] = useState(false);
+  const [msgInput, setMsgInput] = useState('');
+  const [msgLoading, setMsgLoading] = useState(false);
   const [reload, setReload] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { logout } = useAuth();
@@ -133,6 +136,21 @@ export default function TeacherClassTrackingPage() {
         setAlert({ open: true, message: 'Lỗi hệ thống, vui lòng thử lại sau', severity: 'error' });
       }
       event.target.value = '';
+    }
+  };
+
+  const handleSendMessageToClass = async () => {
+    if (!classId || !msgInput.trim()) return;
+    setMsgLoading(true);
+    try {
+      await sendMessageToClass(classId, msgInput.trim());
+      setAlert({ open: true, message: 'Đã gửi thông báo tới tất cả sinh viên', severity: 'success' });
+      setMsgDialogOpen(false);
+      setMsgInput('');
+    } catch {
+      setAlert({ open: true, message: 'Lỗi hệ thống, vui lòng thử lại sau', severity: 'error' });
+    } finally {
+      setMsgLoading(false);
     }
   };
 
@@ -239,7 +257,30 @@ export default function TeacherClassTrackingPage() {
       </Stack>
 
       {classId && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', pb: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, pb: 2 }}>
+          <Tooltip title="Gửi thông báo tới cả lớp" arrow placement="top">
+            <IconButton
+              onClick={() => setMsgDialogOpen(true)}
+              sx={{
+                width: 56,
+                height: 56,
+                bgcolor: 'background.paper',
+                border: '1.5px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+                color: 'text.secondary',
+                transition: 'all 0.2s',
+                '&:hover': {
+                  bgcolor: 'primary.lighter',
+                  borderColor: 'primary.main',
+                  color: 'primary.main',
+                  transform: 'scale(1.05)'
+                }
+              }}
+            >
+              <MessageText size={26} />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Mở trang web cho cả lớp" arrow placement="top">
             <IconButton
               onClick={() => setOpenWebDialogOpen(true)}
@@ -418,6 +459,51 @@ export default function TeacherClassTrackingPage() {
       )}
 
       {classId && <ImportVeyonKeyDialog open={importKeyOpen} onClose={() => setImportKeyOpen(false)} classId={classId} />}
+
+      <Dialog
+        open={msgDialogOpen}
+        onClose={() => {
+          setMsgDialogOpen(false);
+          setMsgInput('');
+        }}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{ paper: { sx: { borderRadius: 3 } } }}
+      >
+        <DialogTitle>Gửi thông báo tới cả lớp</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            fullWidth
+            multiline
+            rows={3}
+            label="Nội dung thông báo"
+            placeholder="Nhập nội dung thông báo..."
+            value={msgInput}
+            onChange={(e) => setMsgInput(e.target.value)}
+            sx={{ mt: 1 }}
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2.5 }}>
+          <Button
+            onClick={() => {
+              setMsgDialogOpen(false);
+              setMsgInput('');
+            }}
+            disabled={msgLoading}
+          >
+            Hủy
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleSendMessageToClass}
+            disabled={msgLoading || !msgInput.trim()}
+            startIcon={msgLoading ? <CircularProgress size={14} color="inherit" /> : <MessageText size={15} />}
+          >
+            Gửi
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Dialog
         open={openWebDialogOpen}
