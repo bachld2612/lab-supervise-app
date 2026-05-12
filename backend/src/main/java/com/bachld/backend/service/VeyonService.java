@@ -3,21 +3,29 @@ package com.bachld.backend.service;
 import com.bachld.backend.config.VeyonKeyManager;
 import com.bachld.backend.dto.request.ImportVeyonKeyRequest;
 import com.bachld.backend.dto.request.LockScreenRequest;
+import com.bachld.backend.dto.request.OpenWebsiteRequest;
 import com.bachld.backend.model.Classes;
 import com.bachld.backend.model.PersonalComputer;
+import com.bachld.backend.model.Student;
+import com.bachld.backend.model.StudentClass;
 import com.bachld.backend.model.Teacher;
 import com.bachld.backend.repository.ClassRepository;
 import com.bachld.backend.repository.PersonalComputerRepository;
+import com.bachld.backend.repository.StudentClassRepository;
+import com.bachld.backend.repository.StudentRepository;
 import com.bachld.backend.repository.TeacherRepository;
 import com.bachld.backend.util.AesEncryptionUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Base64;
+import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -34,6 +42,10 @@ public class VeyonService {
     TeacherRepository teacherRepository;
 
     PersonalComputerRepository personalComputerRepository;
+
+    StudentClassRepository studentClassRepository;
+
+    StudentRepository studentRepository;
 
     public String getPublicKey() {
         return veyonKeyManager.getPublicKeyBase64();
@@ -69,6 +81,36 @@ public class VeyonService {
         String studentIp = getStudentIp(request.getStudentUserId());
         String connectionUid = veyonClientService.getConnectionUid(credentials[0], credentials[1], credentials[2], studentIp);
         veyonClientService.lockScreen(connectionUid, request.getActive(), credentials[2]);
+    }
+
+    public void openWebsiteForStudent(Integer classId, Integer studentId, OpenWebsiteRequest request) {
+        String[] credentials = getVeyonCredentials(classId);
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sinh viên có id: " + studentId));
+        PersonalComputer pc = personalComputerRepository.findByUserId(student.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("Sinh viên chưa đăng ký máy tính cá nhân"));
+        String connectionUid = veyonClientService.getConnectionUid(credentials[0], credentials[1], credentials[2], pc.getIpAddress());
+        veyonClientService.openWebsite(connectionUid, request.getWebsiteUrl(), credentials[2]);
+    }
+
+    public void openWebsiteForClass(Integer classId, OpenWebsiteRequest request) {
+        String[] credentials = getVeyonCredentials(classId);
+        List<StudentClass> studentClasses = studentClassRepository.findByClassId(classId);
+
+        for (StudentClass sc : studentClasses) {
+            try {
+                Student student = studentRepository.findById(sc.getStudentId()).orElse(null);
+                if (student == null) continue;
+
+                PersonalComputer pc = personalComputerRepository.findByUserId(student.getUserId()).orElse(null);
+                if (pc == null) continue;
+
+                String connectionUid = veyonClientService.getConnectionUid(credentials[0], credentials[1], credentials[2], pc.getIpAddress());
+                veyonClientService.openWebsite(connectionUid, request.getWebsiteUrl(), credentials[2]);
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+            }
+        }
     }
 
     public String getScreenshot(Integer classId, Integer studentUserId) {

@@ -6,21 +6,28 @@ import {
   CardContent,
   Chip,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   Grid,
+  IconButton,
   Snackbar,
   Stack,
+  TextField,
   Tooltip,
   Typography
 } from '@mui/material';
 import MainCard from 'components/MainCard';
 import { ChangeEvent, useRef, useState } from 'react';
 import { useClassTracking, StudentTrackingState } from 'hooks/useClassTracking';
-import { ArrowLeft, ExportCurve, ImportCurve, Key, Lock1, Monitor, Timer1, Wifi } from 'iconsax-reactjs';
+import { ArrowLeft, ExportCurve, Global, ImportCurve, Key, Lock1, Monitor, Timer1, Wifi } from 'iconsax-reactjs';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import StudentActionDialog from 'sections/extra-pages/class/student-action-dialog';
 import ImportVeyonKeyDialog from 'sections/extra-pages/class/import-veyon-key-dialog';
 import { importStudentIntoClass, downloadClassStudentImportTemplate } from 'api/class';
+import { openWebsiteForClass } from 'api/veyon';
 import { HttpStatusCode } from 'axios';
 import useAuth from 'hooks/useAuth';
 
@@ -59,6 +66,9 @@ export default function TeacherClassTrackingPage() {
   const [selectedStudent, setSelectedStudent] = useState<StudentTrackingState | null>(null);
   const [lockedStudents, setLockedStudents] = useState<Set<number>>(new Set());
   const [importKeyOpen, setImportKeyOpen] = useState(false);
+  const [openWebDialogOpen, setOpenWebDialogOpen] = useState(false);
+  const [webUrlInput, setWebUrlInput] = useState('');
+  const [webUrlLoading, setWebUrlLoading] = useState(false);
   const [reload, setReload] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { logout } = useAuth();
@@ -123,6 +133,21 @@ export default function TeacherClassTrackingPage() {
         setAlert({ open: true, message: 'Lỗi hệ thống, vui lòng thử lại sau', severity: 'error' });
       }
       event.target.value = '';
+    }
+  };
+
+  const handleOpenWebForClass = async () => {
+    if (!classId || !webUrlInput.trim()) return;
+    setWebUrlLoading(true);
+    try {
+      await openWebsiteForClass(classId, webUrlInput.trim());
+      setAlert({ open: true, message: 'Đã mở trang web cho tất cả sinh viên', severity: 'success' });
+      setOpenWebDialogOpen(false);
+      setWebUrlInput('');
+    } catch {
+      setAlert({ open: true, message: 'Lỗi hệ thống, vui lòng thử lại sau', severity: 'error' });
+    } finally {
+      setWebUrlLoading(false);
     }
   };
 
@@ -212,6 +237,34 @@ export default function TeacherClassTrackingPage() {
           <Chip icon={chip.icon} label={chip.label} color={chip.color} size="small" variant="outlined" />
         </Stack>
       </Stack>
+
+      {classId && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', pb: 2 }}>
+          <Tooltip title="Mở trang web cho cả lớp" arrow placement="top">
+            <IconButton
+              onClick={() => setOpenWebDialogOpen(true)}
+              sx={{
+                width: 56,
+                height: 56,
+                bgcolor: 'background.paper',
+                border: '1.5px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+                color: 'text.secondary',
+                transition: 'all 0.2s',
+                '&:hover': {
+                  bgcolor: 'primary.lighter',
+                  borderColor: 'primary.main',
+                  color: 'primary.main',
+                  transform: 'scale(1.05)'
+                }
+              }}
+            >
+              <Global size={26} />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      )}
 
       <MainCard content={false}>
         <Box sx={{ p: 3 }}>
@@ -365,6 +418,52 @@ export default function TeacherClassTrackingPage() {
       )}
 
       {classId && <ImportVeyonKeyDialog open={importKeyOpen} onClose={() => setImportKeyOpen(false)} classId={classId} />}
+
+      <Dialog
+        open={openWebDialogOpen}
+        onClose={() => {
+          setOpenWebDialogOpen(false);
+          setWebUrlInput('');
+        }}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{ paper: { sx: { borderRadius: 3 } } }}
+      >
+        <DialogTitle>Mở trang web cho cả lớp</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            fullWidth
+            label="Địa chỉ trang web"
+            placeholder="https://example.com"
+            value={webUrlInput}
+            onChange={(e) => setWebUrlInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleOpenWebForClass();
+            }}
+            sx={{ mt: 1 }}
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2.5 }}>
+          <Button
+            onClick={() => {
+              setOpenWebDialogOpen(false);
+              setWebUrlInput('');
+            }}
+            disabled={webUrlLoading}
+          >
+            Hủy
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleOpenWebForClass}
+            disabled={webUrlLoading || !webUrlInput.trim()}
+            startIcon={webUrlLoading ? <CircularProgress size={14} color="inherit" /> : <Global size={15} />}
+          >
+            Mở web
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Stack>
   );
 }

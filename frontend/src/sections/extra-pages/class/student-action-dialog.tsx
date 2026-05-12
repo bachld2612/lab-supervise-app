@@ -2,21 +2,24 @@ import {
   Alert,
   Avatar,
   Box,
+  Button,
   CircularProgress,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
   IconButton,
   Snackbar,
   Stack,
+  TextField,
   Tooltip,
   Typography
 } from '@mui/material';
-import { Camera, CloseCircle, Lock1, Monitor, Unlock, Wifi } from 'iconsax-reactjs';
+import { Camera, CloseCircle, Global, Lock1, Monitor, Unlock, Wifi } from 'iconsax-reactjs';
 import { useEffect, useState } from 'react';
 import { AppUsageEntry, StudentTrackingState } from 'hooks/useClassTracking';
-import { getScreenshot, lockScreen } from 'api/veyon';
+import { getScreenshot, lockScreen, openWebsiteForStudent } from 'api/veyon';
 import { HttpStatusCode } from 'axios';
 
 function formatTime(isoString: string): string {
@@ -71,6 +74,9 @@ export default function StudentActionDialog({
   const [screenshotLoading, setScreenshotLoading] = useState(false);
   const [screenshotData, setScreenshotData] = useState<string | null>(null);
   const [screenshotOpen, setScreenshotOpen] = useState(false);
+  const [openWebDialogOpen, setOpenWebDialogOpen] = useState(false);
+  const [webUrlInput, setWebUrlInput] = useState('');
+  const [webUrlLoading, setWebUrlLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -81,10 +87,27 @@ export default function StudentActionDialog({
     if (!open) {
       setScreenshotData(null);
       setScreenshotOpen(false);
+      setOpenWebDialogOpen(false);
+      setWebUrlInput('');
     }
   }, [open, student.studentId]);
 
   const showSnackbar = (message: string, severity: 'success' | 'error') => setSnackbar({ open: true, message, severity });
+
+  const handleOpenWebForStudent = async () => {
+    if (!webUrlInput.trim()) return;
+    setWebUrlLoading(true);
+    try {
+      await openWebsiteForStudent(classId, student.studentId, webUrlInput.trim());
+      showSnackbar('Đã mở trang web cho sinh viên', 'success');
+      setOpenWebDialogOpen(false);
+      setWebUrlInput('');
+    } catch (error: unknown) {
+      showSnackbar(extractApiErrorMessage(error, 'Lỗi hệ thống, vui lòng thử lại sau'), 'error');
+    } finally {
+      setWebUrlLoading(false);
+    }
+  };
 
   const handleLockToggle = async () => {
     setLockLoading(true);
@@ -235,6 +258,34 @@ export default function StudentActionDialog({
                 </Typography>
               </Stack>
             </Tooltip>
+
+            <Tooltip title="Mở trang web" arrow>
+              <Stack alignItems="center" spacing={0.75}>
+                <IconButton
+                  onClick={() => setOpenWebDialogOpen(true)}
+                  sx={{
+                    width: 60,
+                    height: 60,
+                    border: '1.5px solid',
+                    borderColor: 'divider',
+                    borderRadius: 2,
+                    color: 'text.secondary',
+                    transition: 'all 0.2s',
+                    '&:hover': {
+                      bgcolor: 'primary.lighter',
+                      borderColor: 'primary.main',
+                      color: 'primary.main',
+                      transform: 'scale(1.05)'
+                    }
+                  }}
+                >
+                  <Global size={26} />
+                </IconButton>
+                <Typography variant="caption" fontWeight="medium" color="text.secondary">
+                  Mở web
+                </Typography>
+              </Stack>
+            </Tooltip>
           </Stack>
 
           <Divider sx={{ mb: 2 }} />
@@ -285,6 +336,69 @@ export default function StudentActionDialog({
             </Box>
           </Stack>
         </DialogContent>
+      </Dialog>
+
+      {/* Open Website Dialog */}
+      <Dialog
+        open={openWebDialogOpen}
+        onClose={() => {
+          setOpenWebDialogOpen(false);
+          setWebUrlInput('');
+        }}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{ paper: { sx: { borderRadius: 3 } } }}
+      >
+        <DialogTitle sx={{ pb: 1, pt: 2.5 }}>
+          <Stack direction="row" alignItems="center" justifyContent="space-between">
+            <Typography variant="h5">Mở trang web cho sinh viên</Typography>
+            <IconButton
+              onClick={() => {
+                setOpenWebDialogOpen(false);
+                setWebUrlInput('');
+              }}
+              size="small"
+              sx={{ color: 'text.secondary' }}
+            >
+              <CloseCircle size={20} />
+            </IconButton>
+          </Stack>
+        </DialogTitle>
+        <DialogContent sx={{ pt: 1, pb: 1 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+            Điều hướng máy của <strong>{student.fullName}</strong> tới trang web sau:
+          </Typography>
+          <TextField
+            autoFocus
+            fullWidth
+            label="Địa chỉ trang web"
+            placeholder="https://example.com"
+            value={webUrlInput}
+            onChange={(e) => setWebUrlInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleOpenWebForStudent();
+            }}
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2.5 }}>
+          <Button
+            onClick={() => {
+              setOpenWebDialogOpen(false);
+              setWebUrlInput('');
+            }}
+            disabled={webUrlLoading}
+          >
+            Hủy
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleOpenWebForStudent}
+            disabled={webUrlLoading || !webUrlInput.trim()}
+            startIcon={webUrlLoading ? <CircularProgress size={14} color="inherit" /> : <Global size={15} />}
+          >
+            Mở web
+          </Button>
+        </DialogActions>
       </Dialog>
 
       {/* Screenshot Preview Dialog */}
