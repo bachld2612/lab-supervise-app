@@ -16,10 +16,12 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import { Camera, CloseCircle, Global, Lock1, MessageText, Monitor, Unlock, Wifi } from 'iconsax-reactjs';
-import { useEffect, useState } from 'react';
+import { Camera, CloseCircle, DocumentUpload, Global, Lock1, MessageText, Monitor, Unlock, Wifi } from 'iconsax-reactjs';
+import { useEffect, useRef, useState } from 'react';
 import { AppUsageEntry, StudentTrackingState } from 'hooks/useClassTracking';
 import { getScreenshot, lockScreen, openWebsiteForStudent, sendMessageToStudent } from 'api/veyon';
+import { sendFileToStudent } from 'api/class';
+import { ChangeEvent } from 'react';
 import { HttpStatusCode } from 'axios';
 
 function formatTime(isoString: string): string {
@@ -80,6 +82,10 @@ export default function StudentActionDialog({
   const [msgDialogOpen, setMsgDialogOpen] = useState(false);
   const [msgInput, setMsgInput] = useState('');
   const [msgLoading, setMsgLoading] = useState(false);
+  const [sendFileDialogOpen, setSendFileDialogOpen] = useState(false);
+  const [fileToSend, setFileToSend] = useState<File | null>(null);
+  const [sendFileLoading, setSendFileLoading] = useState(false);
+  const sendFileInputRef = useRef<HTMLInputElement>(null);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -94,10 +100,42 @@ export default function StudentActionDialog({
       setWebUrlInput('');
       setMsgDialogOpen(false);
       setMsgInput('');
+      setSendFileDialogOpen(false);
+      setFileToSend(null);
     }
   }, [open, student.studentId]);
 
   const showSnackbar = (message: string, severity: 'success' | 'error') => setSnackbar({ open: true, message, severity });
+
+  const handleSendFileSelected = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
+    if (file) {
+      setFileToSend(file);
+      setSendFileDialogOpen(true);
+    }
+    event.target.value = '';
+  };
+
+  const handleSendFileToStudent = async () => {
+    if (!fileToSend) return;
+    setSendFileLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', fileToSend);
+      const response = await sendFileToStudent(student.studentId, formData);
+      if (response.statusCode === 200) {
+        showSnackbar(`Đã gửi file "${fileToSend.name}" tới sinh viên`, 'success');
+      } else {
+        showSnackbar(response.message ?? 'Lỗi hệ thống, vui lòng thử lại sau', 'error');
+      }
+    } catch (error: unknown) {
+      showSnackbar(extractApiErrorMessage(error, 'Lỗi hệ thống, vui lòng thử lại sau'), 'error');
+    } finally {
+      setSendFileLoading(false);
+      setSendFileDialogOpen(false);
+      setFileToSend(null);
+    }
+  };
 
   const handleSendMessageToStudent = async () => {
     if (!msgInput.trim()) return;
@@ -218,6 +256,7 @@ export default function StudentActionDialog({
           <Divider sx={{ mb: 2.5 }} />
 
           {/* Action Buttons */}
+          <input type="file" ref={sendFileInputRef} onChange={handleSendFileSelected} style={{ display: 'none' }} />
           <Stack direction="row" spacing={3} justifyContent="center" sx={{ mb: 2.5 }}>
             <Tooltip title={isLocked ? 'Mở khoá màn hình' : 'Khoá màn hình'} arrow>
               <Stack alignItems="center" spacing={0.75}>
@@ -275,6 +314,36 @@ export default function StudentActionDialog({
                 </IconButton>
                 <Typography variant="caption" fontWeight="medium" color="text.secondary">
                   Chụp màn hình
+                </Typography>
+              </Stack>
+            </Tooltip>
+
+            <Tooltip title="Gửi file" arrow>
+              <Stack alignItems="center" spacing={0.75}>
+                <IconButton
+                  onClick={() => sendFileInputRef.current?.click()}
+                  disabled={sendFileLoading}
+                  sx={{
+                    width: 60,
+                    height: 60,
+                    border: '1.5px solid',
+                    borderColor: 'divider',
+                    borderRadius: 2,
+                    color: 'text.secondary',
+                    transition: 'all 0.2s',
+                    '&:hover': {
+                      bgcolor: 'primary.lighter',
+                      borderColor: 'primary.main',
+                      color: 'primary.main',
+                      transform: 'scale(1.05)'
+                    },
+                    '&.Mui-disabled': { borderColor: 'divider', opacity: 0.5 }
+                  }}
+                >
+                  <DocumentUpload size={26} />
+                </IconButton>
+                <Typography variant="caption" fontWeight="medium" color="text.secondary">
+                  Gửi file
                 </Typography>
               </Stack>
             </Tooltip>
@@ -384,6 +453,71 @@ export default function StudentActionDialog({
             </Box>
           </Stack>
         </DialogContent>
+      </Dialog>
+
+      {/* Send File Dialog */}
+      <Dialog
+        open={sendFileDialogOpen}
+        onClose={() => {
+          if (!sendFileLoading) {
+            setSendFileDialogOpen(false);
+            setFileToSend(null);
+          }
+        }}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{ paper: { sx: { borderRadius: 3 } } }}
+      >
+        <DialogTitle sx={{ pb: 1, pt: 2.5 }}>
+          <Stack direction="row" alignItems="center" justifyContent="space-between">
+            <Typography variant="h5">Gửi file cho sinh viên</Typography>
+            <IconButton
+              onClick={() => {
+                setSendFileDialogOpen(false);
+                setFileToSend(null);
+              }}
+              disabled={sendFileLoading}
+              size="small"
+              sx={{ color: 'text.secondary' }}
+            >
+              <CloseCircle size={20} />
+            </IconButton>
+          </Stack>
+        </DialogTitle>
+        <DialogContent sx={{ pt: 1, pb: 1 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+            File sẽ được gửi tới máy của <strong>{student.fullName}</strong> và tải về tự động.
+          </Typography>
+          {fileToSend && (
+            <Box sx={{ p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 2, bgcolor: 'background.default' }}>
+              <Typography variant="body2" fontWeight="medium" noWrap>
+                {fileToSend.name}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {(fileToSend.size / 1024 / 1024).toFixed(2)} MB
+              </Typography>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2.5 }}>
+          <Button
+            onClick={() => {
+              setSendFileDialogOpen(false);
+              setFileToSend(null);
+            }}
+            disabled={sendFileLoading}
+          >
+            Hủy
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleSendFileToStudent}
+            disabled={sendFileLoading}
+            startIcon={sendFileLoading ? <CircularProgress size={14} color="inherit" /> : <DocumentUpload size={15} />}
+          >
+            Gửi
+          </Button>
+        </DialogActions>
       </Dialog>
 
       {/* Send Message Dialog */}

@@ -22,11 +22,23 @@ import {
 import MainCard from 'components/MainCard';
 import { ChangeEvent, useRef, useState } from 'react';
 import { useClassTracking, StudentTrackingState } from 'hooks/useClassTracking';
-import { ArrowLeft, ExportCurve, Global, ImportCurve, Key, Lock1, MessageText, Monitor, Timer1, Wifi } from 'iconsax-reactjs';
+import {
+  ArrowLeft,
+  DocumentUpload,
+  ExportCurve,
+  Global,
+  ImportCurve,
+  Key,
+  Lock1,
+  MessageText,
+  Monitor,
+  Timer1,
+  Wifi
+} from 'iconsax-reactjs';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import StudentActionDialog from 'sections/extra-pages/class/student-action-dialog';
 import ImportVeyonKeyDialog from 'sections/extra-pages/class/import-veyon-key-dialog';
-import { importStudentIntoClass, downloadClassStudentImportTemplate } from 'api/class';
+import { importStudentIntoClass, downloadClassStudentImportTemplate, sendFileToClass } from 'api/class';
 import { openWebsiteForClass, sendMessageToClass } from 'api/veyon';
 import { HttpStatusCode } from 'axios';
 import useAuth from 'hooks/useAuth';
@@ -72,8 +84,12 @@ export default function TeacherClassTrackingPage() {
   const [msgDialogOpen, setMsgDialogOpen] = useState(false);
   const [msgInput, setMsgInput] = useState('');
   const [msgLoading, setMsgLoading] = useState(false);
+  const [sendFileDialogOpen, setSendFileDialogOpen] = useState(false);
+  const [fileToSend, setFileToSend] = useState<File | null>(null);
+  const [sendFileLoading, setSendFileLoading] = useState(false);
   const [reload, setReload] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const sendFileInputRef = useRef<HTMLInputElement>(null);
   const { logout } = useAuth();
 
   const { students, loading, connectedStudentIds } = useClassTracking(
@@ -136,6 +152,36 @@ export default function TeacherClassTrackingPage() {
         setAlert({ open: true, message: 'Lỗi hệ thống, vui lòng thử lại sau', severity: 'error' });
       }
       event.target.value = '';
+    }
+  };
+
+  const handleSendFileSelected = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
+    if (file) {
+      setFileToSend(file);
+      setSendFileDialogOpen(true);
+    }
+    event.target.value = '';
+  };
+
+  const handleSendFileToClass = async () => {
+    if (!classId || !fileToSend) return;
+    setSendFileLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', fileToSend);
+      const response = await sendFileToClass(classId, formData);
+      if (response.statusCode === HttpStatusCode.Ok) {
+        setAlert({ open: true, message: `Đã gửi file "${fileToSend.name}" tới tất cả sinh viên`, severity: 'success' });
+      } else {
+        setAlert({ open: true, message: response.message ?? 'Lỗi hệ thống, vui lòng thử lại sau', severity: 'error' });
+      }
+    } catch {
+      setAlert({ open: true, message: 'Lỗi hệ thống, vui lòng thử lại sau', severity: 'error' });
+    } finally {
+      setSendFileLoading(false);
+      setSendFileDialogOpen(false);
+      setFileToSend(null);
     }
   };
 
@@ -258,6 +304,30 @@ export default function TeacherClassTrackingPage() {
 
       {classId && (
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, pb: 2 }}>
+          <input type="file" ref={sendFileInputRef} onChange={handleSendFileSelected} style={{ display: 'none' }} />
+          <Tooltip title="Gửi file tới cả lớp" arrow placement="top">
+            <IconButton
+              onClick={() => sendFileInputRef.current?.click()}
+              sx={{
+                width: 56,
+                height: 56,
+                bgcolor: 'background.paper',
+                border: '1.5px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+                color: 'text.secondary',
+                transition: 'all 0.2s',
+                '&:hover': {
+                  bgcolor: 'primary.lighter',
+                  borderColor: 'primary.main',
+                  color: 'primary.main',
+                  transform: 'scale(1.05)'
+                }
+              }}
+            >
+              <DocumentUpload size={26} />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Gửi thông báo tới cả lớp" arrow placement="top">
             <IconButton
               onClick={() => setMsgDialogOpen(true)}
@@ -459,6 +529,65 @@ export default function TeacherClassTrackingPage() {
       )}
 
       {classId && <ImportVeyonKeyDialog open={importKeyOpen} onClose={() => setImportKeyOpen(false)} classId={classId} />}
+
+      <Dialog
+        open={sendFileDialogOpen}
+        onClose={() => {
+          if (!sendFileLoading) {
+            setSendFileDialogOpen(false);
+            setFileToSend(null);
+          }
+        }}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{ paper: { sx: { borderRadius: 3 } } }}
+      >
+        <DialogTitle>Gửi file tới cả lớp</DialogTitle>
+        <DialogContent>
+          <Stack spacing={1} sx={{ mt: 1 }}>
+            <Typography variant="body2" color="text.secondary">
+              File sẽ được gửi tới <strong>tất cả sinh viên</strong> trong lớp và tải về máy của họ.
+            </Typography>
+            {fileToSend && (
+              <Box
+                sx={{
+                  p: 1.5,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                  bgcolor: 'background.default'
+                }}
+              >
+                <Typography variant="body2" fontWeight="medium" noWrap>
+                  {fileToSend.name}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {(fileToSend.size / 1024 / 1024).toFixed(2)} MB
+                </Typography>
+              </Box>
+            )}
+          </Stack>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2.5 }}>
+          <Button
+            onClick={() => {
+              setSendFileDialogOpen(false);
+              setFileToSend(null);
+            }}
+            disabled={sendFileLoading}
+          >
+            Hủy
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleSendFileToClass}
+            disabled={sendFileLoading}
+            startIcon={sendFileLoading ? <CircularProgress size={14} color="inherit" /> : <DocumentUpload size={15} />}
+          >
+            Gửi
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Dialog
         open={msgDialogOpen}

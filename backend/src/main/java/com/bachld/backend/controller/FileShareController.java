@@ -1,0 +1,36 @@
+package com.bachld.backend.controller;
+
+import com.bachld.backend.dto.response.BaseResponse;
+import com.bachld.backend.service.FileShareService;
+import com.bachld.backend.util.auth.AuthFilter;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+@RestController
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class FileShareController {
+
+    FileShareService fileShareService;
+
+    @PostMapping("/api/class/{id}/send-file")
+    @AuthFilter(role = "TEACHER")
+    public ResponseEntity<?> sendFileToClass(@PathVariable Integer id,
+                                             @RequestParam("file") MultipartFile file) {
+        fileShareService.sendFileToClass(id, file);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+    }
+
+    @PostMapping("/api/student/{id}/send-file")
+    @AuthFilter(role = "TEACHER")
+    public ResponseEntity<?> sendFileToStudent(@PathVariable Integer id,
+                                               @RequestParam("file") MultipartFile file) {
+        fileShareService.sendFileToStudent(id, file);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+    }
+}
