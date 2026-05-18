@@ -4,6 +4,7 @@ import com.bachld.backend.dto.response.StudentClassInfoResponse;
 import com.bachld.backend.model.*;
 import com.bachld.backend.repository.*;
 import com.bachld.backend.util.enums.Role;
+import com.bachld.backend.util.enums.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -31,6 +32,8 @@ public class WebSocketEventListener {
     private final StudentClassRepository studentClassRepository;
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
+    private final ConnectedStudentRegistry connectedStudentRegistry;
+    private final StudentClassInfoRepository studentClassInfoRepository;
 
     @EventListener
     public void handleSessionConnected(SessionConnectedEvent event) {
@@ -69,6 +72,21 @@ public class WebSocketEventListener {
                 .type(type)
                 .createdAt(LocalDateTime.now())
                 .build();
+
+        if ("CONNECT".equals(type)) {
+            connectedStudentRegistry.register(activeClass.getId(), student.getId());
+        } else if ("DISCONNECT".equals(type)) {
+            connectedStudentRegistry.unregister(activeClass.getId(), student.getId());
+        }
+
+        studentClassRepository.findByStudentIdAndClassId(student.getId(), activeClass.getId()).ifPresent(sc -> {
+            StudentClassInfo log = new StudentClassInfo();
+            log.setStudentClassId(sc.getId());
+            log.setConnectionType(type);
+            log.setBanApplication(false);
+            log.setStatus(Status.ACTIVE.getValue());
+            studentClassInfoRepository.save(log);
+        });
 
         messagingTemplate.convertAndSend("/topic/class/" + activeClass.getId(), response);
         log.info("Student {} ({}) [{}] class {}", student.getCode(), user.getFullName(), type, activeClass.getId());

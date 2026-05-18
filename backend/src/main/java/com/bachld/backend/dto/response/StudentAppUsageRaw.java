@@ -18,4 +18,6 @@ public class StudentAppUsageRaw {
     LocalDateTime createdAt;
 
     boolean isBanApplication;
+
+    String connectionType;
 }

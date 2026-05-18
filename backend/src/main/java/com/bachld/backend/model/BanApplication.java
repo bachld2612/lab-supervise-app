@@ -18,7 +18,7 @@ public class BanApplication extends BaseEntity {
     @Column(name = "teacher_id")
     Integer teacherId;
 
-    @Column(name = "application_name")
+    @Column(name = "application_name", columnDefinition = "TEXT")
     String applicationName;
 
     @Column(name = "image_url", columnDefinition = "TEXT")

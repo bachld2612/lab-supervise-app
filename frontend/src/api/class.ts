@@ -109,6 +109,24 @@ const sendFileToClass = async (classId: number, formData: FormData) => {
   }
 };
 
+const getClassStudyStatus = async (classId: number) => {
+  try {
+    const response = await axiosServices.get(`/api/class/v1/${classId}/study-status`);
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+const getConnectedStudents = async (classId: number) => {
+  try {
+    const response = await axiosServices.get(`/api/class/v1/${classId}/connected-students`);
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
 const sendFileToStudent = async (studentId: number, formData: FormData) => {
   try {
     const response = await axiosServices.post(`/api/student/${studentId}/send-file`, formData, {
@@ -125,12 +143,14 @@ const sendFileToStudent = async (studentId: number, formData: FormData) => {
 export {
   getList,
   getById,
+  getClassStudyStatus,
   create,
   update,
   deleteById,
   getTeacherClasses,
   getStudentsByClassId,
   getClassStudentTracking,
+  getConnectedStudents,
   downloadClassStudentImportTemplate,
   importStudentIntoClass,
   sendFileToClass,

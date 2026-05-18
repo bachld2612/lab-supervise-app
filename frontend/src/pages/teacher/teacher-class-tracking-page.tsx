@@ -20,25 +20,13 @@ import {
   Typography
 } from '@mui/material';
 import MainCard from 'components/MainCard';
-import { ChangeEvent, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useClassTracking, StudentTrackingState } from 'hooks/useClassTracking';
-import {
-  ArrowLeft,
-  DocumentUpload,
-  ExportCurve,
-  Global,
-  ImportCurve,
-  Key,
-  Lock1,
-  MessageText,
-  Monitor,
-  Timer1,
-  Wifi
-} from 'iconsax-reactjs';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { ArrowLeft, DocumentUpload, ExportCurve, Global, ImportCurve, Key, Lock1, MessageText, Timer1, Wifi } from 'iconsax-reactjs';
+import { useNavigate, useParams } from 'react-router';
 import StudentActionDialog from 'sections/extra-pages/class/student-action-dialog';
 import ImportVeyonKeyDialog from 'sections/extra-pages/class/import-veyon-key-dialog';
-import { importStudentIntoClass, downloadClassStudentImportTemplate, sendFileToClass } from 'api/class';
+import { importStudentIntoClass, downloadClassStudentImportTemplate, sendFileToClass, getClassStudyStatus } from 'api/class';
 import { openWebsiteForClass, sendMessageToClass } from 'api/veyon';
 import { HttpStatusCode } from 'axios';
 import useAuth from 'hooks/useAuth';
@@ -55,24 +43,10 @@ function formatTime(isoString: string): string {
   }
 }
 
-function useConnectionChip(studyStatus: number | undefined) {
-  if (studyStatus === undefined) {
-    return { label: 'Đang kết nối', color: 'warning' as const, icon: <Wifi size={14} /> };
-  }
-  if (studyStatus === 1) {
-    return { label: 'Đã kết nối', color: 'success' as const, icon: <Wifi size={14} /> };
-  }
-  return { label: 'Chờ đến giờ học', color: 'warning' as const, icon: <Timer1 size={14} /> };
-}
-
 export default function TeacherClassTrackingPage() {
   const { id } = useParams<{ id: string }>();
   const classId = id ? Number(id) : null;
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const studyStatus: number | undefined = location.state?.studyStatus;
-  const chip = useConnectionChip(studyStatus);
 
   const [alert, setAlert] = useState({ open: false, message: '', severity: 'error' as 'success' | 'error' | 'info' | 'warning' });
   const [selectedStudent, setSelectedStudent] = useState<StudentTrackingState | null>(null);
@@ -88,9 +62,17 @@ export default function TeacherClassTrackingPage() {
   const [fileToSend, setFileToSend] = useState<File | null>(null);
   const [sendFileLoading, setSendFileLoading] = useState(false);
   const [reload, setReload] = useState(false);
+  const [studyStatus, setStudyStatus] = useState<number | undefined>(undefined);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const sendFileInputRef = useRef<HTMLInputElement>(null);
   const { logout } = useAuth();
+
+  useEffect(() => {
+    if (!classId) return;
+    getClassStudyStatus(classId).then((res) => {
+      if (res?.statusCode === HttpStatusCode.Ok) setStudyStatus(res.data as number);
+    });
+  }, [classId]);
 
   const { students, loading, connectedStudentIds } = useClassTracking(
     classId,
@@ -104,6 +86,44 @@ export default function TeacherClassTrackingPage() {
         severity: 'warning'
       })
   );
+
+  const chip =
+    studyStatus === undefined
+      ? { label: 'Đang kết nối', color: 'warning' as const, icon: <Wifi size={14} /> }
+      : studyStatus === 1
+        ? { label: 'Đã kết nối', color: 'success' as const, icon: <Wifi size={14} /> }
+        : { label: 'Chờ đến giờ học', color: 'warning' as const, icon: <Timer1 size={14} /> };
+
+  const activityFeed = useMemo(() => {
+    type FeedEntry = {
+      eventType: 'app' | 'connect' | 'disconnect';
+      studentName: string;
+      applicationName?: string;
+      banApplication?: boolean;
+      createdAt: string;
+    };
+    const entries: FeedEntry[] = [];
+    for (const s of students) {
+      for (const e of s.appHistory) {
+        if (e.connectionType) {
+          entries.push({
+            eventType: e.connectionType === 'CONNECT' ? 'connect' : 'disconnect',
+            studentName: s.fullName,
+            createdAt: e.createdAt
+          });
+        } else {
+          entries.push({
+            eventType: 'app',
+            studentName: s.fullName,
+            applicationName: e.applicationName,
+            banApplication: e.banApplication,
+            createdAt: e.createdAt
+          });
+        }
+      }
+    }
+    return entries.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 100);
+  }, [students]);
 
   const handleCardClick = (student: StudentTrackingState) => {
     setSelectedStudent(student);
@@ -377,144 +397,186 @@ export default function TeacherClassTrackingPage() {
         </Box>
       )}
 
-      <MainCard content={false}>
-        <Box sx={{ p: 3 }}>
-          {students.length === 0 ? (
-            <Box textAlign="center" py={6}>
-              <Typography color="text.secondary" variant="h6">
-                Không có sinh viên nào trong lớp này
-              </Typography>
-            </Box>
-          ) : (
-            <Grid container spacing={3}>
-              {students.map((student) => {
-                const isLocked = lockedStudents.has(student.userId);
-                const isOnline = connectedStudentIds.has(student.studentId);
-                return (
-                  <Grid key={student.studentId} size={{ xs: 12, sm: 6, md: 4 }}>
-                    <Tooltip title="Bấm để xem chi tiết và điều khiển máy" placement="top" arrow>
-                      <Card
-                        onClick={() => handleCardClick(student)}
-                        sx={{
-                          height: '100%',
-                          border: '1px solid',
-                          borderColor: isLocked ? 'error.main' : 'divider',
-                          borderRadius: 2,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          cursor: 'pointer',
-                          transition: 'transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease',
-                          '&:hover': {
-                            transform: 'translateY(-3px)',
-                            boxShadow: 4,
-                            borderColor: isLocked ? 'error.dark' : 'primary.main'
-                          },
-                          '&:active': {
-                            transform: 'translateY(-1px)',
-                            boxShadow: 2
-                          }
-                        }}
-                      >
-                        <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 }, display: 'flex', flexDirection: 'column', height: '100%' }}>
-                          <Stack spacing={1.5} sx={{ flex: 1, minHeight: 0 }}>
-                            <Stack spacing={0.5}>
-                              <Stack direction="row" alignItems="center" justifyContent="space-between">
-                                <Typography
-                                  variant="h6"
-                                  fontWeight="bold"
-                                  sx={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', pr: 1 }}
-                                >
+      <Stack direction={{ xs: 'column', lg: 'row' }} spacing={2} alignItems="flex-start">
+        {/* Left panel: student cards grid */}
+        <Box sx={{ flex: '1 1 0', minWidth: 0 }}>
+          <MainCard content={false}>
+            <Box sx={{ p: 2 }}>
+              {students.length === 0 ? (
+                <Box textAlign="center" py={6}>
+                  <Typography color="text.secondary" variant="h6">
+                    Không có sinh viên nào trong lớp này
+                  </Typography>
+                </Box>
+              ) : (
+                <Grid container spacing={1.5}>
+                  {students.map((student, idx) => {
+                    const isLocked = lockedStudents.has(student.userId);
+                    const isOnline = connectedStudentIds.has(student.studentId);
+                    const latestEntry = student.appHistory.find((e) => !e.connectionType) ?? null;
+                    const isBanned = isOnline && latestEntry?.banApplication === true;
+                    return (
+                      <Grid key={student.studentId} size={{ xs: 12, sm: 6, md: 3 }}>
+                        <Tooltip title="Bấm để xem chi tiết và điều khiển máy" placement="top" arrow>
+                          <Card
+                            onClick={() => handleCardClick(student)}
+                            sx={{
+                              border: '2px solid',
+                              borderColor: isBanned ? 'error.main' : isOnline ? 'success.main' : 'divider',
+                              borderRadius: 2,
+                              cursor: 'pointer',
+                              bgcolor: isBanned ? 'rgba(255,86,48,0.08)' : 'background.paper',
+                              transition: 'transform 0.15s, box-shadow 0.15s',
+                              '&:hover': { transform: 'translateY(-2px)', boxShadow: 3 }
+                            }}
+                          >
+                            <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
+                              <Stack spacing={0.75}>
+                                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                                  <Typography variant="caption" color="text.disabled" fontFamily="monospace" fontWeight="bold">
+                                    {`PC-${String(idx + 1).padStart(2, '0')}`}
+                                  </Typography>
+                                  <Stack direction="row" spacing={0.5} alignItems="center">
+                                    {isLocked && (
+                                      <Box sx={{ color: 'warning.main', display: 'flex', alignItems: 'center' }}>
+                                        <Lock1 size={12} />
+                                      </Box>
+                                    )}
+                                    <Box
+                                      sx={{
+                                        width: 8,
+                                        height: 8,
+                                        borderRadius: '50%',
+                                        bgcolor: isBanned ? 'error.main' : isOnline ? 'success.main' : 'text.disabled'
+                                      }}
+                                    />
+                                  </Stack>
+                                </Stack>
+                                <Typography variant="body2" fontWeight="bold" noWrap title={student.fullName}>
                                   {student.fullName}
                                 </Typography>
-                                <Stack direction="row" spacing={0.75} alignItems="center" sx={{ flexShrink: 0 }}>
-                                  <Tooltip title={isOnline ? 'Kết nối' : 'Mất kết nối'} arrow>
-                                    <Box sx={{ color: isOnline ? 'success.main' : 'text.disabled', display: 'flex', alignItems: 'center' }}>
-                                      <Wifi size={16} />
-                                    </Box>
-                                  </Tooltip>
-                                  {isLocked && (
-                                    <Tooltip title="Màn hình đang bị khoá" arrow>
-                                      <Box sx={{ color: 'error.main', display: 'flex', alignItems: 'center' }}>
-                                        <Lock1 size={16} />
-                                      </Box>
-                                    </Tooltip>
-                                  )}
-                                </Stack>
-                              </Stack>
-                              <Stack direction="row" spacing={1}>
                                 <Typography variant="caption" color="text.secondary">
                                   {student.code}
                                 </Typography>
-                                <Typography variant="caption" color="text.disabled">
-                                  ·
-                                </Typography>
-                                <Typography variant="caption" color="text.secondary">
-                                  {student.manageClassName}
-                                </Typography>
-                              </Stack>
-                            </Stack>
-
-                            <Divider />
-
-                            <Stack spacing={0.5}>
-                              <Stack direction="row" spacing={1} alignItems="center">
-                                <Monitor size={14} />
-                                <Typography variant="caption" fontWeight="medium" color="text.secondary">
-                                  Ứng dụng đang dùng
-                                </Typography>
-                              </Stack>
-
-                              <Box
-                                sx={{
-                                  maxHeight: 180,
-                                  overflowX: 'auto',
-                                  overflowY: 'auto',
-                                  pr: 0.5,
-                                  pb: 0.5,
-                                  '&::-webkit-scrollbar': { width: 4, height: 4 },
-                                  '&::-webkit-scrollbar-track': { bgcolor: 'transparent' },
-                                  '&::-webkit-scrollbar-thumb': { bgcolor: 'divider', borderRadius: 2 }
-                                }}
-                              >
-                                {student.appHistory.length === 0 ? (
+                                <Divider />
+                                {isBanned ? (
+                                  <Typography variant="caption" color="error.main" noWrap fontWeight="medium">
+                                    {latestEntry.applicationName}
+                                  </Typography>
+                                ) : !isOnline ? (
                                   <Typography variant="caption" color="text.disabled" sx={{ fontStyle: 'italic' }}>
-                                    Chưa có dữ liệu
+                                    {student.appHistory.length === 0 ? 'Chưa kết nối' : 'Offline'}
                                   </Typography>
                                 ) : (
-                                  <Stack spacing={0.5} sx={{ minWidth: 'max-content' }}>
-                                    {student.appHistory.map((entry, idx) => (
-                                      <Stack key={idx} direction="row" spacing={1} alignItems="baseline">
-                                        <Typography variant="caption" color="text.disabled" sx={{ minWidth: 56, fontFamily: 'monospace' }}>
-                                          {formatTime(entry.createdAt)}
-                                        </Typography>
-                                        <Typography
-                                          variant="caption"
-                                          sx={{
-                                            flex: 1,
-                                            whiteSpace: 'nowrap',
-                                            color: entry.banApplication ? 'error.main' : idx === 0 ? 'primary.main' : 'text.secondary',
-                                            fontWeight: entry.banApplication ? 'bold' : idx === 0 ? 'medium' : 'normal'
-                                          }}
-                                        >
-                                          {entry.applicationName}
-                                        </Typography>
-                                      </Stack>
-                                    ))}
-                                  </Stack>
+                                  <Typography variant="caption" color={latestEntry ? 'primary.main' : 'text.disabled'} noWrap>
+                                    {latestEntry?.applicationName ?? 'Chưa có dữ liệu'}
+                                  </Typography>
                                 )}
-                              </Box>
-                            </Stack>
-                          </Stack>
-                        </CardContent>
-                      </Card>
-                    </Tooltip>
-                  </Grid>
-                );
-              })}
-            </Grid>
-          )}
+                              </Stack>
+                            </CardContent>
+                          </Card>
+                        </Tooltip>
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+              )}
+            </Box>
+          </MainCard>
         </Box>
-      </MainCard>
+
+        {/* Right panel: live activity feed */}
+        <Box sx={{ flex: '0 0 300px', minWidth: 280, position: 'sticky', top: 80, alignSelf: 'flex-start' }}>
+          <MainCard content={false}>
+            <Box sx={{ p: 2 }}>
+              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
+                <Typography variant="h5">Hoạt Động Trực Tiếp</Typography>
+                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'success.main' }} />
+              </Stack>
+              <Divider sx={{ mb: 1.5 }} />
+              <Box
+                sx={{
+                  maxHeight: 'calc(100vh - 260px)',
+                  overflowY: 'auto',
+                  '&::-webkit-scrollbar': { width: 4 },
+                  '&::-webkit-scrollbar-track': { bgcolor: 'transparent' },
+                  '&::-webkit-scrollbar-thumb': { bgcolor: 'divider', borderRadius: 2 }
+                }}
+              >
+                {activityFeed.length === 0 ? (
+                  <Typography variant="caption" color="text.disabled" sx={{ fontStyle: 'italic' }}>
+                    Chưa có hoạt động
+                  </Typography>
+                ) : (
+                  <Stack spacing={0}>
+                    {activityFeed.map((entry, feedIdx) => (
+                      <Stack
+                        key={feedIdx}
+                        direction="row"
+                        spacing={1}
+                        alignItems="flex-start"
+                        sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider' }}
+                      >
+                        <Typography
+                          variant="caption"
+                          color="text.disabled"
+                          sx={{ fontFamily: 'monospace', flexShrink: 0, lineHeight: 1.8 }}
+                        >
+                          {formatTime(entry.createdAt)}
+                        </Typography>
+                        <Box
+                          sx={{
+                            width: 6,
+                            height: 6,
+                            borderRadius: '50%',
+                            bgcolor:
+                              entry.eventType === 'connect'
+                                ? 'success.main'
+                                : entry.eventType === 'disconnect'
+                                  ? 'warning.main'
+                                  : entry.banApplication
+                                    ? 'error.main'
+                                    : 'primary.main',
+                            flexShrink: 0,
+                            mt: '5px'
+                          }}
+                        />
+                        <Typography
+                          variant="caption"
+                          color={
+                            entry.eventType === 'connect'
+                              ? 'success.main'
+                              : entry.eventType === 'disconnect'
+                                ? 'warning.main'
+                                : entry.banApplication
+                                  ? 'error.main'
+                                  : 'text.primary'
+                          }
+                          sx={{ lineHeight: 1.6 }}
+                        >
+                          {entry.eventType === 'connect' ? (
+                            <>
+                              <strong>{entry.studentName}</strong> đã kết nối vào hệ thống
+                            </>
+                          ) : entry.eventType === 'disconnect' ? (
+                            <>
+                              <strong>{entry.studentName}</strong> đã ngắt kết nối
+                            </>
+                          ) : (
+                            <>
+                              <strong>{entry.studentName}</strong> đổi ứng dụng sang {entry.applicationName}
+                            </>
+                          )}
+                        </Typography>
+                      </Stack>
+                    ))}
+                  </Stack>
+                )}
+              </Box>
+            </Box>
+          </MainCard>
+        </Box>
+      </Stack>
 
       {liveSelectedStudent && classId && (
         <StudentActionDialog

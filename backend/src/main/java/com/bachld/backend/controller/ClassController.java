@@ -1,5 +1,6 @@
 package com.bachld.backend.controller;
 
+import com.bachld.backend.config.ConnectedStudentRegistry;
 import com.bachld.backend.dto.request.ClassCreateRequest;
 import com.bachld.backend.dto.request.ClassUpdateRequest;
 import com.bachld.backend.dto.response.BaseResponse;
@@ -27,6 +28,13 @@ import java.time.LocalDate;
 public class ClassController {
 
     ClassService classService;
+    ConnectedStudentRegistry connectedStudentRegistry;
+
+    @GetMapping("/v1/{classId}/connected-students")
+    @AuthFilter(role = "TEACHER")
+    public ResponseEntity<?> getConnectedStudents(@PathVariable int classId) {
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), connectedStudentRegistry.getConnectedStudents(classId)));
+    }
 
     @GetMapping("/v1")
     @AuthFilter(role = "ADMIN")
@@ -75,6 +83,12 @@ public class ClassController {
     @AuthFilter(role = "TEACHER")
     public ResponseEntity<?> getListByTeacherUserId() {
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), classService.getListByTeacherUserId()));
+    }
+
+    @GetMapping("/v1/{classId}/study-status")
+    @AuthFilter(role = "TEACHER")
+    public ResponseEntity<?> getStudyStatus(@PathVariable int classId) {
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), classService.getStudyStatus(classId)));
     }
 
     @GetMapping("/v1/{classId}/tracking")

@@ -17,9 +17,10 @@ services:
       start_period: 30s
 
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: bachld2612/lab-supervise-backend:1.0.0-20260515
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
     container_name: lab-supervise-backend
     ports:
       - "8080:8080"

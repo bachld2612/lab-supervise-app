@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Client, IMessage } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { getClassStudentTracking } from 'api/class';
+import { getClassStudentTracking, getConnectedStudents } from 'api/class';
 import { HttpStatusCode } from 'axios';
 
 const WS_URL = `${import.meta.env.VITE_APP_API_URL || 'http://localhost:8080/'}ws`;
@@ -10,6 +10,7 @@ export interface AppUsageEntry {
   applicationName: string;
   createdAt: string;
   banApplication: boolean;
+  connectionType?: string; // 'CONNECT' | 'DISCONNECT' — undefined for regular app events
 }
 
 export interface StudentTrackingState {
@@ -44,7 +45,12 @@ interface ClassStudentTrackingResponse {
   phone: string;
   manageClassId: number;
   manageClassName: string;
-  applicationsToday: AppUsageEntry[];
+  applicationsToday: Array<{
+    applicationName: string;
+    createdAt: string;
+    isBanApplication: boolean;
+    connectionType?: string;
+  }>;
 }
 
 export function useClassTracking(
@@ -63,10 +69,10 @@ export function useClassTracking(
   useEffect(() => {
     if (!classId) return;
     setLoading(true);
-    getClassStudentTracking(classId)
-      .then((res) => {
-        if (res.statusCode === HttpStatusCode.Ok) {
-          const data: ClassStudentTrackingResponse[] = res.data ?? [];
+    Promise.all([getClassStudentTracking(classId), getConnectedStudents(classId)])
+      .then(([trackingRes, connectedRes]) => {
+        if (trackingRes.statusCode === HttpStatusCode.Ok) {
+          const data: ClassStudentTrackingResponse[] = trackingRes.data ?? [];
           setStudents(
             data.map((s) => ({
               studentId: s.studentId,
@@ -77,9 +83,18 @@ export function useClassTracking(
               phone: s.phone,
               manageClassId: s.manageClassId,
               manageClassName: s.manageClassName,
-              appHistory: [...s.applicationsToday].reverse()
+              appHistory: [...s.applicationsToday].reverse().map((e) => ({
+                applicationName: e.applicationName,
+                createdAt: e.createdAt,
+                banApplication: e.isBanApplication,
+                connectionType: e.connectionType
+              }))
             }))
           );
+        }
+        if (connectedRes.statusCode === HttpStatusCode.Ok) {
+          const ids: number[] = connectedRes.data ?? [];
+          setConnectedStudentIds(new Set(ids));
         }
       })
       .finally(() => setLoading(false));
@@ -103,6 +118,20 @@ export function useClassTracking(
 
             if (data.type === 'CONNECT') {
               setConnectedStudentIds((prev) => new Set(prev).add(data.studentId));
+              // Append connection event to student's appHistory
+              setStudents((prev) =>
+                prev.map((s) =>
+                  s.studentId === data.studentId
+                    ? {
+                        ...s,
+                        appHistory: [
+                          { applicationName: '', createdAt: data.createdAt ?? new Date().toISOString(), banApplication: false, connectionType: 'CONNECT' },
+                          ...s.appHistory
+                        ]
+                      }
+                    : s
+                )
+              );
               onStudentConnect?.(data.studentName, data.studentCode);
               return;
             }
@@ -113,10 +142,28 @@ export function useClassTracking(
                 next.delete(data.studentId);
                 return next;
               });
+              // Append disconnection event to student's appHistory
+              setStudents((prev) =>
+                prev.map((s) =>
+                  s.studentId === data.studentId
+                    ? {
+                        ...s,
+                        appHistory: [
+                          { applicationName: '', createdAt: data.createdAt ?? new Date().toISOString(), banApplication: false, connectionType: 'DISCONNECT' },
+                          ...s.appHistory
+                        ]
+                      }
+                    : s
+                )
+              );
               onStudentDisconnect?.(data.studentName, data.studentCode);
               return;
             }
 
+            setConnectedStudentIds((prev) => {
+              if (prev.has(data.studentId)) return prev;
+              return new Set(prev).add(data.studentId);
+            });
             setStudents((prev) =>
               prev.map((s) =>
                 s.studentId === data.studentId
