@@ -17,4 +17,6 @@ public class AppUsageItem {
     LocalDateTime createdAt;
 
     boolean isBanApplication;
+
+    String connectionType;
 }

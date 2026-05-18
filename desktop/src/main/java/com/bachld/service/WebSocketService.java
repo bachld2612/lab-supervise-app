@@ -2,6 +2,9 @@ package com.bachld.service;
 
 import com.bachld.config.AppConfig;
 import com.bachld.model.request.PCInfoPayload;
+import com.bachld.model.response.FilePayload;
+import jakarta.websocket.ContainerProvider;
+import jakarta.websocket.WebSocketContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -9,6 +12,15 @@ import org.springframework.messaging.simp.stomp.*;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
+
+import javax.swing.SwingUtilities;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.util.Base64;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -36,9 +48,12 @@ public class WebSocketService {
         this.tokenManager = tokenManager;
         this.wsUrl = AppConfig.getInstance().getServerWsUrl();
 
-        // Initialize STOMP client with standard WebSocket client
-        this.stompClient = new WebSocketStompClient(new StandardWebSocketClient());
-        // Use Jackson for JSON conversion (consistent with RestClient)
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        container.setDefaultMaxTextMessageBufferSize(50 * 1024 * 1024);
+        container.setDefaultMaxBinaryMessageBufferSize(50 * 1024 * 1024);
+
+        this.stompClient = new WebSocketStompClient(new StandardWebSocketClient(container));
+        this.stompClient.setInboundMessageSizeLimit(50 * 1024 * 1024);
         this.stompClient.setMessageConverter(new MappingJackson2MessageConverter());
     }
     
@@ -126,6 +141,35 @@ public class WebSocketService {
         }
     }
 
+    private void saveReceivedFile(FilePayload payload) {
+        try {
+            String downloadsPath = System.getProperty("user.home") + File.separator + "Downloads";
+            File dir = new File(downloadsPath);
+            if (!dir.exists()) dir.mkdirs();
+
+            byte[] fileBytes = Base64.getDecoder().decode(payload.getFileContentBase64());
+            File outputFile = new File(dir, payload.getFileName());
+            Files.write(outputFile.toPath(), fileBytes);
+
+            SwingUtilities.invokeLater(() -> {
+                if (SystemTray.isSupported()) {
+                    TrayIcon[] icons = SystemTray.getSystemTray().getTrayIcons();
+                    if (icons.length > 0) {
+                        icons[0].displayMessage(
+                                "File nhận được",
+                                "\"" + payload.getFileName() + "\" đã được lưu vào Downloads.",
+                                TrayIcon.MessageType.INFO
+                        );
+                    }
+                }
+            });
+        } catch (IllegalArgumentException e) {
+            log.error("Base64 payload không hợp lệ: {}", e.getMessage());
+        } catch (IOException e) {
+            log.error("Không thể lưu file nhận được: {}", e.getMessage());
+        }
+    }
+
     /**
      * Inner handler to monitor STOMP session events.
      */
@@ -133,6 +177,24 @@ public class WebSocketService {
         @Override
         public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
             log.info("STOMP connection successful. SessionID: {}", session.getSessionId());
+
+            com.bachld.model.response.User currentUser =
+                    SessionManager.getInstance().getCurrentUser();
+            if (currentUser != null) {
+                String topic = "/topic/user/" + currentUser.getId() + "/file";
+                session.subscribe(topic, new StompFrameHandler() {
+                    @Override
+                    public Type getPayloadType(StompHeaders headers) {
+                        return FilePayload.class;
+                    }
+
+                    @Override
+                    public void handleFrame(StompHeaders headers, Object payload) {
+                        saveReceivedFile((FilePayload) payload);
+                    }
+                });
+                log.info("Subscribed to {}", topic);
+            }
         }
 
         @Override

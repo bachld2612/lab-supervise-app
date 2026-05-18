@@ -5,7 +5,8 @@
       "Bash(find E:\\\\lab_supervise\\\\backend\\\\src\\\\main\\\\java\\\\com\\\\bachld\\\\backend\\\\model *)",
       "Bash(grep -r \"http\\\\|baseURL\\\\|API\" E:\\\\\\\\lab_supervise\\\\\\\\frontend\\\\\\\\src\\\\\\\\utils)",
       "Bash(find E:\\\\lab_supervise\\\\frontend *)",
-      "Bash(grep -E \"\\\\.java$\")"
+      "Bash(grep -E \"\\\\.java$\")",
+      "Bash(Get-ChildItem *)"
     ]
   }
 }

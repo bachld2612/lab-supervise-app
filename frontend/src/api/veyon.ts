@@ -1,7 +1,7 @@
 import axiosServices from 'utils/axios';
 
 export const getVeyonPublicKey = async (): Promise<{ statusCode: number; data: string }> => {
-  const response = await axiosServices.get('/api/v1/teacher/keys/public-key');
+  const response = await axiosServices.get('/api/veyon/v1/teacher/keys/public-key');
   return response.data;
 };
 
@@ -10,16 +10,44 @@ export const importVeyonKey = async (
   keyName: string,
   encryptedKeyData: string
 ): Promise<{ statusCode: number; data: null }> => {
-  const response = await axiosServices.post('/api/v1/teacher/keys/import', { classId, keyName, encryptedKeyData });
+  const response = await axiosServices.post('/api/veyon/v1/teacher/keys/import', { classId, keyName, encryptedKeyData });
   return response.data;
 };
 
 export const lockScreen = async (classId: number, studentUserId: number, active: boolean): Promise<{ statusCode: number; data: null }> => {
-  const response = await axiosServices.post('/api/class/lock-screen', { classId, studentUserId, active });
+  const response = await axiosServices.post('/api/veyon/v1/class/lock-screen', { classId, studentUserId, active });
   return response.data;
 };
 
 export const getScreenshot = async (classId: number, studentUserId: number): Promise<{ statusCode: number; data: string }> => {
-  const response = await axiosServices.get('/api/class/screenshot', { params: { classId, studentUserId } });
+  const response = await axiosServices.get('/api/veyon/v1/class/screenshot', { params: { classId, studentUserId } });
+  return response.data;
+};
+
+export const openWebsiteForClass = async (classId: number, websiteUrl: string): Promise<{ statusCode: number; data: null }> => {
+  const response = await axiosServices.post(`/api/veyon/v1/class/${classId}/open-website`, { websiteUrl });
+  return response.data;
+};
+
+export const openWebsiteForStudent = async (
+  classId: number,
+  studentId: number,
+  websiteUrl: string
+): Promise<{ statusCode: number; data: null }> => {
+  const response = await axiosServices.post(`/api/veyon/v1/class/${classId}/student/${studentId}/open-website`, { websiteUrl });
+  return response.data;
+};
+
+export const sendMessageToClass = async (classId: number, text: string): Promise<{ statusCode: number; data: null }> => {
+  const response = await axiosServices.post(`/api/veyon/v1/class/${classId}/text-message`, { text });
+  return response.data;
+};
+
+export const sendMessageToStudent = async (
+  classId: number,
+  studentId: number,
+  text: string
+): Promise<{ statusCode: number; data: null }> => {
+  const response = await axiosServices.post(`/api/veyon/v1/class/${classId}/student/${studentId}/text-message`, { text });
   return response.data;
 };

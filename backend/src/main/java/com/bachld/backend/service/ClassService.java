@@ -270,6 +270,7 @@ public class ClassService {
                                         .applicationName(r.getApplicationName())
                                         .createdAt(r.getCreatedAt())
                                         .isBanApplication(r.isBanApplication())
+                                        .connectionType(r.getConnectionType())
                                         .build(),
                                 Collectors.toList()
                         )
@@ -278,6 +279,25 @@ public class ClassService {
         students.forEach(s -> s.setApplicationsToday(usageByStudent.getOrDefault(s.getStudentId(), List.of())));
 
         return students;
+    }
+
+    public int getStudyStatus(Integer classId) {
+        Classes clazz = classRepository.findById(classId).orElse(null);
+        if (clazz == null) return 0;
+
+        LocalDate today = LocalDate.now();
+        if (today.isBefore(clazz.getStartDate()) || today.isAfter(clazz.getEndDate())) return 0;
+
+        Schedule schedule = scheduleRepository.findById(clazz.getScheduleId()).orElse(null);
+        if (schedule == null || schedule.getDaysOfWeek() == null) return 0;
+
+        boolean isToday = Arrays.asList(schedule.getDaysOfWeek().split(","))
+                .contains(String.valueOf(today.getDayOfWeek().getValue()));
+        if (!isToday) return 0;
+
+        LocalTime now = LocalTime.now();
+        boolean isActiveTime = !now.isBefore(schedule.getStartTime()) && !now.isAfter(schedule.getEndTime());
+        return isActiveTime ? 1 : 0;
     }
 
     public Page<StudentResponse> getStudentsByClassId(Integer classId, Pageable pageable, String keyword) {

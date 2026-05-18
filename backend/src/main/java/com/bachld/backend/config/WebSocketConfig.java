@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 
 import java.util.List;
 
@@ -53,6 +54,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+        registration.setMessageSizeLimit(50 * 1024 * 1024);
+        registration.setSendBufferSizeLimit(50 * 1024 * 1024);
+        registration.setSendTimeLimit(30_000);
+    }
+
+    @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
             @Override
@@ -77,20 +85,33 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     }
                 } else if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
                     String destination = accessor.getDestination();
-                    if (destination != null && destination.startsWith("/topic/class/")) {
+                    if (destination == null) return message;
+
+                    if (destination.startsWith("/topic/class/")) {
                         if (accessor.getUser() == null) {
                             throw new IllegalArgumentException("Unauthorized subscription");
                         }
-                        
+
                         Integer userId = Integer.valueOf(accessor.getUser().getName());
                         Integer classId = Integer.valueOf(destination.replace("/topic/class/", ""));
-                        
+
                         // Check if teacher managing this class
                         Teacher teacher = teacherRepository.findByUserId(userId).orElse(null);
                         Classes clazz = classRepository.findById(classId).orElse(null);
-                        
+
                         if (teacher == null || clazz == null || !clazz.getTeacherId().equals(teacher.getId())) {
                             throw new IllegalArgumentException("Bạn không được phép truy cập lớp này");
+                        }
+                    } else if (destination.startsWith("/topic/user/")) {
+                        if (accessor.getUser() == null) {
+                            throw new IllegalArgumentException("Unauthorized subscription");
+                        }
+                        String[] parts = destination.split("/");
+                        // /topic/user/{userId}/file → parts[3]
+                        Integer topicUserId = Integer.valueOf(parts[3]);
+                        Integer authUserId = Integer.valueOf(accessor.getUser().getName());
+                        if (!topicUserId.equals(authUserId)) {
+                            throw new IllegalArgumentException("Không được phép subscribe topic của user khác");
                         }
                     }
                 }

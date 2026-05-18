@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -31,6 +33,14 @@ public class VeyonClientService {
     @NonFinal
     @Value("${veyon.api.screenshot}")
     String screenshotUrl;
+
+    @NonFinal
+    @Value("${veyon.api.open-website}")
+    String openWebsiteUrl;
+
+    @NonFinal
+    @Value("${veyon.api.text-message}")
+    String textMessageUrl;
 
     @NonFinal
     @Value("${veyon.screenshot.max-retries}")
@@ -88,6 +98,28 @@ public class VeyonClientService {
         }
 
         return responseBody.get("connection-uid").toString();
+    }
+
+    public void openWebsite(String connectionUid, String websiteUrl, String teacherIp) {
+        String url = openWebsiteUrl.replace("{{teacher_ip}}", teacherIp);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("connection-uid", connectionUid);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, Object> body = Map.of("active", true, "arguments", Map.of("websiteUrls", List.of(websiteUrl)));
+        restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(body, headers), String.class);
+    }
+
+    public void sendMessage(String connectionUid, String text, String teacherIp) {
+        String url = textMessageUrl.replace("{{teacher_ip}}", teacherIp);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("connection-uid", connectionUid);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, Object> body = Map.of("active", true, "arguments", Map.of("text", text));
+        restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(body, headers), String.class);
     }
 
     public void lockScreen(String connectionUid, boolean active, String teacherIp) {

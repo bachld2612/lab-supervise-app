@@ -18,9 +18,12 @@ public class StudentClassInfo extends BaseEntity {
     @Column(name = "student_class_id")
     Integer studentClassId;
 
-    @Column(name = "application_name")
+    @Column(name = "application_name", columnDefinition = "TEXT")
     String applicationName;
 
     @Column(name = "is_ban_application", columnDefinition = "BOOLEAN DEFAULT FALSE")
     boolean isBanApplication;
+
+    @Column(name = "connection_type", length = 20)
+    String connectionType;
 }
