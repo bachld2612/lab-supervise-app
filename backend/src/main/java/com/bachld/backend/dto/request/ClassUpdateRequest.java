@@ -39,4 +39,6 @@ public class ClassUpdateRequest {
     String endDate;
 
     Integer semesterId;
+
+    Integer roomId;
 }

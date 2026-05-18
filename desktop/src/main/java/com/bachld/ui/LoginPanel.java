@@ -377,7 +377,12 @@ public class LoginPanel extends JPanel {
                             com.bachld.service.WebSocketService.getInstance(com.bachld.service.TokenManager.getInstance());
                     wsService.connect();
 
-                    MainFrame mainFrame = new MainFrame(authService, pcService, classService, wsService);
+                    com.bachld.client.IncidentReportApiClient incidentApiClient =
+                            new com.bachld.client.IncidentReportApiClient(restClient);
+                    com.bachld.service.IncidentReportService incidentService =
+                            new com.bachld.service.IncidentReportService(incidentApiClient);
+
+                    MainFrame mainFrame = new MainFrame(authService, pcService, classService, wsService, incidentService);
                     mainFrame.setVisible(true);
 
                     Window ancestor = SwingUtilities.getWindowAncestor(LoginPanel.this);

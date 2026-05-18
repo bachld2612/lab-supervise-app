@@ -18,6 +18,7 @@ public class MainFrame extends JFrame {
     private final PersonalComputerService pcService;
     private final com.bachld.service.ClassService classService;
     private final com.bachld.service.WebSocketService webSocketService;
+    private final com.bachld.service.IncidentReportService incidentReportService;
     private com.bachld.service.TrackingService trackingService;
     private JPanel contentArea;
     private CardLayout cardLayout;
@@ -27,11 +28,13 @@ public class MainFrame extends JFrame {
 
     public MainFrame(AuthService authService, PersonalComputerService pcService,
                      com.bachld.service.ClassService classService,
-                     com.bachld.service.WebSocketService webSocketService) {
+                     com.bachld.service.WebSocketService webSocketService,
+                     com.bachld.service.IncidentReportService incidentReportService) {
         this.authService = authService;
         this.pcService = pcService;
         this.classService = classService;
         this.webSocketService = webSocketService;
+        this.incidentReportService = incidentReportService;
 
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("win")) {
@@ -75,6 +78,7 @@ public class MainFrame extends JFrame {
         contentArea.add(wrapInPageWrapper(new ClassManagementPanel(classService), "Quản lý lớp học"), "CLASS_MGMT");
         pcPanel = new PersonalComputerPanel(pcService);
         contentArea.add(pcPanel, "PC_MGMT");
+        contentArea.add(wrapInPageWrapper(new IncidentReportPanel(incidentReportService), "Báo cáo sự cố"), "INCIDENT_REPORT");
 
         mainWrapper.add(contentArea, BorderLayout.CENTER);
         add(mainWrapper, BorderLayout.CENTER);

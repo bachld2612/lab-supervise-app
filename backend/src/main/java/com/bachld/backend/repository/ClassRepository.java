@@ -17,7 +17,7 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
             c.id, c.name,
             (SELECT CAST(COUNT(stc.studentId) AS integer) FROM StudentClass stc WHERE stc.classId = c.id),
             c.maxStudent, c.sessionNumber, c.status, s.id, s.name, t.id, u.fullName, sc.id, sc.name, c.startDate, c.endDate,
-            sm.id, sm.name
+            sm.id, sm.name, r.id, r.name
         )
         FROM Classes c
             JOIN Semester sm ON sm.id = c.semesterId
@@ -25,6 +25,7 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
             JOIN Teacher t ON c.teacherId = t.id
             JOIN User u ON t.userId = u.id
             JOIN Schedule sc ON c.scheduleId = sc.id
+            LEFT JOIN Room r ON r.id = c.roomId
         WHERE (LOWER(c.name) LIKE :keyword)
             AND (:status IS NULL OR c.status = :status)
     """)
@@ -35,7 +36,7 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
             c.id, c.name,
             (SELECT CAST(COUNT(stc.studentId) AS integer) FROM StudentClass stc WHERE stc.classId = c.id),
             c.maxStudent, c.sessionNumber, c.status, s.id, s.name, t.id, u.fullName, sc.id, sc.name, c.startDate, c.endDate,
-            sm.id, sm.name
+            sm.id, sm.name, r.id, r.name
         )
         FROM Classes c
             JOIN Semester sm ON sm.id = c.semesterId
@@ -43,6 +44,7 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
             JOIN Teacher t ON c.teacherId = t.id
             JOIN User u ON t.userId = u.id
             JOIN Schedule sc ON c.scheduleId = sc.id
+            LEFT JOIN Room r ON r.id = c.roomId
         WHERE c.id = :id
             AND c.status = :status
     """)
@@ -53,7 +55,7 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
             c.id, c.name,
             (SELECT CAST(COUNT(stc.studentId) AS integer) FROM StudentClass stc WHERE stc.classId = c.id),
             c.maxStudent, c.sessionNumber, c.status, s.id, s.name, t.id, u.fullName, sc.id, sc.name, c.startDate, c.endDate,
-            sm.id, sm.name
+            sm.id, sm.name, r.id, r.name
         )
         FROM Classes c
             JOIN Semester sm ON sm.id = c.semesterId
@@ -61,6 +63,7 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
             JOIN Teacher t ON c.teacherId = t.id
             JOIN User u ON t.userId = u.id
             JOIN Schedule sc ON c.scheduleId = sc.id
+            LEFT JOIN Room r ON r.id = c.roomId
             JOIN StudentClass stc ON stc.classId = c.id
             JOIN Student st ON st.id = stc.studentId
         WHERE st.userId = :userId
@@ -73,7 +76,7 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
             c.id, c.name,
             (SELECT CAST(COUNT(stc.studentId) AS integer) FROM StudentClass stc WHERE stc.classId = c.id),
             c.maxStudent, c.sessionNumber, c.status, s.id, s.name, t.id, u.fullName, sc.id, sc.name, c.startDate, c.endDate,
-            sm.id, sm.name
+            sm.id, sm.name, r.id, r.name
         )
         FROM Classes c
             JOIN Semester sm ON sm.id = c.semesterId
@@ -81,8 +84,11 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
             JOIN Teacher t ON c.teacherId = t.id
             JOIN User u ON t.userId = u.id
             JOIN Schedule sc ON c.scheduleId = sc.id
+            LEFT JOIN Room r ON r.id = c.roomId
         WHERE t.userId = :userId
             AND :today BETWEEN c.startDate AND c.endDate
     """)
     List<ClassResponse> findActiveClassByTeacherUserId(Integer userId, LocalDate today);
+
+    List<Classes> findByRoomIdAndStatus(Integer roomId, Integer status);
 }

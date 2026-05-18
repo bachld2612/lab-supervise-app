@@ -48,4 +48,7 @@ public class Classes extends BaseEntity {
 
     @Column(name = "veyon_key_name", columnDefinition = "TEXT")
     String veyonKeyName;
+
+    @Column(name = "room_id")
+    Integer roomId;
 }

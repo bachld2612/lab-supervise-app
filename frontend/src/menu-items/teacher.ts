@@ -43,6 +43,13 @@ const teacherMenu: NavItemType = {
       type: 'item',
       url: 'teacher/personal-computer',
       icon: icons.cpu
+    },
+    {
+      id: 'teacher-incident-report',
+      title: 'Báo cáo sự cố',
+      type: 'item',
+      url: 'incident-report/teacher',
+      icon: icons.danger
     }
   ]
 };

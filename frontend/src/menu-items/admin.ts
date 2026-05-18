@@ -70,6 +70,13 @@ const adminMenu: NavItemType = {
       icon: icons.table
     },
     {
+      id: 'manage-rooms',
+      title: 'Quản lý phòng học',
+      type: 'item',
+      url: '/room',
+      icon: icons.box
+    },
+    {
       id: 'department-management',
       title: 'Quản lý thông tin trường',
       type: 'collapse',
