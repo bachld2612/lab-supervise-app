@@ -16,4 +16,6 @@ export interface Classes {
   semesterId: number;
   semesterName: string;
   studyStatus?: number;
+  roomId?: number;
+  roomName?: string;
 }

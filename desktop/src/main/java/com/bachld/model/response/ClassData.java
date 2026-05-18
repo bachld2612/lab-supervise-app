@@ -23,4 +23,6 @@ public class ClassData {
     private Long semesterId;
     private String semesterName;
     private int studyStatus; // 0: Upcoming, 1: Ongoing
+    private Integer roomId;
+    private String roomName;
 }

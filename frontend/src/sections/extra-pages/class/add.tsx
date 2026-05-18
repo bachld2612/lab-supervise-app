@@ -11,6 +11,7 @@ import { getList as getTeacherList } from 'api/teacher';
 import { getList as getSubjectList } from 'api/subject';
 import { getList as getScheduleList } from 'api/schedule';
 import { getList as getSemesterList } from 'api/semester';
+import { getList as getRoomList } from 'api/room';
 import { HttpStatusCode } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import useAuth from 'hooks/useAuth';
@@ -18,6 +19,7 @@ import { Teacher } from 'types/teacher';
 import { Subject } from 'types/subject';
 import { Schedule } from 'types/schedule';
 import { Semester } from 'types/semester';
+import { Room } from 'types/room';
 
 export default function AddClass() {
   const intl = useIntl();
@@ -27,6 +29,7 @@ export default function AddClass() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [semesters, setSemesters] = useState<Semester[]>([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState({
     open: false,
@@ -49,6 +52,9 @@ export default function AddClass() {
       const resSem = await getSemesterList({ page: 0, size: 1000, keyword: '', status: '1' });
       if (resSem.statusCode === HttpStatusCode.Ok) setSemesters(resSem.data.content);
 
+      const resR = await getRoomList({ page: 0, size: 1000, keyword: '', status: '1', sort: '' });
+      if (resR.statusCode === HttpStatusCode.Ok) setRooms(resR.data.content);
+
       setLoading(false);
     };
     fetchData();
@@ -61,6 +67,7 @@ export default function AddClass() {
     teacherId: Yup.number().required('Giảng viên không được phép bỏ trống').min(1, 'Giảng viên không được phép bỏ trống'),
     scheduleId: Yup.number().required('Lịch học không được phép bỏ trống').min(1, 'Lịch học không được phép bỏ trống'),
     semesterId: Yup.number().required('Học kì không được phép bỏ trống').min(1, 'Học kì không được phép bỏ trống'),
+    roomId: Yup.number().required('Phòng học không được phép bỏ trống').min(1, 'Phòng học không được phép bỏ trống'),
     startDate: Yup.string().required('Ngày bắt đầu không được phép bỏ trống'),
     endDate: Yup.string().required('Ngày kết thúc không được phép bỏ trống')
   });
@@ -79,6 +86,8 @@ export default function AddClass() {
     scheduleName: '',
     semesterId: 0,
     semesterName: '',
+    roomId: 0,
+    roomName: '',
     startDate: '',
     endDate: ''
   };
@@ -287,6 +296,42 @@ export default function AddClass() {
                     size="small"
                     error={formik.touched.semesterId && Boolean(formik.errors.semesterId)}
                     helperText={formik.touched.semesterId && formik.errors.semesterId}
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      )
+                    }}
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12 }}>
+              <InputLabel htmlFor="roomId" required sx={{ '& .MuiInputLabel-asterisk': { color: 'error.main' }, mb: 1 }}>
+                Phòng học
+              </InputLabel>
+
+              <Autocomplete
+                id="roomId"
+                options={rooms}
+                getOptionLabel={(option) => option.name || ''}
+                value={rooms.find((r) => r.id === formik.values.roomId) || null}
+                onChange={(_, newValue) => {
+                  formik.setFieldValue('roomId', newValue ? newValue.id : 0);
+                  formik.setFieldValue('roomName', newValue ? newValue.name : '');
+                }}
+                loading={loading}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder="Chọn phòng học"
+                    size="small"
+                    error={formik.touched.roomId && Boolean(formik.errors.roomId)}
+                    helperText={formik.touched.roomId && formik.errors.roomId}
                     InputProps={{
                       ...params.InputProps,
                       endAdornment: (

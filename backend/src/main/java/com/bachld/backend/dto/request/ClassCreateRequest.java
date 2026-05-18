@@ -48,4 +48,7 @@ public class ClassCreateRequest {
 
     @NotNull(message = "Học kỳ không được phép bỏ trống")
     Integer semesterId;
+
+    @NotNull(message = "Phòng học không được phép bỏ trống")
+    Integer roomId;
 }

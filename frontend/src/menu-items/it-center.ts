@@ -1,16 +1,13 @@
 // assets
-import { Setting2, Monitor, SecurityUser, Setting5, Information } from 'iconsax-reactjs';
+import { Buildings, Danger } from 'iconsax-reactjs';
 
 // types
 import { NavItemType } from 'types/menu';
 
 // icons
 const icons = {
-  setting: Setting2,
-  monitor: Monitor,
-  user: SecurityUser,
-  config: Setting5,
-  info: Information
+  room: Buildings,
+  incident: Danger
 };
 
 // ==============================|| MENU ITEMS - IT CENTER ||============================== //
@@ -21,39 +18,18 @@ const itCenterMenu: NavItemType = {
   type: 'group',
   children: [
     {
-      id: 'system-monitor',
-      title: 'Giám sát hệ thống',
+      id: 'manage-rooms',
+      title: 'Quản lý phòng học',
       type: 'item',
-      url: '/it-center/monitor',
-      icon: icons.monitor
+      url: '/room',
+      icon: icons.room
     },
     {
-      id: 'system-users',
-      title: 'Danh sách tài khoản',
+      id: 'incident-report',
+      title: 'Báo cáo sự cố',
       type: 'item',
-      url: '/it-center/users',
-      icon: icons.user
-    },
-    {
-      id: 'system-config',
-      title: 'Cấu hình phần cứng',
-      type: 'item',
-      url: '/it-center/config',
-      icon: icons.config
-    },
-    {
-      id: 'system-settings',
-      title: 'Cấu hình hệ thống',
-      type: 'item',
-      url: '/it-center/settings',
-      icon: icons.setting
-    },
-    {
-      id: 'system-about',
-      title: 'Trợ giúp & Hướng dẫn',
-      type: 'item',
-      url: '/it-center/about',
-      icon: icons.info
+      url: '/incident-report',
+      icon: icons.incident
     }
   ]
 };

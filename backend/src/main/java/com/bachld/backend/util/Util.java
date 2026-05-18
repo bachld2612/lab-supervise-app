@@ -18,6 +18,9 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -43,6 +46,12 @@ public class Util {
 
     @Autowired
     private PersonalComputerRepository personalComputerRepository;
+
+    @Autowired
+    private ClassRepository classRepository;
+
+    @Autowired
+    private ScheduleRepository scheduleRepository;
 
     @Autowired
     private Validator validator;
@@ -174,5 +183,51 @@ public class Util {
             }
         }
         return true;
+    }
+
+    /**
+     * Kiểm tra phòng học có bị trùng lịch với lớp khác không.
+     * Conflict khi: cùng roomId + khoảng ngày overlap + chia sẻ ít nhất 1 ngày trong tuần + giờ học overlap.
+     *
+     * @param roomId          phòng cần kiểm tra
+     * @param scheduleId      ca học của lớp đang tạo/sửa
+     * @param startDate       ngày bắt đầu của lớp đang tạo/sửa
+     * @param endDate         ngày kết thúc của lớp đang tạo/sửa
+     * @param excludeClassId  id lớp đang sửa (null nếu đang tạo mới)
+     */
+    public void validateRoom(Integer roomId, Integer scheduleId, LocalDate startDate, LocalDate endDate, Integer excludeClassId) {
+        Schedule newSchedule = scheduleRepository.findById(scheduleId).orElse(null);
+        if (newSchedule == null || newSchedule.getDaysOfWeek() == null) return;
+
+        Set<String> newDays = new HashSet<>(Arrays.asList(newSchedule.getDaysOfWeek().split(",")));
+
+        List<Classes> sameRoomClasses = classRepository.findByRoomIdAndStatus(roomId, Status.ACTIVE.getValue());
+
+        for (Classes c : sameRoomClasses) {
+            if (excludeClassId != null && c.getId() == excludeClassId) continue;
+
+            // Kiểm tra khoảng ngày có overlap không
+            boolean dateOverlap = !startDate.isAfter(c.getEndDate()) && !endDate.isBefore(c.getStartDate());
+            if (!dateOverlap) continue;
+
+            Schedule otherSchedule = scheduleRepository.findById(c.getScheduleId()).orElse(null);
+            if (otherSchedule == null || otherSchedule.getDaysOfWeek() == null) continue;
+
+            Set<String> otherDays = new HashSet<>(Arrays.asList(otherSchedule.getDaysOfWeek().split(",")));
+
+            // Kiểm tra có chung ngày trong tuần không
+            boolean sharedDay = newDays.stream().anyMatch(otherDays::contains);
+            if (!sharedDay) continue;
+
+            // Kiểm tra giờ học overlap
+            boolean timeOverlap = newSchedule.getStartTime().isBefore(otherSchedule.getEndTime())
+                    && newSchedule.getEndTime().isAfter(otherSchedule.getStartTime());
+
+            if (timeOverlap) {
+                throw new IllegalArgumentException(
+                        "Phòng học đã được sử dụng bởi lớp \"" + c.getName() + "\" trong khung giờ này"
+                );
+            }
+        }
     }
 }

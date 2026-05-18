@@ -34,7 +34,9 @@ export default function DetailClass() {
     startDate: '',
     endDate: '',
     semesterId: 0,
-    semesterName: ''
+    semesterName: '',
+    roomId: 0,
+    roomName: ''
   });
   const [hasEditPermission, setHasEditPermission] = useState(false);
 
@@ -121,6 +123,13 @@ export default function DetailClass() {
             <Stack sx={{ gap: 1 }}>
               <InputLabel>Học kỳ</InputLabel>
               <Typography variant="body1">{classDetail.semesterName}</Typography>
+            </Stack>
+          </Grid>
+
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Stack sx={{ gap: 1 }}>
+              <InputLabel>Phòng học</InputLabel>
+              <Typography variant="body1">{classDetail.roomName || '—'}</Typography>
             </Stack>
           </Grid>
 

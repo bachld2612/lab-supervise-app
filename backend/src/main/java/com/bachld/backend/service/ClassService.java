@@ -100,6 +100,8 @@ public class ClassService {
             throw new IllegalArgumentException("Ngày bắt đầu phải nhỏ hơn ngày kết thúc");
         }
 
+        util.validateRoom(request.getRoomId(), request.getScheduleId(), startDate, endDate, null);
+
         Classes classes = new Classes();
         classes.setName(request.getName());
         classes.setMaxStudent(request.getMaxStudent());
@@ -110,6 +112,7 @@ public class ClassService {
         classes.setEndDate(endDate);
         classes.setSemesterId(request.getSemesterId());
         classes.setStatus(Status.ACTIVE.getValue());
+        classes.setRoomId(request.getRoomId());
 
         int sessionCount = schedule.getPeriods().split(",").length;
         int sessionNumber = (subject.getCreditNumber() * 15) / sessionCount;
@@ -215,6 +218,11 @@ public class ClassService {
         if (classes.getStartDate().isAfter(classes.getEndDate())) {
             throw new IllegalArgumentException("Ngày bắt đầu phải sớm hơn ngày kết thúc");
         }
+
+        if (request.getRoomId() != null) {
+            classes.setRoomId(request.getRoomId());
+        }
+        util.validateRoom(classes.getRoomId(), classes.getScheduleId(), classes.getStartDate(), classes.getEndDate(), id);
 
         SubjectResponse currentSubject = subjectRepository.findByIdAndStatus(classes.getSubjectId(), Status.ACTIVE.getValue());
         ScheduleResponse currentSchedule = scheduleRepository.findByIdAndStatus(classes.getScheduleId(), Status.ACTIVE.getValue());
