@@ -19,7 +19,16 @@ import {
 import { Camera, CloseCircle, DocumentUpload, Global, Lock1, MessageText, Monitor, Unlock, Wifi } from 'iconsax-reactjs';
 import { useEffect, useRef, useState } from 'react';
 import { AppUsageEntry, StudentTrackingState } from 'hooks/useClassTracking';
-import { getScreenshot, lockScreen, openWebsiteForStudent, sendMessageToStudent } from 'api/veyon';
+import {
+  getScreenshot,
+  lockScreen,
+  openWebsiteForStudent,
+  sendMessageToStudent,
+  lockScreenForExamRoom,
+  getScreenshotForExamRoom,
+  openWebsiteForExamRoomStudent,
+  sendMessageToExamRoomStudent
+} from 'api/veyon';
 import { sendFileToStudent } from 'api/class';
 import { ChangeEvent } from 'react';
 import { HttpStatusCode } from 'axios';
@@ -61,6 +70,9 @@ interface StudentActionDialogProps {
   isLocked: boolean;
   isOnline: boolean;
   onLockChange: (userId: number, locked: boolean) => void;
+  isExamRoom?: boolean;
+  examRoomId?: number;
+  isActive?: boolean;
 }
 
 export default function StudentActionDialog({
@@ -70,7 +82,10 @@ export default function StudentActionDialog({
   classId,
   isLocked,
   isOnline,
-  onLockChange
+  onLockChange,
+  isExamRoom = false,
+  examRoomId,
+  isActive = true
 }: StudentActionDialogProps) {
   const [lockLoading, setLockLoading] = useState(false);
   const [screenshotLoading, setScreenshotLoading] = useState(false);
@@ -141,7 +156,11 @@ export default function StudentActionDialog({
     if (!msgInput.trim()) return;
     setMsgLoading(true);
     try {
-      await sendMessageToStudent(classId, student.studentId, msgInput.trim());
+      if (isExamRoom && examRoomId) {
+        await sendMessageToExamRoomStudent(examRoomId, student.studentId, msgInput.trim());
+      } else {
+        await sendMessageToStudent(classId, student.studentId, msgInput.trim());
+      }
       showSnackbar('Đã gửi thông báo tới sinh viên', 'success');
       setMsgDialogOpen(false);
       setMsgInput('');
@@ -156,7 +175,11 @@ export default function StudentActionDialog({
     if (!webUrlInput.trim()) return;
     setWebUrlLoading(true);
     try {
-      await openWebsiteForStudent(classId, student.studentId, webUrlInput.trim());
+      if (isExamRoom && examRoomId) {
+        await openWebsiteForExamRoomStudent(examRoomId, student.studentId, webUrlInput.trim());
+      } else {
+        await openWebsiteForStudent(classId, student.studentId, webUrlInput.trim());
+      }
       showSnackbar('Đã mở trang web cho sinh viên', 'success');
       setOpenWebDialogOpen(false);
       setWebUrlInput('');
@@ -170,7 +193,12 @@ export default function StudentActionDialog({
   const handleLockToggle = async () => {
     setLockLoading(true);
     try {
-      const res = await lockScreen(classId, student.userId, !isLocked);
+      let res: { statusCode: number; data: null };
+      if (isExamRoom && examRoomId) {
+        res = await lockScreenForExamRoom(examRoomId, student.userId, !isLocked);
+      } else {
+        res = await lockScreen(classId, student.userId, !isLocked);
+      }
       if (res.statusCode === HttpStatusCode.Ok) {
         onLockChange(student.userId, !isLocked);
         showSnackbar(!isLocked ? 'Đã khoá màn hình thành công' : 'Đã mở khoá màn hình thành công', 'success');
@@ -185,7 +213,12 @@ export default function StudentActionDialog({
   const handleScreenshot = async () => {
     setScreenshotLoading(true);
     try {
-      const res = await getScreenshot(classId, student.userId);
+      let res: { statusCode: number; data: string };
+      if (isExamRoom && examRoomId) {
+        res = await getScreenshotForExamRoom(examRoomId, student.userId);
+      } else {
+        res = await getScreenshot(classId, student.userId);
+      }
       if (res.statusCode === HttpStatusCode.Ok && res.data) {
         setScreenshotData(res.data);
         setScreenshotOpen(true);
@@ -255,9 +288,11 @@ export default function StudentActionDialog({
 
           <Divider sx={{ mb: 2.5 }} />
 
-          {/* Action Buttons */}
+          {/* Action Buttons — chỉ hiển thị khi lớp/phòng thi đang diễn ra */}
+          {isActive && (
           <input type="file" ref={sendFileInputRef} onChange={handleSendFileSelected} style={{ display: 'none' }} />
-          <Stack direction="row" spacing={3} justifyContent="center" sx={{ mb: 2.5 }}>
+          )}
+          {isActive && <Stack direction="row" spacing={3} justifyContent="center" sx={{ mb: 2.5 }}>
             <Tooltip title={isLocked ? 'Mở khoá màn hình' : 'Khoá màn hình'} arrow>
               <Stack alignItems="center" spacing={0.75}>
                 <IconButton
@@ -403,9 +438,9 @@ export default function StudentActionDialog({
                 </Typography>
               </Stack>
             </Tooltip>
-          </Stack>
+          </Stack>}
 
-          <Divider sx={{ mb: 2 }} />
+          {isActive && <Divider sx={{ mb: 2 }} />}
 
           {/* Live App History — stays in sync with WS via parent prop */}
           <Stack spacing={1}>

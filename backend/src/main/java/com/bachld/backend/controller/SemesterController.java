@@ -24,7 +24,7 @@ public class SemesterController {
     SemesterService semesterService;
 
     @GetMapping("/v1")
-    @AuthFilter(role = "ADMIN")
+    @AuthFilter(role = "ADMIN,TEACHER,STUDENT")
     public ResponseEntity<?> getList(
             @PageableDefault Pageable pageable,
             @RequestParam(required = false) String keyword,

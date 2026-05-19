@@ -61,6 +61,8 @@ const AdminDashboardPage = Loadable(lazy(() => import('pages/dashboard/admin-das
 const TeacherDashboardPage = Loadable(lazy(() => import('pages/dashboard/teacher-dashboard-page')));
 const ItCenterDashboardPage = Loadable(lazy(() => import('pages/dashboard/it-center-dashboard-page')));
 const TeacherClassTrackingPage = Loadable(lazy(() => import('pages/teacher/teacher-class-tracking-page')));
+const TeacherExamRoomTrackingPage = Loadable(lazy(() => import('pages/teacher/teacher-exam-room-tracking-page')));
+const ExamRoomPage = Loadable(lazy(() => import('pages/exam-room/exam-room-page')));
 const BanApplicationPage = Loadable(lazy(() => import('pages/ban-application/ban-application-page')));
 const PersonalComputerPage = Loadable(lazy(() => import('pages/teacher/personal-computer-page')));
 const RoomPage = Loadable(lazy(() => import('pages/room/room-page')));
@@ -231,6 +233,14 @@ const MainRoutes = {
         {
           path: 'teacher/class/:id/tracking',
           element: <TeacherClassTrackingPage />
+        },
+        {
+          path: 'exam-room',
+          element: <ExamRoomPage />
+        },
+        {
+          path: 'teacher/exam-room/:id/tracking',
+          element: <TeacherExamRoomTrackingPage />
         },
         {
           path: 'ban-application',

@@ -19,6 +19,8 @@ public class MainFrame extends JFrame {
     private final com.bachld.service.ClassService classService;
     private final com.bachld.service.WebSocketService webSocketService;
     private final com.bachld.service.IncidentReportService incidentReportService;
+    private final com.bachld.service.ExamRoomService examRoomService;
+    private final com.bachld.service.SemesterService semesterService;
     private com.bachld.service.TrackingService trackingService;
     private JPanel contentArea;
     private CardLayout cardLayout;
@@ -29,12 +31,16 @@ public class MainFrame extends JFrame {
     public MainFrame(AuthService authService, PersonalComputerService pcService,
                      com.bachld.service.ClassService classService,
                      com.bachld.service.WebSocketService webSocketService,
-                     com.bachld.service.IncidentReportService incidentReportService) {
+                     com.bachld.service.IncidentReportService incidentReportService,
+                     com.bachld.service.ExamRoomService examRoomService,
+                     com.bachld.service.SemesterService semesterService) {
         this.authService = authService;
         this.pcService = pcService;
         this.classService = classService;
         this.webSocketService = webSocketService;
         this.incidentReportService = incidentReportService;
+        this.examRoomService = examRoomService;
+        this.semesterService = semesterService;
 
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("win")) {
@@ -75,7 +81,7 @@ public class MainFrame extends JFrame {
         contentArea.setOpaque(false);
         contentArea.setBorder(new EmptyBorder(0, 30, 30, 30));
 
-        contentArea.add(wrapInPageWrapper(new ClassManagementPanel(classService), "Quản lý lớp học"), "CLASS_MGMT");
+        contentArea.add(wrapInPageWrapper(new DashboardPanel(classService, examRoomService, semesterService), "Trang chủ"), "HOME");
         pcPanel = new PersonalComputerPanel(pcService);
         contentArea.add(pcPanel, "PC_MGMT");
         contentArea.add(wrapInPageWrapper(new IncidentReportPanel(incidentReportService), "Báo cáo sự cố"), "INCIDENT_REPORT");
@@ -83,7 +89,7 @@ public class MainFrame extends JFrame {
         mainWrapper.add(contentArea, BorderLayout.CENTER);
         add(mainWrapper, BorderLayout.CENTER);
 
-        showPage("CLASS_MGMT");
+        showPage("HOME");
     }
 
     // ── System Tray ───────────────────────────────────────────────────────────

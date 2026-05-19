@@ -133,32 +133,31 @@ public class ClassService {
         LocalTime nowTime = LocalTime.now();
         int dayOfWeek = today.getDayOfWeek().getValue();
 
-        // studyStatus = 1 --> studying
-        // studyStatus = 0 --> Not study
+        // studyStatus = 1 --> ongoing, 0 --> upcoming, 2 --> ended
         for (ClassResponse clazz : response) {
             Schedule schedule = scheduleMap.get(clazz.getScheduleId());
-
             if (schedule != null && schedule.getDaysOfWeek() != null) {
                 boolean isToday = Arrays.asList(schedule.getDaysOfWeek().split(","))
                         .contains(String.valueOf(dayOfWeek));
-
                 boolean isActiveTime = !nowTime.isBefore(schedule.getStartTime()) && !nowTime.isAfter(schedule.getEndTime());
-
+                boolean isEnded = isToday && nowTime.isAfter(schedule.getEndTime());
                 if (isToday && isActiveTime) {
                     clazz.setStudyStatus(1);
-                    break;
+                } else if (isEnded) {
+                    clazz.setStudyStatus(2);
+                } else {
+                    clazz.setStudyStatus(0);
                 }
-            }
-        }
-
-        for (ClassResponse clazz : response) {
-            if (clazz.getStudyStatus() == null || clazz.getStudyStatus() != 1 ) {
+            } else {
                 clazz.setStudyStatus(0);
             }
         }
 
         return response.stream()
-                .sorted(Comparator.comparing(ClassResponse::getStudyStatus).reversed())
+                .sorted(Comparator.comparingInt((ClassResponse c) -> {
+                    int s = c.getStudyStatus() == null ? 0 : c.getStudyStatus();
+                    return s == 1 ? 0 : s == 0 ? 1 : 2;
+                }))
                 .collect(Collectors.toList());
     }
 
@@ -254,14 +253,24 @@ public class ClassService {
                 boolean isToday = Arrays.asList(schedule.getDaysOfWeek().split(","))
                         .contains(String.valueOf(dayOfWeek));
                 boolean isActiveTime = !nowTime.isBefore(schedule.getStartTime()) && !nowTime.isAfter(schedule.getEndTime());
-                clazz.setStudyStatus((isToday && isActiveTime) ? 1 : 0);
+                boolean isEnded = isToday && nowTime.isAfter(schedule.getEndTime());
+                if (isToday && isActiveTime) {
+                    clazz.setStudyStatus(1);
+                } else if (isEnded) {
+                    clazz.setStudyStatus(2);
+                } else {
+                    clazz.setStudyStatus(0);
+                }
             } else {
                 clazz.setStudyStatus(0);
             }
         }
 
         return response.stream()
-                .sorted(Comparator.comparing(ClassResponse::getStudyStatus).reversed())
+                .sorted(Comparator.comparingInt((ClassResponse c) -> {
+                    int s = c.getStudyStatus() == null ? 0 : c.getStudyStatus();
+                    return s == 1 ? 0 : s == 0 ? 1 : 2;
+                }))
                 .collect(Collectors.toList());
     }
 
@@ -305,7 +314,9 @@ public class ClassService {
 
         LocalTime now = LocalTime.now();
         boolean isActiveTime = !now.isBefore(schedule.getStartTime()) && !now.isAfter(schedule.getEndTime());
-        return isActiveTime ? 1 : 0;
+        if (isActiveTime) return 1;
+        if (now.isAfter(schedule.getEndTime())) return 2;
+        return 0;
     }
 
     public Page<StudentResponse> getStudentsByClassId(Integer classId, Pageable pageable, String keyword) {

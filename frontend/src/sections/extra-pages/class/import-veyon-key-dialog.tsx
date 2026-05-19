@@ -15,6 +15,7 @@ import {
 import { CloseCircle, DocumentUpload, Key } from 'iconsax-reactjs';
 import { useRef, useState } from 'react';
 import { getVeyonPublicKey, importVeyonKey } from 'api/veyon';
+import { importVeyonKey as importVeyonKeyForExamRoom } from 'api/exam-room';
 import { HttpStatusCode } from 'axios';
 
 async function importRsaPublicKey(base64Key: string): Promise<CryptoKey> {
@@ -48,9 +49,10 @@ interface ImportVeyonKeyDialogProps {
   open: boolean;
   onClose: () => void;
   classId: number;
+  isExamRoom?: boolean;
 }
 
-export default function ImportVeyonKeyDialog({ open, onClose, classId }: ImportVeyonKeyDialogProps) {
+export default function ImportVeyonKeyDialog({ open, onClose, classId, isExamRoom }: ImportVeyonKeyDialogProps) {
   const [keyName, setKeyName] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -100,7 +102,9 @@ export default function ImportVeyonKeyDialog({ open, onClose, classId }: ImportV
       const encryptedKeyData = await rsaEncryptLargeString(pemContent, publicKey);
 
       // Bước 5: Gửi lên server
-      const res = await importVeyonKey(classId, keyName.trim(), encryptedKeyData);
+      const res = isExamRoom
+        ? await importVeyonKeyForExamRoom(classId, keyName.trim(), encryptedKeyData)
+        : await importVeyonKey(classId, keyName.trim(), encryptedKeyData);
       if (res.statusCode === HttpStatusCode.Ok) {
         showSnackbar('Import khóa Veyon thành công', 'success');
         setTimeout(() => handleClose(), 1500);

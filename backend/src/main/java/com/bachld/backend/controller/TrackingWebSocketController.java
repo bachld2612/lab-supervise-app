@@ -12,7 +12,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
-import java.time.LocalTime;
 
 @Controller
 @RequiredArgsConstructor
@@ -32,12 +31,15 @@ public class TrackingWebSocketController {
 
         try {
             String username = principal.getName();
-            String appName = request.getApplicationName();
 
             StudentClassInfoResponse response = trackingService.processTracking(Integer.valueOf(username), request);
 
             if (response != null && response.getClassId() != null) {
-                messagingTemplate.convertAndSend("/topic/class/" + response.getClassId(), response);
+                if ("EXAM".equals(response.getType())) {
+                    messagingTemplate.convertAndSend("/topic/exam/" + response.getClassId(), response);
+                } else {
+                    messagingTemplate.convertAndSend("/topic/class/" + response.getClassId(), response);
+                }
             }
         } catch (Exception e) {
             log.error("!!! [WS-TEST] LỖI XỬ LÝ MESSAGE: {}", e.getMessage(), e);

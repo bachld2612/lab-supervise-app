@@ -33,7 +33,11 @@ public class WebSocketEventListener {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
     private final ConnectedStudentRegistry connectedStudentRegistry;
+    private final ConnectedExamStudentRegistry connectedExamStudentRegistry;
     private final StudentClassInfoRepository studentClassInfoRepository;
+    private final ExamRoomRepository examRoomRepository;
+    private final StudentExamRoomRepository studentExamRoomRepository;
+    private final StudentExamRoomInfoRepository studentExamRoomInfoRepository;
 
     @EventListener
     public void handleSessionConnected(SessionConnectedEvent event) {
@@ -62,7 +66,10 @@ public class WebSocketEventListener {
         if (student == null) return;
 
         Classes activeClass = findActiveClass(student.getId());
-        if (activeClass == null) return;
+        if (activeClass == null) {
+            notifyExamRoomIfActive(student, user, type);
+            return;
+        }
 
         StudentClassInfoResponse response = StudentClassInfoResponse.builder()
                 .classId(activeClass.getId())
@@ -114,5 +121,56 @@ public class WebSocketEventListener {
             if (isToday && isActiveTime) return clazz;
         }
         return null;
+    }
+
+    private ExamRoom findActiveExamRoom(Integer studentId) {
+        LocalDate today = LocalDate.now();
+        LocalTime nowTime = LocalTime.now();
+        List<ExamRoom> exams = examRoomRepository.findActiveByStudentId(studentId, today);
+        return exams.stream()
+                .filter(er -> !nowTime.isBefore(er.getStartTime()) && !nowTime.isAfter(er.getEndTime()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private void notifyExamRoomIfActive(Student student, User user, String type) {
+        ExamRoom examRoom = findActiveExamRoom(student.getId());
+
+        if (examRoom == null && "DISCONNECT".equals(type)) {
+            // Exam may have ended — look up from registry so we still send the disconnect
+            Integer registeredRoomId = connectedExamStudentRegistry.getExamRoomForStudent(student.getId());
+            if (registeredRoomId != null) {
+                examRoom = examRoomRepository.findById(registeredRoomId).orElse(null);
+            }
+        }
+
+        if (examRoom == null) return;
+
+        studentExamRoomRepository.findByStudentIdAndExamRoomId(student.getId(), examRoom.getId()).ifPresent(ser -> {
+            StudentExamRoomInfo info = new StudentExamRoomInfo();
+            info.setStudentExamRoomId(ser.getId());
+            info.setConnectionType(type);
+            info.setViolation(false);
+            info.setStatus(Status.ACTIVE.getValue());
+            studentExamRoomInfoRepository.save(info);
+        });
+
+        if ("CONNECT".equals(type)) {
+            connectedExamStudentRegistry.register(examRoom.getId(), student.getId());
+        } else if ("DISCONNECT".equals(type)) {
+            connectedExamStudentRegistry.unregister(examRoom.getId(), student.getId());
+        }
+
+        StudentClassInfoResponse response = StudentClassInfoResponse.builder()
+                .classId(examRoom.getId())
+                .studentId(student.getId())
+                .studentName(user.getFullName())
+                .studentCode(student.getCode())
+                .type(type)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        messagingTemplate.convertAndSend("/topic/exam/" + examRoom.getId(), response);
+        log.info("Student {} ({}) [{}] exam {}", student.getCode(), user.getFullName(), type, examRoom.getId());
     }
 }

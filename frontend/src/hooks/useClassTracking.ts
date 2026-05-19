@@ -48,7 +48,7 @@ interface ClassStudentTrackingResponse {
   applicationsToday: Array<{
     applicationName: string;
     createdAt: string;
-    isBanApplication: boolean;
+    banApplication: boolean;
     connectionType?: string;
   }>;
 }
@@ -86,7 +86,7 @@ export function useClassTracking(
               appHistory: [...s.applicationsToday].reverse().map((e) => ({
                 applicationName: e.applicationName,
                 createdAt: e.createdAt,
-                banApplication: e.isBanApplication,
+                banApplication: e.banApplication,
                 connectionType: e.connectionType
               }))
             }))

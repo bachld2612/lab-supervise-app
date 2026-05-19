@@ -10,23 +10,26 @@ import java.awt.geom.RoundRectangle2D;
 
 public class ClassCard extends JPanel {
     private final ClassData data;
-    private final boolean isOngoing;
-    
+    private final int studyStatus; // 0=upcoming, 1=ongoing, 2=ended
+
     // Theme Colors
-    private static final Color BG_ONGOING = new Color(240, 253, 244); // light green
+    private static final Color BG_ONGOING = new Color(240, 253, 244);
     private static final Color BORDER_ONGOING = new Color(74, 222, 128);
     private static final Color TEXT_ONGOING = new Color(21, 128, 61);
-    
+
     private static final Color BG_UPCOMING = Color.WHITE;
     private static final Color BORDER_UPCOMING = new Color(226, 232, 240);
     private static final Color TEXT_UPCOMING = new Color(71, 85, 105);
-    
+
+    private static final Color BG_ENDED = new Color(248, 250, 252);
+    private static final Color BORDER_ENDED = new Color(203, 213, 225);
+
     private static final Color PRIMARY_BLUE = new Color(37, 99, 235);
     private static final Color SLATE_800 = new Color(30, 41, 59);
 
     public ClassCard(ClassData data) {
         this.data = data;
-        this.isOngoing = data.getStudyStatus() == 1;
+        this.studyStatus = data.getStudyStatus();
         
         setLayout(new BorderLayout());
         setOpaque(false);
@@ -42,12 +45,16 @@ public class ClassCard extends JPanel {
         top.setOpaque(false);
         
         // Status Badge
-        JLabel badge = new JLabel(isOngoing ? " ● ĐANG DIỄN RA " : " SẮP TỚI ");
+        String badgeText = studyStatus == 1 ? " ● ĐANG DIỄN RA " : studyStatus == 2 ? " ĐÃ KẾT THÚC " : " SẮP TỚI ";
+        JLabel badge = new JLabel(badgeText);
         badge.setFont(new Font("Segoe UI", Font.BOLD, 11));
         badge.setOpaque(true);
-        if (isOngoing) {
+        if (studyStatus == 1) {
             badge.setBackground(new Color(34, 197, 94));
             badge.setForeground(Color.WHITE);
+        } else if (studyStatus == 2) {
+            badge.setBackground(new Color(203, 213, 225));
+            badge.setForeground(new Color(71, 85, 105));
         } else {
             badge.setBackground(new Color(241, 245, 249));
             badge.setForeground(new Color(100, 116, 139));
@@ -101,7 +108,7 @@ public class ClassCard extends JPanel {
         
         JLabel students = new JLabel("Sĩ số: " + data.getCurrentStudent() + "/" + data.getMaxStudent());
         students.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        students.setForeground(isOngoing ? TEXT_ONGOING : PRIMARY_BLUE);
+        students.setForeground(studyStatus == 1 ? TEXT_ONGOING : studyStatus == 2 ? TEXT_UPCOMING : PRIMARY_BLUE);
         bottom.add(students, BorderLayout.WEST);
         
         int percent = (int) ((double) data.getCurrentStudent() / data.getMaxStudent() * 100);
@@ -144,26 +151,25 @@ public class ClassCard extends JPanel {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
-        // Shadow/Glow
-        if (isOngoing) {
-            g2.setColor(new Color(34, 197, 94, 20)); // Soft green glow
+        if (studyStatus == 1) {
+            g2.setColor(new Color(34, 197, 94, 20));
             g2.fill(new RoundRectangle2D.Float(2, 2, getWidth() - 4, getHeight() - 4, 25, 25));
         } else {
-            g2.setColor(new Color(0, 0, 0, 15)); // Simple shadow
+            g2.setColor(new Color(0, 0, 0, 15));
             g2.fill(new RoundRectangle2D.Float(3, 3, getWidth() - 6, getHeight() - 4, 25, 25));
         }
 
-        // Card BG
-        g2.setColor(isOngoing ? BG_ONGOING : BG_UPCOMING);
+        Color bg = studyStatus == 1 ? BG_ONGOING : studyStatus == 2 ? BG_ENDED : BG_UPCOMING;
+        Color border = studyStatus == 1 ? BORDER_ONGOING : studyStatus == 2 ? BORDER_ENDED : BORDER_UPCOMING;
+
+        g2.setColor(bg);
         g2.fill(new RoundRectangle2D.Float(0, 0, getWidth() - 4, getHeight() - 4, 20, 20));
-        
-        // Border
-        g2.setColor(isOngoing ? BORDER_ONGOING : BORDER_UPCOMING);
-        g2.setStroke(new BasicStroke(isOngoing ? 2f : 1f));
+
+        g2.setColor(border);
+        g2.setStroke(new BasicStroke(studyStatus == 1 ? 2f : 1f));
         g2.draw(new RoundRectangle2D.Float(0.5f, 0.5f, getWidth() - 5, getHeight() - 5, 20, 20));
-        
-        if (isOngoing) {
-            // Left indicator strip
+
+        if (studyStatus == 1) {
             g2.setColor(new Color(34, 197, 94));
             g2.fill(new RoundRectangle2D.Float(0, 20, 4, getHeight() - 44, 2, 2));
         }

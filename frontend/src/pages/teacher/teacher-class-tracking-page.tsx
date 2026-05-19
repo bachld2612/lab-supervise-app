@@ -36,8 +36,7 @@ function formatTime(isoString: string): string {
     const date = new Date(isoString);
     const hh = String(date.getHours()).padStart(2, '0');
     const mm = String(date.getMinutes()).padStart(2, '0');
-    const ss = String(date.getSeconds()).padStart(2, '0');
-    return `${hh}:${mm}:${ss}`;
+    return `${hh}:${mm}`;
   } catch {
     return isoString;
   }
@@ -92,7 +91,9 @@ export default function TeacherClassTrackingPage() {
       ? { label: 'Đang kết nối', color: 'warning' as const, icon: <Wifi size={14} /> }
       : studyStatus === 1
         ? { label: 'Đã kết nối', color: 'success' as const, icon: <Wifi size={14} /> }
-        : { label: 'Chờ đến giờ học', color: 'warning' as const, icon: <Timer1 size={14} /> };
+        : studyStatus === 2
+          ? { label: 'Đã kết thúc', color: 'default' as const, icon: <Timer1 size={14} /> }
+          : { label: 'Chờ đến giờ học', color: 'warning' as const, icon: <Timer1 size={14} /> };
 
   const activityFeed = useMemo(() => {
     type FeedEntry = {
@@ -322,7 +323,7 @@ export default function TeacherClassTrackingPage() {
         </Stack>
       </Stack>
 
-      {classId && (
+      {classId && studyStatus === 1 && (
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, pb: 2 }}>
           <input type="file" ref={sendFileInputRef} onChange={handleSendFileSelected} style={{ display: 'none' }} />
           <Tooltip title="Gửi file tới cả lớp" arrow placement="top">
@@ -587,6 +588,7 @@ export default function TeacherClassTrackingPage() {
           isLocked={lockedStudents.has(liveSelectedStudent.userId)}
           isOnline={connectedStudentIds.has(liveSelectedStudent.studentId)}
           onLockChange={handleLockChange}
+          isActive={studyStatus === 1}
         />
       )}
 

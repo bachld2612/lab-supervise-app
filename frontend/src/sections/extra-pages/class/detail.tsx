@@ -11,6 +11,7 @@ import { useIntl } from 'react-intl';
 import { getById } from 'api/class';
 import { Classes } from 'types/classes';
 import AnimateButton from 'components/@extended/AnimateButton';
+import formatDate from 'utils/formatDate';
 
 // ==============================|| CLASS DETAIL PAGE ||============================== //
 
@@ -136,14 +137,14 @@ export default function DetailClass() {
           <Grid size={{ xs: 12, sm: 6 }}>
             <Stack sx={{ gap: 1 }}>
               <InputLabel>Ngày bắt đầu</InputLabel>
-              <Typography variant="body1">{classDetail.startDate}</Typography>
+              <Typography variant="body1">{formatDate(classDetail.startDate)}</Typography>
             </Stack>
           </Grid>
 
           <Grid size={{ xs: 12, sm: 6 }}>
             <Stack sx={{ gap: 1 }}>
               <InputLabel>Ngày kết thúc</InputLabel>
-              <Typography variant="body1">{classDetail.endDate}</Typography>
+              <Typography variant="body1">{formatDate(classDetail.endDate)}</Typography>
             </Stack>
           </Grid>
         </Grid>

@@ -57,7 +57,7 @@ public class SidebarPanel extends JPanel {
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
         menuPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
-        addItem(menuPanel, "Quản lý lớp học", "CLASS_MGMT", "🏫");
+        addItem(menuPanel, "Trang chủ", "HOME", "🏠");
         addItem(menuPanel, "Quản lý máy tính cá nhân", "PC_MGMT", "💻");
         addItem(menuPanel, "Báo cáo sự cố", "INCIDENT_REPORT", "🚨");
 
