@@ -11,6 +11,7 @@ import { useIntl } from 'react-intl';
 import { getById } from 'api/semester';
 import { Semester } from 'types/semester';
 import AnimateButton from 'components/@extended/AnimateButton';
+import formatDate from 'utils/formatDate';
 
 // ==============================|| SEMESTER DETAIL PAGE ||============================== //
 
@@ -93,7 +94,7 @@ export default function DetailSemester() {
             <Stack sx={{ gap: 1 }}>
               <InputLabel>Ngày bắt đầu</InputLabel>
               <Typography variant="body1" fontWeight={500}>
-                {semesterDetail.startDate}
+                {formatDate(semesterDetail.startDate)}
               </Typography>
             </Stack>
           </Grid>
@@ -102,7 +103,7 @@ export default function DetailSemester() {
             <Stack sx={{ gap: 1 }}>
               <InputLabel>Ngày kết thúc</InputLabel>
               <Typography variant="body1" fontWeight={500}>
-                {semesterDetail.endDate}
+                {formatDate(semesterDetail.endDate)}
               </Typography>
             </Stack>
           </Grid>

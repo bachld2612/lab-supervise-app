@@ -6,7 +6,8 @@
       "Bash(grep -r \"http\\\\|baseURL\\\\|API\" E:\\\\\\\\lab_supervise\\\\\\\\frontend\\\\\\\\src\\\\\\\\utils)",
       "Bash(find E:\\\\lab_supervise\\\\frontend *)",
       "Bash(grep -E \"\\\\.java$\")",
-      "Bash(Get-ChildItem *)"
+      "Bash(Get-ChildItem *)",
+      "Bash(dir /s \"E:\\\\lab_supervise\\\\desktop\\\\src\\\\main\\\\java\\\\com\\\\bachld\\\\ui\\\\*.java\")"
     ]
   }
 }

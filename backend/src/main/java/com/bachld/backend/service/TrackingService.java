@@ -11,12 +11,14 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +38,21 @@ public class TrackingService {
 
     BanApplicationRepository banApplicationRepository;
 
+    ExamRoomRepository examRoomRepository;
+
+    StudentExamRoomRepository studentExamRoomRepository;
+
+    StudentExamRoomInfoRepository studentExamRoomInfoRepository;
+
+    AllowedApplicationRepository allowedApplicationRepository;
+
+    private static String normalize(String s) {
+        if (s == null) return "";
+        return Normalizer.normalize(s, Normalizer.Form.NFD)
+                .replaceAll("\\p{Mn}", "")
+                .toLowerCase();
+    }
+
     @Transactional
     public StudentClassInfoResponse processTracking(Integer userId, StudentClassInfoCreateRequest request) {
         Student student = studentRepository.findByUserId(userId).orElse(null);
@@ -46,7 +63,51 @@ public class TrackingService {
         User user = userRepository.findById(userId).orElse(null);
         String studentName = (user != null) ? user.getFullName() : "Unknown";
 
+        // --- Exam room check (priority over regular class) ---
         LocalDate today = LocalDate.now();
+        LocalTime nowTime = LocalTime.now();
+        String appName = request.getApplicationName();
+
+        List<ExamRoom> activeExams = examRoomRepository.findActiveByStudentId(student.getId(), today);
+        Optional<ExamRoom> activeExam = activeExams.stream()
+                .filter(er -> !nowTime.isBefore(er.getStartTime()) && !nowTime.isAfter(er.getEndTime()))
+                .findFirst();
+
+        if (activeExam.isPresent()) {
+            ExamRoom exam = activeExam.get();
+            StudentExamRoom ser = studentExamRoomRepository
+                    .findByStudentIdAndExamRoomId(student.getId(), exam.getId()).orElse(null);
+            if (ser == null) return null;
+
+            boolean trackingEnabled = Boolean.TRUE.equals(exam.getTrackingEnabled());
+            boolean isViolation = false;
+            if (trackingEnabled) {
+                List<String> allowedApps = allowedApplicationRepository.findActiveAppNamesByExamRoomId(exam.getId());
+                String normalizedApp = normalize(appName);
+                isViolation = allowedApps.stream()
+                        .noneMatch(allowed -> normalizedApp.contains(normalize(allowed)));
+            }
+
+            StudentExamRoomInfo info = new StudentExamRoomInfo();
+            info.setStudentExamRoomId(ser.getId());
+            info.setApplicationName(appName);
+            info.setViolation(isViolation);
+            info.setStatus(Status.ACTIVE.getValue());
+            studentExamRoomInfoRepository.save(info);
+
+            return StudentClassInfoResponse.builder()
+                    .classId(exam.getId())
+                    .studentId(student.getId())
+                    .studentName(studentName)
+                    .studentCode(student.getCode())
+                    .applicationName(appName)
+                    .createdAt(LocalDateTime.now())
+                    .isBanApplication(isViolation)
+                    .type("EXAM")
+                    .build();
+        }
+        // --- End exam room check ---
+
         List<Classes> potentialClasses = studentClassRepository.findActiveClassesByStudentId(student.getId(), today);
 
         if (potentialClasses.isEmpty()) {
@@ -58,7 +119,6 @@ public class TrackingService {
                 .collect(Collectors.toMap(BaseEntity::getId, s -> s));
 
         Classes activeClass = null;
-        LocalTime nowTime = LocalTime.now();
         int dayOfWeek = today.getDayOfWeek().getValue();
 
         for (Classes clazz : potentialClasses) {
@@ -88,9 +148,9 @@ public class TrackingService {
         }
 
         List<String> bannedApps = banApplicationRepository.findActiveAppNamesByClassId(activeClass.getId());
-        String appName = request.getApplicationName();
+        String normalizedApp = normalize(appName);
         boolean isBanApplication = bannedApps.stream()
-                .anyMatch(banned -> appName.toLowerCase().contains(banned.toLowerCase()));
+                .anyMatch(banned -> normalizedApp.contains(normalize(banned)));
 
         StudentClassInfo info = new StudentClassInfo();
         info.setStudentClassId(studentClass.getId());

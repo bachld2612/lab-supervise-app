@@ -51,3 +51,35 @@ export const sendMessageToStudent = async (
   const response = await axiosServices.post(`/api/veyon/v1/class/${classId}/student/${studentId}/text-message`, { text });
   return response.data;
 };
+
+// ===== EXAM ROOM VEYON =====
+
+export const lockScreenForExamRoom = async (examRoomId: number, studentUserId: number, active: boolean) => {
+  const response = await axiosServices.post('/api/veyon/v1/exam-room/lock-screen', { examRoomId, studentUserId, active });
+  return response.data;
+};
+
+export const getScreenshotForExamRoom = async (examRoomId: number, studentUserId: number) => {
+  const response = await axiosServices.get('/api/veyon/v1/exam-room/screenshot', { params: { examRoomId, studentUserId } });
+  return response.data;
+};
+
+export const openWebsiteForExamRoom = async (examRoomId: number, websiteUrl: string) => {
+  const response = await axiosServices.post(`/api/veyon/v1/exam-room/${examRoomId}/open-website`, { websiteUrl });
+  return response.data;
+};
+
+export const openWebsiteForExamRoomStudent = async (examRoomId: number, studentId: number, websiteUrl: string) => {
+  const response = await axiosServices.post(`/api/veyon/v1/exam-room/${examRoomId}/student/${studentId}/open-website`, { websiteUrl });
+  return response.data;
+};
+
+export const sendMessageToExamRoom = async (examRoomId: number, text: string) => {
+  const response = await axiosServices.post(`/api/veyon/v1/exam-room/${examRoomId}/text-message`, { text });
+  return response.data;
+};
+
+export const sendMessageToExamRoomStudent = async (examRoomId: number, studentId: number, text: string) => {
+  const response = await axiosServices.post(`/api/veyon/v1/exam-room/${examRoomId}/student/${studentId}/text-message`, { text });
+  return response.data;
+};

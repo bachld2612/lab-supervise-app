@@ -77,6 +77,13 @@ const adminMenu: NavItemType = {
       icon: icons.box
     },
     {
+      id: 'manage-exam-rooms',
+      title: 'Quản lý phòng thi',
+      type: 'item',
+      url: '/exam-room',
+      icon: icons.table
+    },
+    {
       id: 'department-management',
       title: 'Quản lý thông tin trường',
       type: 'collapse',

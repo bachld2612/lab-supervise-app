@@ -83,6 +83,7 @@ import useAuth from 'hooks/useAuth';
 import { type Semester } from 'types/semester';
 import { deleteById, getList } from 'api/semester';
 import { DEFAULT_PAGE_SIZE, PageRequest } from 'types/paging';
+import formatDate from 'utils/formatDate';
 
 const fuzzyFilter: FilterFn<Semester> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);
@@ -343,6 +344,7 @@ export default function SemesterPage() {
         id: 'startDate',
         header: 'Ngày bắt đầu',
         accessorKey: 'startDate',
+        cell: (cell) => formatDate(cell.row.original.startDate),
         dataType: 'text',
         enableGrouping: false
       },
@@ -350,6 +352,7 @@ export default function SemesterPage() {
         id: 'endDate',
         header: 'Ngày kết thúc',
         accessorKey: 'endDate',
+        cell: (cell) => formatDate(cell.row.original.endDate),
         dataType: 'text',
         enableGrouping: false
       },
@@ -389,7 +392,7 @@ export default function SemesterPage() {
   const [pageRequest, setPageRequest] = useState<PageRequest>({
     page: 0,
     size: DEFAULT_PAGE_SIZE,
-    sort: '',
+    sort: 'startDate,desc',
     keyword: '',
     status: ''
   });

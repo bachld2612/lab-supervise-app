@@ -7,6 +7,7 @@ import com.bachld.service.ClassService;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.Comparator;
 import java.util.List;
 
 public class ClassManagementPanel extends JPanel {
@@ -106,8 +107,12 @@ public class ClassManagementPanel extends JPanel {
             gridContainer.setLayout(new FlowLayout(FlowLayout.CENTER));
             gridContainer.add(new JLabel("Bạn chưa có lớp học nào."));
         } else {
-            // Force 3 columns again just in case
             gridContainer.setLayout(new GridLayout(0, 3, 25, 25));
+            // sort: ongoing (1) → upcoming (0) → ended (2)
+            classes.sort(Comparator.comparingInt(d -> {
+                int s = d.getStudyStatus();
+                return s == 1 ? 0 : s == 0 ? 1 : 2;
+            }));
             for (ClassData data : classes) {
                 gridContainer.add(new ClassCard(data));
             }
