@@ -43,10 +43,10 @@ public class ExamRoomCreateRequest {
     String examDate;
 
     @NotEmpty(message = "Giờ bắt đầu không được để trống")
-    @Pattern(regexp = "^\\d{2}:\\d{2}:\\d{2}$", message = "Giờ bắt đầu phải có định dạng HH:mm:ss")
+    @Pattern(regexp = "^\\d{2}:\\d{2}(:\\d{2})?$", message = "Giờ bắt đầu phải có định dạng HH:mm hoặc HH:mm:ss")
     String startTime;
 
     @NotEmpty(message = "Giờ kết thúc không được để trống")
-    @Pattern(regexp = "^\\d{2}:\\d{2}:\\d{2}$", message = "Giờ kết thúc phải có định dạng HH:mm:ss")
+    @Pattern(regexp = "^\\d{2}:\\d{2}(:\\d{2})?$", message = "Giờ kết thúc phải có định dạng HH:mm hoặc HH:mm:ss")
     String endTime;
 }

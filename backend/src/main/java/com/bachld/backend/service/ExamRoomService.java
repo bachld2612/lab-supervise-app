@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -97,8 +96,8 @@ public class ExamRoomService {
     @Transactional
     public void create(ExamRoomCreateRequest request) {
         LocalDate examDate = LocalDate.parse(request.getExamDate());
-        LocalTime startTime = LocalTime.parse(request.getStartTime(), DateTimeFormatter.ofPattern("HH:mm"));
-        LocalTime endTime = LocalTime.parse(request.getEndTime(), DateTimeFormatter.ofPattern("HH:mm"));
+        LocalTime startTime = LocalTime.parse(request.getStartTime());
+        LocalTime endTime = LocalTime.parse(request.getEndTime());
 
         if (!startTime.isBefore(endTime)) {
             throw new IllegalArgumentException("Giờ bắt đầu phải trước giờ kết thúc");
@@ -145,9 +144,9 @@ public class ExamRoomService {
         LocalDate examDate = request.getExamDate() != null
                 ? LocalDate.parse(request.getExamDate()) : examRoom.getExamDate();
         LocalTime startTime = request.getStartTime() != null
-                ? LocalTime.parse(request.getStartTime(), DateTimeFormatter.ofPattern("HH:mm")) : examRoom.getStartTime();
+                ? LocalTime.parse(request.getStartTime()) : examRoom.getStartTime();
         LocalTime endTime = request.getEndTime() != null
-                ? LocalTime.parse(request.getEndTime(), DateTimeFormatter.ofPattern("HH:mm")) : examRoom.getEndTime();
+                ? LocalTime.parse(request.getEndTime()) : examRoom.getEndTime();
 
         if (!startTime.isBefore(endTime)) {
             throw new IllegalArgumentException("Giờ bắt đầu phải trước giờ kết thúc");

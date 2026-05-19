@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import {
   Alert,
   Autocomplete,
-  Box,
   Button,
   Chip,
   CircularProgress,
@@ -94,6 +93,13 @@ const emptyValues: ExamRoomFormValues = {
   endTime: ''
 };
 
+const normalizeTimeForInput = (time?: string) => (time ? time.slice(0, 5) : '');
+
+const normalizeTimeForSubmit = (time: string) => {
+  if (/^\d{2}:\d{2}$/.test(time)) return `${time}:00`;
+  return time;
+};
+
 interface DropdownData {
   teachers: Teacher[];
   subjects: Subject[];
@@ -130,12 +136,17 @@ function ExamRoomFormDialog({
           semesterId: editItem.semesterId,
           maxStudent: editItem.maxStudent,
           examDate: editItem.examDate,
-          startTime: editItem.startTime,
-          endTime: editItem.endTime
+          startTime: normalizeTimeForInput(editItem.startTime),
+          endTime: normalizeTimeForInput(editItem.endTime)
         }
       : emptyValues,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
-      const payload = { ...values, maxStudent: Number(values.maxStudent) };
+      const payload = {
+        ...values,
+        maxStudent: Number(values.maxStudent),
+        startTime: normalizeTimeForSubmit(values.startTime),
+        endTime: normalizeTimeForSubmit(values.endTime)
+      };
       const response = editItem ? await update(payload as Partial<ExamRoom>, editItem.id) : await create(payload as Partial<ExamRoom>);
 
       setSubmitting(false);
@@ -170,7 +181,9 @@ function ExamRoomFormDialog({
 
             <Grid container spacing={2}>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <InputLabel required sx={{ mb: 0.5 }}>Mã phòng thi</InputLabel>
+                <InputLabel required sx={{ mb: 0.5 }}>
+                  Mã phòng thi
+                </InputLabel>
                 <TextField
                   name="code"
                   fullWidth
@@ -185,7 +198,9 @@ function ExamRoomFormDialog({
               </Grid>
 
               <Grid size={{ xs: 12, sm: 6 }}>
-                <InputLabel required sx={{ mb: 0.5 }}>Sĩ số tối đa</InputLabel>
+                <InputLabel required sx={{ mb: 0.5 }}>
+                  Sĩ số tối đa
+                </InputLabel>
                 <TextField
                   name="maxStudent"
                   type="number"
@@ -201,7 +216,9 @@ function ExamRoomFormDialog({
               </Grid>
 
               <Grid size={{ xs: 12 }}>
-                <InputLabel required sx={{ mb: 0.5 }}>Môn học</InputLabel>
+                <InputLabel required sx={{ mb: 0.5 }}>
+                  Môn học
+                </InputLabel>
                 <Autocomplete
                   options={subjects}
                   getOptionLabel={(o) => `${o.code} - ${o.name}`}
@@ -221,7 +238,9 @@ function ExamRoomFormDialog({
               </Grid>
 
               <Grid size={{ xs: 12 }}>
-                <InputLabel required sx={{ mb: 0.5 }}>Phòng thi</InputLabel>
+                <InputLabel required sx={{ mb: 0.5 }}>
+                  Phòng thi
+                </InputLabel>
                 <Autocomplete
                   options={rooms}
                   getOptionLabel={(o) => o.name ?? ''}
@@ -241,7 +260,9 @@ function ExamRoomFormDialog({
               </Grid>
 
               <Grid size={{ xs: 12, sm: 6 }}>
-                <InputLabel required sx={{ mb: 0.5 }}>Giảng viên coi thi 1</InputLabel>
+                <InputLabel required sx={{ mb: 0.5 }}>
+                  Giảng viên coi thi 1
+                </InputLabel>
                 <Autocomplete
                   options={teachers}
                   getOptionLabel={(o) => `${o.code} - ${o.fullName}`}
@@ -261,7 +282,9 @@ function ExamRoomFormDialog({
               </Grid>
 
               <Grid size={{ xs: 12, sm: 6 }}>
-                <InputLabel required sx={{ mb: 0.5 }}>Giảng viên coi thi 2</InputLabel>
+                <InputLabel required sx={{ mb: 0.5 }}>
+                  Giảng viên coi thi 2
+                </InputLabel>
                 <Autocomplete
                   options={teachers}
                   getOptionLabel={(o) => `${o.code} - ${o.fullName}`}
@@ -281,7 +304,9 @@ function ExamRoomFormDialog({
               </Grid>
 
               <Grid size={{ xs: 12 }}>
-                <InputLabel required sx={{ mb: 0.5 }}>Học kỳ</InputLabel>
+                <InputLabel required sx={{ mb: 0.5 }}>
+                  Học kỳ
+                </InputLabel>
                 <Autocomplete
                   options={semesters}
                   getOptionLabel={(o) => o.name ?? ''}
@@ -301,7 +326,9 @@ function ExamRoomFormDialog({
               </Grid>
 
               <Grid size={{ xs: 12, sm: 4 }}>
-                <InputLabel required sx={{ mb: 0.5 }}>Ngày thi</InputLabel>
+                <InputLabel required sx={{ mb: 0.5 }}>
+                  Ngày thi
+                </InputLabel>
                 <TextField
                   name="examDate"
                   type="date"
@@ -317,7 +344,9 @@ function ExamRoomFormDialog({
               </Grid>
 
               <Grid size={{ xs: 12, sm: 4 }}>
-                <InputLabel required sx={{ mb: 0.5 }}>Giờ bắt đầu</InputLabel>
+                <InputLabel required sx={{ mb: 0.5 }}>
+                  Giờ bắt đầu
+                </InputLabel>
                 <TextField
                   name="startTime"
                   type="time"
@@ -333,7 +362,9 @@ function ExamRoomFormDialog({
               </Grid>
 
               <Grid size={{ xs: 12, sm: 4 }}>
-                <InputLabel required sx={{ mb: 0.5 }}>Giờ kết thúc</InputLabel>
+                <InputLabel required sx={{ mb: 0.5 }}>
+                  Giờ kết thúc
+                </InputLabel>
                 <TextField
                   name="endTime"
                   type="time"
@@ -351,7 +382,9 @@ function ExamRoomFormDialog({
           </Stack>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2.5 }}>
-          <Button onClick={handleClose} disabled={formik.isSubmitting}>Hủy</Button>
+          <Button onClick={handleClose} disabled={formik.isSubmitting}>
+            Hủy
+          </Button>
           <Button
             type="submit"
             variant="contained"
@@ -520,10 +553,7 @@ export default function ExamRoomPage() {
       </Stack>
 
       <MainCard content={false}>
-        <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          sx={{ gap: 2, justifyContent: 'space-between', p: 2 }}
-        >
+        <Stack direction={{ xs: 'column', sm: 'row' }} sx={{ gap: 2, justifyContent: 'space-between', p: 2 }}>
           <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap' }}>
             <OutlinedInput
               value={keywordInput}
@@ -539,7 +569,10 @@ export default function ExamRoomPage() {
             />
             <Select
               value={statusFilter}
-              onChange={(e: SelectChangeEvent) => { setStatusFilter(e.target.value); setPageNumber(0); }}
+              onChange={(e: SelectChangeEvent) => {
+                setStatusFilter(e.target.value);
+                setPageNumber(0);
+              }}
               displayEmpty
               input={<OutlinedInput />}
             >
@@ -588,13 +621,19 @@ export default function ExamRoomPage() {
                 data.map((row, idx) => (
                   <TableRow key={row.id} hover>
                     <TableCell>{pageNumber * pageSize + idx + 1}</TableCell>
-                    <TableCell><Typography variant="body2" fontWeight="medium">{row.code}</Typography></TableCell>
+                    <TableCell>
+                      <Typography variant="body2" fontWeight="medium">
+                        {row.code}
+                      </Typography>
+                    </TableCell>
                     <TableCell>{row.subjectName}</TableCell>
                     <TableCell>{row.roomName}</TableCell>
                     <TableCell>{row.teacher1Name}</TableCell>
                     <TableCell>{row.teacher2Name}</TableCell>
                     <TableCell>{formatDate(row.examDate)}</TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>{formatTimeWithoutSecond(row.startTime)} – {formatTimeWithoutSecond(row.endTime)}</TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                      {formatTimeWithoutSecond(row.startTime)} – {formatTimeWithoutSecond(row.endTime)}
+                    </TableCell>
                     <TableCell>{row.semesterName}</TableCell>
                     <TableCell align="center">
                       <Typography
@@ -605,11 +644,7 @@ export default function ExamRoomPage() {
                       </Typography>
                     </TableCell>
                     <TableCell align="center">
-                      <Chip
-                        label={row.status === 1 ? 'Hoạt động' : 'Dừng'}
-                        color={row.status === 1 ? 'success' : 'error'}
-                        size="small"
-                      />
+                      <Chip label={row.status === 1 ? 'Hoạt động' : 'Dừng'} color={row.status === 1 ? 'success' : 'error'} size="small" />
                     </TableCell>
                     <TableCell align="center">
                       <Stack direction="row" spacing={0.5} justifyContent="center">
@@ -631,24 +666,14 @@ export default function ExamRoomPage() {
                           <>
                             <Tooltip title={row.status === 0 ? 'Không thể chỉnh sửa' : 'Chỉnh sửa'}>
                               <span>
-                                <IconButton
-                                  color="primary"
-                                  size="small"
-                                  onClick={() => setEditItem(row)}
-                                  disabled={row.status === 0}
-                                >
+                                <IconButton color="primary" size="small" onClick={() => setEditItem(row)} disabled={row.status === 0}>
                                   <Edit2 variant="Outline" />
                                 </IconButton>
                               </span>
                             </Tooltip>
                             <Tooltip title={row.status === 0 ? 'Không thể xóa' : 'Xóa'}>
                               <span>
-                                <IconButton
-                                  color="error"
-                                  size="small"
-                                  onClick={() => setDeleteItem(row)}
-                                  disabled={row.status === 0}
-                                >
+                                <IconButton color="error" size="small" onClick={() => setDeleteItem(row)} disabled={row.status === 0}>
                                   <Trash variant="Outline" />
                                 </IconButton>
                               </span>
@@ -658,7 +683,10 @@ export default function ExamRoomPage() {
                                 <IconButton
                                   color="primary"
                                   size="small"
-                                  onClick={() => { setImportTargetId(row.id); importFileRef.current?.click(); }}
+                                  onClick={() => {
+                                    setImportTargetId(row.id);
+                                    importFileRef.current?.click();
+                                  }}
                                   disabled={row.status === 0}
                                 >
                                   <ImportCurve variant="Outline" />
@@ -676,27 +704,30 @@ export default function ExamRoomPage() {
           </Table>
         </TableContainer>
 
-        <input
-          ref={importFileRef}
-          type="file"
-          accept=".xlsx,.xls"
-          style={{ display: 'none' }}
-          onChange={handleImportStudents}
-        />
+        <input ref={importFileRef} type="file" accept=".xlsx,.xls" style={{ display: 'none' }} onChange={handleImportStudents} />
 
         <Divider />
 
         <Grid container sx={{ alignItems: 'center', justifyContent: 'space-between', px: 2, py: 1.5 }}>
           <Grid>
             <Stack direction="row" spacing={1} alignItems="center">
-              <Typography variant="caption" color="secondary">Số bản ghi mỗi trang</Typography>
+              <Typography variant="caption" color="secondary">
+                Số bản ghi mỗi trang
+              </Typography>
               <FormControl size="small">
                 <Select
                   value={pageSize}
-                  onChange={(e: SelectChangeEvent<number>) => { setPageSize(Number(e.target.value)); setPageNumber(0); }}
+                  onChange={(e: SelectChangeEvent<number>) => {
+                    setPageSize(Number(e.target.value));
+                    setPageNumber(0);
+                  }}
                   sx={{ '& .MuiSelect-select': { py: 0.75, px: 1.25 } }}
                 >
-                  {pageSizeOptions.map((o) => <MenuItem key={o} value={o}>{o}</MenuItem>)}
+                  {pageSizeOptions.map((o) => (
+                    <MenuItem key={o} value={o}>
+                      {o}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Stack>
@@ -719,7 +750,10 @@ export default function ExamRoomPage() {
       <ExamRoomFormDialog
         open={addDialogOpen}
         onClose={() => setAddDialogOpen(false)}
-        onSuccess={(msg) => { setAlert({ open: true, message: msg, severity: 'success' }); setReload((p) => !p); }}
+        onSuccess={(msg) => {
+          setAlert({ open: true, message: msg, severity: 'success' });
+          setReload((p) => !p);
+        }}
         editItem={null}
         dropdownData={dropdownData}
       />
@@ -728,7 +762,10 @@ export default function ExamRoomPage() {
       <ExamRoomFormDialog
         open={!!editItem}
         onClose={() => setEditItem(null)}
-        onSuccess={(msg) => { setAlert({ open: true, message: msg, severity: 'success' }); setReload((p) => !p); }}
+        onSuccess={(msg) => {
+          setAlert({ open: true, message: msg, severity: 'success' });
+          setReload((p) => !p);
+        }}
         editItem={editItem}
         dropdownData={dropdownData}
       />
@@ -742,9 +779,16 @@ export default function ExamRoomPage() {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteItem(null)} disabled={deleteLoading}>Hủy</Button>
-          <Button variant="contained" color="error" onClick={handleDelete} disabled={deleteLoading}
-            startIcon={deleteLoading ? <CircularProgress size={14} color="inherit" /> : undefined}>
+          <Button onClick={() => setDeleteItem(null)} disabled={deleteLoading}>
+            Hủy
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleDelete}
+            disabled={deleteLoading}
+            startIcon={deleteLoading ? <CircularProgress size={14} color="inherit" /> : undefined}
+          >
             Xóa
           </Button>
         </DialogActions>

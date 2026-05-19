@@ -32,9 +32,9 @@ public class ExamRoomUpdateRequest {
     @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Ngày thi phải có định dạng yyyy-MM-dd")
     String examDate;
 
-    @Pattern(regexp = "^\\d{2}:\\d{2}:\\d{2}$", message = "Giờ bắt đầu phải có định dạng HH:mm")
+    @Pattern(regexp = "^\\d{2}:\\d{2}(:\\d{2})?$", message = "Giờ bắt đầu phải có định dạng HH:mm hoặc HH:mm:ss")
     String startTime;
 
-    @Pattern(regexp = "^\\d{2}:\\d{2}:\\d{2}$", message = "Giờ kết thúc phải có định dạng HH:mm")
+    @Pattern(regexp = "^\\d{2}:\\d{2}(:\\d{2})?$", message = "Giờ kết thúc phải có định dạng HH:mm hoặc HH:mm:ss")
     String endTime;
 }
