@@ -21,7 +21,7 @@ axiosServices.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401 && !window.location.href.includes('/login')) {
-      redirectWithBasePath('/maintenance/500');
+      redirectWithBasePath('/login');
     }
     return Promise.reject((error.response && error.response.data) || 'Wrong Services');
   }

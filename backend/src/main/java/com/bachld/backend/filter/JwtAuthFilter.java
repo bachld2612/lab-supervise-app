@@ -2,7 +2,7 @@ package com.bachld.backend.filter;
 
 
 import com.bachld.backend.service.JwtService;
-import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,6 +38,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getServletPath().startsWith("/api/auth/");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
         String token = null;
@@ -62,8 +67,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 }
             }
         }
-        catch (ExpiredJwtException expiredJwtException) {
-            resolver.resolveException(request, response, null, expiredJwtException);
+        catch (JwtException jwtException) {
+            resolver.resolveException(request, response, null, jwtException);
             return;
         }
 
