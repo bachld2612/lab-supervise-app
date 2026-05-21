@@ -4,6 +4,7 @@ import com.bachld.config.AppConfig;
 import com.bachld.model.response.PersonalComputerResponse;
 import com.bachld.service.AuthService;
 import com.bachld.service.PersonalComputerService;
+import com.bachld.service.UserService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -21,6 +22,7 @@ public class MainFrame extends JFrame {
     private final com.bachld.service.IncidentReportService incidentReportService;
     private final com.bachld.service.ExamRoomService examRoomService;
     private final com.bachld.service.SemesterService semesterService;
+    private final UserService userService;
     private com.bachld.service.TrackingService trackingService;
     private JPanel contentArea;
     private CardLayout cardLayout;
@@ -33,7 +35,8 @@ public class MainFrame extends JFrame {
                      com.bachld.service.WebSocketService webSocketService,
                      com.bachld.service.IncidentReportService incidentReportService,
                      com.bachld.service.ExamRoomService examRoomService,
-                     com.bachld.service.SemesterService semesterService) {
+                     com.bachld.service.SemesterService semesterService,
+                     UserService userService) {
         this.authService = authService;
         this.pcService = pcService;
         this.classService = classService;
@@ -41,6 +44,7 @@ public class MainFrame extends JFrame {
         this.incidentReportService = incidentReportService;
         this.examRoomService = examRoomService;
         this.semesterService = semesterService;
+        this.userService = userService;
 
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("win")) {
@@ -197,10 +201,6 @@ public class MainFrame extends JFrame {
         JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 15));
         right.setOpaque(false);
 
-        JLabel bell = new JLabel("🔔");
-        bell.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 18));
-        bell.setForeground(new Color(100, 116, 139));
-
         JLabel profile = new JLabel("👤");
         profile.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 24));
         profile.setForeground(new Color(100, 116, 139));
@@ -211,6 +211,7 @@ public class MainFrame extends JFrame {
 
         JMenuItem itemPassword = new JMenuItem("Đổi mật khẩu");
         itemPassword.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        itemPassword.addActionListener(e -> new ChangePasswordDialog(this, userService).setVisible(true));
 
         JMenuItem itemLogout = new JMenuItem("Đăng xuất");
         itemLogout.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -229,7 +230,6 @@ public class MainFrame extends JFrame {
             }
         });
 
-        right.add(bell);
         right.add(profile);
         bar.add(right, BorderLayout.EAST);
 

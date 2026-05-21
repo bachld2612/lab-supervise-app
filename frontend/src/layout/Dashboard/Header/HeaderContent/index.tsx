@@ -5,7 +5,6 @@ import Box from '@mui/material/Box';
 
 // project-imports
 import MobileSection from './MobileSection';
-import Notification from './Notification';
 import Profile from './Profile';
 
 import { MenuOrientation } from 'config';
@@ -24,7 +23,6 @@ export default function HeaderContent() {
       {menuOrientation === MenuOrientation.HORIZONTAL && !downLG && <DrawerHeader open={true} />}
       <Box sx={{ flexGrow: 1 }} />
 
-      <Notification />
       {!downLG && <Profile />}
       {downLG && <MobileSection />}
     </>

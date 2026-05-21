@@ -1,274 +1,223 @@
-2026-05-20 00:03:26.227 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172246@e.tlu.edu.vn
-2026-05-20 00:03:26.240 [SwingWorker-pool-2-thread-1] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: http://localhost:8080/api/auth/v1/login
-2026-05-20 00:03:26.331 [SwingWorker-pool-2-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/auth/v1/login
-2026-05-20 00:03:26.654 [SwingWorker-pool-2-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:03:26.677 [SwingWorker-pool-2-thread-1] INFO  com.bachld.client.AuthApiClient - API response status: 200
-2026-05-20 00:03:26.725 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172246@e.tlu.edu.vn
-2026-05-20 00:03:27.017 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - STOMP connection successful. SessionID: 676b2242-64ed-ea18-0e6f-3eece7d4dab4
-2026-05-20 00:03:27.020 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - Subscribed to /topic/user/9/file
-2026-05-20 00:03:27.408 [AWT-EventQueue-0] INFO  com.bachld.service.SemesterService - Fetching semesters...
-2026-05-20 00:03:27.411 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
-2026-05-20 00:03:27.412 [SwingWorker-pool-2-thread-2] DEBUG com.bachld.client.SemesterApiClient - Fetching semesters from: http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
-2026-05-20 00:03:27.413 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Fetching student exam rooms...
-2026-05-20 00:03:27.413 [SwingWorker-pool-2-thread-3] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: http://localhost:8080/api/class/v1/student
-2026-05-20 00:03:27.424 [SwingWorker-pool-2-thread-2] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
-2026-05-20 00:03:27.425 [SwingWorker-pool-2-thread-2] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:03:27.428 [SwingWorker-pool-2-thread-3] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/class/v1/student
-2026-05-20 00:03:27.429 [SwingWorker-pool-2-thread-3] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:03:27.431 [SwingWorker-pool-2-thread-4] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/exam-room/v1/student
-2026-05-20 00:03:27.432 [SwingWorker-pool-2-thread-4] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:03:27.456 [AWT-EventQueue-0] INFO  com.bachld.util.VpnUtil - VPN detected (Tailscale CGNAT): iftype53_32770 -> 100.124.227.3
-2026-05-20 00:03:27.456 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Updating personal computer IP to: 100.124.227.3
-2026-05-20 00:03:27.458 [SwingWorker-pool-2-thread-5] DEBUG c.b.client.PersonalComputerApiClient - Sending POST request to: http://localhost:8080/api/personal-computer/v1/update
-2026-05-20 00:03:27.466 [SwingWorker-pool-2-thread-5] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/personal-computer/v1/update
-2026-05-20 00:03:27.467 [SwingWorker-pool-2-thread-5] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:03:27.502 [SwingWorker-pool-2-thread-5] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:03:27.503 [SwingWorker-pool-2-thread-3] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:03:27.504 [SwingWorker-pool-2-thread-5] INFO  c.b.client.PersonalComputerApiClient - POST /update response status: 200
-2026-05-20 00:03:27.504 [SwingWorker-pool-2-thread-3] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
-2026-05-20 00:03:27.517 [SwingWorker-pool-2-thread-2] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:03:27.520 [SwingWorker-pool-2-thread-4] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:03:27.522 [SwingWorker-pool-2-thread-4] INFO  com.bachld.client.ExamRoomApiClient - GET /exam-room/v1/student response status: 200
-2026-05-20 00:03:27.551 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully updated personal computer IP
-2026-05-20 00:03:27.551 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
-2026-05-20 00:03:27.552 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
-2026-05-20 00:03:27.552 [SwingWorker-pool-2-thread-6] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: http://localhost:8080/api/personal-computer/v1/me
-2026-05-20 00:03:27.552 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Successfully fetched student exam rooms
-2026-05-20 00:03:27.554 [SwingWorker-pool-2-thread-6] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/personal-computer/v1/me
-2026-05-20 00:03:27.554 [SwingWorker-pool-2-thread-6] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:03:27.571 [SwingWorker-pool-2-thread-6] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:03:27.572 [SwingWorker-pool-2-thread-6] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
-2026-05-20 00:03:27.751 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
-2026-05-20 00:20:21.965 [WebSocketClient-AsyncIO-12] WARN  com.bachld.service.WebSocketService - WebSocket transport error. Session may be lost: Connection closed
-2026-05-20 00:20:24.346 [pool-3-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: explorer.exe
-2026-05-20 00:20:24.469 [pool-3-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
-2026-05-20 00:26:56.969 [pool-3-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
-2026-05-20 00:26:57.126 [pool-3-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: backend – ExamRoomController.java
-2026-05-20 00:26:57.942 [pool-3-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
-2026-05-20 00:26:58.157 [pool-3-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Lab Supervision System - TLU - Brave
-2026-05-20 00:26:58.376 [pool-3-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Task Switching
-2026-05-20 00:26:59.236 [pool-3-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
-2026-05-20 00:27:02.816 [pool-3-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: Xác nhận đăng xuất
-2026-05-20 00:27:04.187 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@6a733c91[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@1cf86120[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@724ca133]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Shutting down, pool size = 1, active threads = 0, queued tasks = 1, completed tasks = 284]
-2026-05-20 00:27:04.232 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@31da306c[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@79a6d7d2[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@260858a7]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Shutting down, pool size = 1, active threads = 0, queued tasks = 1, completed tasks = 284]
-2026-05-20 00:27:04.297 [pool-3-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
-2026-05-20 00:27:20.792 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172246@e.tlu.edu.vn
-2026-05-20 00:27:20.794 [SwingWorker-pool-2-thread-7] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: http://localhost:8080/api/auth/v1/login
-2026-05-20 00:27:20.797 [SwingWorker-pool-2-thread-7] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/auth/v1/login
-2026-05-20 00:27:20.882 [SwingWorker-pool-2-thread-7] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:27:20.883 [SwingWorker-pool-2-thread-7] INFO  com.bachld.client.AuthApiClient - API response status: 200
-2026-05-20 00:27:20.920 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172246@e.tlu.edu.vn
-2026-05-20 00:27:21.064 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - STOMP connection successful. SessionID: 89b0c5b2-2698-e1f4-7e1d-0a2b17404c9c
-2026-05-20 00:27:21.065 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - Subscribed to /topic/user/9/file
-2026-05-20 00:27:21.145 [AWT-EventQueue-0] INFO  com.bachld.service.SemesterService - Fetching semesters...
-2026-05-20 00:27:21.145 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
-2026-05-20 00:27:21.145 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Fetching student exam rooms...
-2026-05-20 00:27:21.146 [SwingWorker-pool-2-thread-9] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: http://localhost:8080/api/class/v1/student
-2026-05-20 00:27:21.146 [SwingWorker-pool-2-thread-8] DEBUG com.bachld.client.SemesterApiClient - Fetching semesters from: http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
-2026-05-20 00:27:21.146 [SwingWorker-pool-2-thread-8] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
-2026-05-20 00:27:21.146 [SwingWorker-pool-2-thread-9] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/class/v1/student
-2026-05-20 00:27:21.146 [SwingWorker-pool-2-thread-10] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/exam-room/v1/student
-2026-05-20 00:27:21.147 [SwingWorker-pool-2-thread-8] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:27:21.147 [SwingWorker-pool-2-thread-10] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:27:21.147 [SwingWorker-pool-2-thread-9] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:27:21.169 [AWT-EventQueue-0] INFO  com.bachld.util.VpnUtil - VPN detected (Tailscale CGNAT): iftype53_32770 -> 100.124.227.3
-2026-05-20 00:27:21.169 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Updating personal computer IP to: 100.124.227.3
-2026-05-20 00:27:21.172 [SwingWorker-pool-2-thread-1] DEBUG c.b.client.PersonalComputerApiClient - Sending POST request to: http://localhost:8080/api/personal-computer/v1/update
-2026-05-20 00:27:21.173 [SwingWorker-pool-2-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/personal-computer/v1/update
-2026-05-20 00:27:21.174 [SwingWorker-pool-2-thread-1] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:27:21.175 [SwingWorker-pool-2-thread-10] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:27:21.176 [SwingWorker-pool-2-thread-10] INFO  com.bachld.client.ExamRoomApiClient - GET /exam-room/v1/student response status: 200
-2026-05-20 00:27:21.185 [SwingWorker-pool-2-thread-9] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:27:21.185 [SwingWorker-pool-2-thread-9] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
-2026-05-20 00:27:21.195 [SwingWorker-pool-2-thread-8] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:27:21.207 [SwingWorker-pool-2-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:27:21.208 [SwingWorker-pool-2-thread-1] INFO  c.b.client.PersonalComputerApiClient - POST /update response status: 200
-2026-05-20 00:27:21.227 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Successfully fetched student exam rooms
-2026-05-20 00:27:21.227 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
-2026-05-20 00:27:21.267 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully updated personal computer IP
-2026-05-20 00:27:21.267 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
-2026-05-20 00:27:21.269 [SwingWorker-pool-2-thread-5] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: http://localhost:8080/api/personal-computer/v1/me
-2026-05-20 00:27:21.270 [SwingWorker-pool-2-thread-5] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/personal-computer/v1/me
-2026-05-20 00:27:21.270 [SwingWorker-pool-2-thread-5] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:27:21.324 [SwingWorker-pool-2-thread-5] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:27:21.325 [SwingWorker-pool-2-thread-5] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
-2026-05-20 00:27:21.337 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
-2026-05-20 00:27:21.358 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@69c0feda[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@423e1572[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@de942a0]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:27:22.301 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@7c65428f[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@979fade[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@3b5efb06]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:27:23.144 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@189ea533[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@123d45f7[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@54d4f264]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:27:23.156 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@45679824[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@4e39ed95[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@36531b58]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:27:23.268 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@7ce48ff[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@283d0a86[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@29691f51]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:27:23.272 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@5fca19f5[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@7e91569a[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@3e381af4]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:27:23.273 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@2076d39b[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@2a362b43[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@5e678d19]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:26.087 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@56e67583[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@2f7c73d1[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@348b394e]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:26.105 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@61988677[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@401a9ecf[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@cb48fe6]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:26.252 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@38acc155[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@4b7adaa[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@10cfa715]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:26.260 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@49db9b68[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@1da25309[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@24c167ea]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:26.261 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@3747b456[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@17234d6f[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@18967e99]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:26.797 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@45ed1c0[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@2252690d[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@2f97101d]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:26.809 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@281ad2c5[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@eb13019[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@3f1a2ac3]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:26.953 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@33ac6131[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@5a38c6d7[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@5d8e0471]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:26.956 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@7ccc43bd[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@4d5e017b[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@51cc6879]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:26.961 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@236cb42a[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@2cb910fc[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@11d199c9]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:27.155 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@447bd6de[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@3d23ca51[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@59f913f9]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:27.164 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@30d57dd4[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@2f0e79f[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@2122c4d2]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:27.263 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@18f80389[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@2a028036[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@2fcb46f6]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:27.274 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@486cd84e[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@3d8f69f[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@3d65d5e2]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:27.275 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@47210bb2[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@10d06e81[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@54f81e0a]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:30.227 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@6e8a9365[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@692115b0[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@7a96da73]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:31.189 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@c5d6bb4[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@2139799d[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@40d4749f]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:31.202 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@3ffa55ad[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@3676c0e1[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@5ce9a223]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:31.202 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@367d91f[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@621f0d6[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@43237e76]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@5d89de84[Shutting down, pool size = 1, active threads = 0, queued tasks = 1, completed tasks = 24]
-2026-05-20 00:28:31.244 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@49057283[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@581d992d[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@58ec3b07]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:31.244 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@230c8139[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@722a7922[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@7b8480f1]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@5d89de84[Shutting down, pool size = 1, active threads = 0, queued tasks = 1, completed tasks = 24]
-2026-05-20 00:28:31.293 [pool-5-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
-2026-05-20 00:28:32.360 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@29520577[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@24bf1133[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@105f2078]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7d4599de[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 285]
-2026-05-20 00:28:32.360 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@60800efc[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@1e9e1b66[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x00000215913288c8@3fdc82fe]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@5d89de84[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 25]
-2026-05-20 00:30:06.755 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172246@e.tlu.edu.vn
-2026-05-20 00:30:06.763 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: http://localhost:8080/api/auth/v1/login
-2026-05-20 00:30:06.840 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/auth/v1/login
-2026-05-20 00:30:06.973 [SwingWorker-pool-1-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:30:06.994 [SwingWorker-pool-1-thread-1] INFO  com.bachld.client.AuthApiClient - API response status: 200
-2026-05-20 00:30:07.028 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172246@e.tlu.edu.vn
-2026-05-20 00:30:07.229 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - STOMP connection successful. SessionID: 487692e1-7e2c-077f-a553-948ad8b0d958
-2026-05-20 00:30:07.232 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - Subscribed to /topic/user/9/file
-2026-05-20 00:30:07.603 [AWT-EventQueue-0] INFO  com.bachld.service.SemesterService - Fetching semesters...
-2026-05-20 00:30:07.604 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
-2026-05-20 00:30:07.606 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.client.SemesterApiClient - Fetching semesters from: http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
-2026-05-20 00:30:07.606 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Fetching student exam rooms...
-2026-05-20 00:30:07.606 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: http://localhost:8080/api/class/v1/student
-2026-05-20 00:30:07.613 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
-2026-05-20 00:30:07.614 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:30:07.617 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/class/v1/student
-2026-05-20 00:30:07.617 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:30:07.621 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/exam-room/v1/student
-2026-05-20 00:30:07.621 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:30:07.630 [AWT-EventQueue-0] INFO  com.bachld.util.VpnUtil - VPN detected (Tailscale CGNAT): iftype53_32770 -> 100.124.227.3
-2026-05-20 00:30:07.630 [SwingWorker-pool-1-thread-2] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:30:07.631 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Updating personal computer IP to: 100.124.227.3
-2026-05-20 00:30:07.633 [SwingWorker-pool-1-thread-5] DEBUG c.b.client.PersonalComputerApiClient - Sending POST request to: http://localhost:8080/api/personal-computer/v1/update
-2026-05-20 00:30:07.636 [SwingWorker-pool-1-thread-4] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:30:07.638 [SwingWorker-pool-1-thread-3] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:30:07.639 [SwingWorker-pool-1-thread-3] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
-2026-05-20 00:30:07.639 [SwingWorker-pool-1-thread-4] INFO  com.bachld.client.ExamRoomApiClient - GET /exam-room/v1/student response status: 200
-2026-05-20 00:30:07.641 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/personal-computer/v1/update
-2026-05-20 00:30:07.641 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:30:07.664 [SwingWorker-pool-1-thread-5] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:30:07.665 [SwingWorker-pool-1-thread-5] INFO  c.b.client.PersonalComputerApiClient - POST /update response status: 200
-2026-05-20 00:30:07.702 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
-2026-05-20 00:30:07.703 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Successfully fetched student exam rooms
-2026-05-20 00:30:07.874 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully updated personal computer IP
-2026-05-20 00:30:07.875 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
-2026-05-20 00:30:07.876 [SwingWorker-pool-1-thread-6] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: http://localhost:8080/api/personal-computer/v1/me
-2026-05-20 00:30:07.878 [SwingWorker-pool-1-thread-6] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/personal-computer/v1/me
-2026-05-20 00:30:07.878 [SwingWorker-pool-1-thread-6] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:30:07.892 [SwingWorker-pool-1-thread-6] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:30:07.894 [SwingWorker-pool-1-thread-6] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
-2026-05-20 00:30:07.973 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
-2026-05-20 00:30:20.117 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@d80b2[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@6d9b0bf1[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000018db8328fd8@76e5e439]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@10910d1c[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 9]
-2026-05-20 00:54:43.971 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172246@e.tlu.edu.vn
-2026-05-20 00:54:43.982 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: http://localhost:8080/api/auth/v1/login
-2026-05-20 00:54:44.068 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/auth/v1/login
-2026-05-20 00:54:44.325 [SwingWorker-pool-1-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:54:44.346 [SwingWorker-pool-1-thread-1] INFO  com.bachld.client.AuthApiClient - API response status: 200
-2026-05-20 00:54:44.393 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172246@e.tlu.edu.vn
-2026-05-20 00:54:44.686 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - STOMP connection successful. SessionID: 5e3321e1-bce9-cde1-4861-b650d62ef384
-2026-05-20 00:54:44.689 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - Subscribed to /topic/user/9/file
-2026-05-20 00:54:45.061 [AWT-EventQueue-0] INFO  com.bachld.service.SemesterService - Fetching semesters...
-2026-05-20 00:54:45.062 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
-2026-05-20 00:54:45.063 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.client.SemesterApiClient - Fetching semesters from: http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
-2026-05-20 00:54:45.063 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Fetching student exam rooms...
-2026-05-20 00:54:45.063 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: http://localhost:8080/api/class/v1/student
-2026-05-20 00:54:45.072 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
-2026-05-20 00:54:45.074 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:54:45.076 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/class/v1/student
-2026-05-20 00:54:45.076 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:54:45.081 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/exam-room/v1/student
-2026-05-20 00:54:45.082 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:54:45.091 [AWT-EventQueue-0] INFO  com.bachld.util.VpnUtil - VPN detected (Tailscale CGNAT): iftype53_32770 -> 100.124.227.3
-2026-05-20 00:54:45.093 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Updating personal computer IP to: 100.124.227.3
-2026-05-20 00:54:45.096 [SwingWorker-pool-1-thread-5] DEBUG c.b.client.PersonalComputerApiClient - Sending POST request to: http://localhost:8080/api/personal-computer/v1/update
-2026-05-20 00:54:45.096 [SwingWorker-pool-1-thread-2] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:54:45.103 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/personal-computer/v1/update
-2026-05-20 00:54:45.104 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:54:45.119 [SwingWorker-pool-1-thread-3] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:54:45.122 [SwingWorker-pool-1-thread-3] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
-2026-05-20 00:54:45.123 [SwingWorker-pool-1-thread-4] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:54:45.126 [SwingWorker-pool-1-thread-4] INFO  com.bachld.client.ExamRoomApiClient - GET /exam-room/v1/student response status: 200
-2026-05-20 00:54:45.141 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
-2026-05-20 00:54:45.141 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Successfully fetched student exam rooms
-2026-05-20 00:54:45.143 [SwingWorker-pool-1-thread-5] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:54:45.144 [SwingWorker-pool-1-thread-5] INFO  c.b.client.PersonalComputerApiClient - POST /update response status: 200
-2026-05-20 00:54:45.393 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully updated personal computer IP
-2026-05-20 00:54:45.394 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
-2026-05-20 00:54:45.395 [SwingWorker-pool-1-thread-6] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: http://localhost:8080/api/personal-computer/v1/me
-2026-05-20 00:54:45.396 [SwingWorker-pool-1-thread-6] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/personal-computer/v1/me
-2026-05-20 00:54:45.396 [SwingWorker-pool-1-thread-6] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 00:54:45.413 [SwingWorker-pool-1-thread-6] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 00:54:45.414 [SwingWorker-pool-1-thread-6] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
-2026-05-20 00:54:45.440 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
-2026-05-20 00:59:54.571 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@7c03f031[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@2334b13f[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@6a1d806f]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Shutting down, pool size = 1, active threads = 0, queued tasks = 1, completed tasks = 14]
-2026-05-20 00:59:54.618 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@2adece3a[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@2a7ddc0c[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@2cc62d35]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Shutting down, pool size = 1, active threads = 0, queued tasks = 1, completed tasks = 14]
-2026-05-20 00:59:54.664 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
-2026-05-20 00:59:54.722 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@105422a3[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@49bf3128[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@de609af]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 00:59:54.735 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@41b70a0a[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@4c27918d[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@7c21cf50]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 00:59:54.827 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@72b531c5[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@704769a5[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@1c35d9]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 00:59:54.830 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@21b98f6b[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@b2b82c3[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@406ac842]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 00:59:54.832 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@3b0df4ae[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@7a59a980[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@2d331192]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 00:59:57.903 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@548a72ad[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@5622f673[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@6100409e]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 00:59:57.914 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@2241171f[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@f65416[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@4126bb15]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 00:59:57.998 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@63375f58[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@255906e0[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@173da0b9]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 00:59:58.007 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@5e257059[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@496445ce[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@24673404]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 00:59:58.007 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@71ca88c5[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@731395a[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@6c904647]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 01:00:08.021 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172245@e.tlu.edu.vn
-2026-05-20 01:00:08.022 [SwingWorker-pool-1-thread-7] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: http://localhost:8080/api/auth/v1/login
-2026-05-20 01:00:08.023 [SwingWorker-pool-1-thread-7] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/auth/v1/login
-2026-05-20 01:00:08.109 [SwingWorker-pool-1-thread-7] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 01:00:08.110 [SwingWorker-pool-1-thread-7] INFO  com.bachld.client.AuthApiClient - API response status: 200
-2026-05-20 01:00:08.144 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172245@e.tlu.edu.vn
-2026-05-20 01:00:08.213 [WebSocketClient-AsyncIO-11] INFO  com.bachld.service.WebSocketService - STOMP connection successful. SessionID: 3297a4e4-d495-aee7-44e8-c0fe638aa160
-2026-05-20 01:00:08.214 [WebSocketClient-AsyncIO-11] INFO  com.bachld.service.WebSocketService - Subscribed to /topic/user/3/file
-2026-05-20 01:00:08.266 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@64214659[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@498991d[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@aed9b3d]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 01:00:08.266 [AWT-EventQueue-0] INFO  com.bachld.service.SemesterService - Fetching semesters...
-2026-05-20 01:00:08.266 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
-2026-05-20 01:00:08.266 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Fetching student exam rooms...
-2026-05-20 01:00:08.266 [SwingWorker-pool-1-thread-9] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: http://localhost:8080/api/class/v1/student
-2026-05-20 01:00:08.266 [SwingWorker-pool-1-thread-8] DEBUG com.bachld.client.SemesterApiClient - Fetching semesters from: http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
-2026-05-20 01:00:08.266 [SwingWorker-pool-1-thread-8] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
-2026-05-20 01:00:08.266 [SwingWorker-pool-1-thread-9] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/class/v1/student
-2026-05-20 01:00:08.266 [SwingWorker-pool-1-thread-10] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/exam-room/v1/student
-2026-05-20 01:00:08.268 [SwingWorker-pool-1-thread-9] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 01:00:08.268 [SwingWorker-pool-1-thread-10] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 01:00:08.266 [SwingWorker-pool-1-thread-8] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 01:00:08.293 [AWT-EventQueue-0] INFO  com.bachld.util.VpnUtil - VPN detected (Tailscale CGNAT): iftype53_32770 -> 100.124.227.3
-2026-05-20 01:00:08.294 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Updating personal computer IP to: 100.124.227.3
-2026-05-20 01:00:08.294 [SwingWorker-pool-1-thread-8] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 01:00:08.294 [SwingWorker-pool-1-thread-1] DEBUG c.b.client.PersonalComputerApiClient - Sending POST request to: http://localhost:8080/api/personal-computer/v1/update
-2026-05-20 01:00:08.295 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/personal-computer/v1/update
-2026-05-20 01:00:08.295 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 01:00:08.298 [SwingWorker-pool-1-thread-10] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 01:00:08.299 [SwingWorker-pool-1-thread-10] INFO  com.bachld.client.ExamRoomApiClient - GET /exam-room/v1/student response status: 200
-2026-05-20 01:00:08.300 [SwingWorker-pool-1-thread-9] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 01:00:08.302 [SwingWorker-pool-1-thread-9] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
-2026-05-20 01:00:08.336 [SwingWorker-pool-1-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 01:00:08.337 [SwingWorker-pool-1-thread-1] INFO  c.b.client.PersonalComputerApiClient - POST /update response status: 200
-2026-05-20 01:00:08.348 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Successfully fetched student exam rooms
-2026-05-20 01:00:08.348 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
-2026-05-20 01:00:08.418 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully updated personal computer IP
-2026-05-20 01:00:08.418 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
-2026-05-20 01:00:08.418 [SwingWorker-pool-1-thread-2] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: http://localhost:8080/api/personal-computer/v1/me
-2026-05-20 01:00:08.419 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/personal-computer/v1/me
-2026-05-20 01:00:08.419 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-20 01:00:08.435 [SwingWorker-pool-1-thread-2] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-20 01:00:08.435 [SwingWorker-pool-1-thread-2] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
-2026-05-20 01:00:08.492 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
-2026-05-20 01:00:08.510 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@67ca0898[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@418866b8[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@1984fe5]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 01:00:12.200 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@482c027d[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@9b799b6[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@b08839e]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 01:00:16.211 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@5017fe3[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@7f955d28[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@4a5a1145]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 01:00:18.808 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@62f52838[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@2d96aad4[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@78bfde53]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 01:00:18.903 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@72967f32[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@6c05bde2[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@74dd7abc]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 01:00:19.674 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@67d5f0ec[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@39e92db0[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@78427dc2]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 01:00:20.888 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@3d488a77[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@267b7ccb[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@560f4119]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 01:00:21.380 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@24196761[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@75d25fa2[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@832e8f7]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 01:00:22.241 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@25d91314[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@5dfb4aa7[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@3a3331f5]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@731a5950[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 15]
-2026-05-20 01:00:22.241 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@38eb2e2c[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@69d69bdd[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x0000020f43328af8@2cd41883]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@7177d377[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 9]
+2026-05-21 10:33:01.004 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172244@e.tlu.edu.vn
+2026-05-21 10:33:01.032 [SwingWorker-pool-2-thread-1] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: http://localhost:8080/api/auth/v1/login
+2026-05-21 10:33:01.117 [SwingWorker-pool-2-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/auth/v1/login
+2026-05-21 10:33:01.592 [SwingWorker-pool-2-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:33:01.613 [SwingWorker-pool-2-thread-1] INFO  com.bachld.client.AuthApiClient - API response status: 200
+2026-05-21 10:33:01.659 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172244@e.tlu.edu.vn
+2026-05-21 10:33:01.976 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - STOMP connection successful. SessionID: 3886b56a-c60d-d6aa-8738-a8f28a594148
+2026-05-21 10:33:01.978 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - Subscribed to /topic/user/10/file
+2026-05-21 10:33:02.357 [AWT-EventQueue-0] INFO  com.bachld.service.SemesterService - Fetching semesters...
+2026-05-21 10:33:02.358 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
+2026-05-21 10:33:02.359 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Fetching student exam rooms...
+2026-05-21 10:33:02.359 [SwingWorker-pool-2-thread-2] DEBUG com.bachld.client.SemesterApiClient - Fetching semesters from: http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
+2026-05-21 10:33:02.360 [SwingWorker-pool-2-thread-3] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: http://localhost:8080/api/class/v1/student
+2026-05-21 10:33:02.369 [SwingWorker-pool-2-thread-2] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
+2026-05-21 10:33:02.370 [SwingWorker-pool-2-thread-2] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:33:02.372 [SwingWorker-pool-2-thread-3] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/class/v1/student
+2026-05-21 10:33:02.373 [SwingWorker-pool-2-thread-3] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:33:02.376 [SwingWorker-pool-2-thread-4] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/exam-room/v1/student
+2026-05-21 10:33:02.377 [SwingWorker-pool-2-thread-4] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:33:02.378 [AWT-EventQueue-0] INFO  com.bachld.util.VpnUtil - VPN detected (Tailscale CGNAT): iftype53_32770 -> 100.124.227.3
+2026-05-21 10:33:02.379 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Updating personal computer IP to: 100.124.227.3
+2026-05-21 10:33:02.383 [SwingWorker-pool-2-thread-5] DEBUG c.b.client.PersonalComputerApiClient - Sending POST request to: http://localhost:8080/api/personal-computer/v1/update
+2026-05-21 10:33:02.389 [SwingWorker-pool-2-thread-5] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/personal-computer/v1/update
+2026-05-21 10:33:02.389 [SwingWorker-pool-2-thread-5] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:33:02.438 [SwingWorker-pool-2-thread-4] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:33:02.441 [SwingWorker-pool-2-thread-4] INFO  com.bachld.client.ExamRoomApiClient - GET /exam-room/v1/student response status: 200
+2026-05-21 10:33:02.441 [SwingWorker-pool-2-thread-3] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:33:02.442 [SwingWorker-pool-2-thread-3] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
+2026-05-21 10:33:02.449 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Successfully fetched student exam rooms
+2026-05-21 10:33:02.449 [SwingWorker-pool-2-thread-2] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:33:02.450 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
+2026-05-21 10:33:02.515 [SwingWorker-pool-2-thread-5] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:33:02.517 [SwingWorker-pool-2-thread-5] INFO  c.b.client.PersonalComputerApiClient - POST /update response status: 200
+2026-05-21 10:33:02.672 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully updated personal computer IP
+2026-05-21 10:33:02.673 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
+2026-05-21 10:33:02.674 [SwingWorker-pool-2-thread-6] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: http://localhost:8080/api/personal-computer/v1/me
+2026-05-21 10:33:02.675 [SwingWorker-pool-2-thread-6] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/personal-computer/v1/me
+2026-05-21 10:33:02.675 [SwingWorker-pool-2-thread-6] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:33:02.695 [SwingWorker-pool-2-thread-6] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:33:02.696 [SwingWorker-pool-2-thread-6] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
+2026-05-21 10:33:02.764 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
+2026-05-21 10:33:20.575 [SwingWorker-pool-2-thread-7] DEBUG com.bachld.client.UserApiClient - Sending PUT request to: http://localhost:8080/api/user/v1/change-password
+2026-05-21 10:33:20.577 [SwingWorker-pool-2-thread-7] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: PUT http://localhost:8080/api/user/v1/change-password
+2026-05-21 10:33:20.577 [SwingWorker-pool-2-thread-7] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:33:20.702 [SwingWorker-pool-2-thread-7] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 422
+2026-05-21 10:33:20.703 [SwingWorker-pool-2-thread-7] ERROR c.bachld.config.CustomErrorHandler - HTTP error response - Status: 422 UNPROCESSABLE_ENTITY
+2026-05-21 10:33:20.708 [SwingWorker-pool-2-thread-7] ERROR c.bachld.config.CustomErrorHandler - API error - Status: 422, Message: Mật khẩu cũ không chính xác
+2026-05-21 10:33:20.712 [SwingWorker-pool-2-thread-7] WARN  com.bachld.client.UserApiClient - Change password failed - status: 422, message: Mật khẩu cũ không chính xác
+2026-05-21 10:33:20.750 [AWT-EventQueue-0] ERROR com.bachld.service.UserService - Change password error
+com.bachld.exception.RestClientException: Mật khẩu cũ không chính xác
+	at com.bachld.client.UserApiClient.changePassword(UserApiClient.java:44)
+	at com.bachld.service.UserService$1.doInBackground(UserService.java:32)
+	at com.bachld.service.UserService$1.doInBackground(UserService.java:29)
+	at java.desktop/javax.swing.SwingWorker$1.call(SwingWorker.java:305)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.desktop/javax.swing.SwingWorker.run(SwingWorker.java:342)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: org.springframework.web.client.HttpClientErrorException$UnprocessableEntity: 422 Mật khẩu cũ không chính xác
+	at org.springframework.web.client.HttpClientErrorException.create(HttpClientErrorException.java:134)
+	at org.springframework.web.client.HttpClientErrorException.create(HttpClientErrorException.java:89)
+	at com.bachld.config.CustomErrorHandler.handleError(CustomErrorHandler.java:83)
+	at org.springframework.web.client.ResponseErrorHandler.handleError(ResponseErrorHandler.java:63)
+	at org.springframework.web.client.RestTemplate.handleResponse(RestTemplate.java:942)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:891)
+	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
+	at org.springframework.web.client.RestTemplate.exchange(RestTemplate.java:672)
+	at com.bachld.client.UserApiClient.changePassword(UserApiClient.java:34)
+	... 8 common frames omitted
+2026-05-21 10:33:35.971 [SwingWorker-pool-2-thread-8] DEBUG com.bachld.client.UserApiClient - Sending PUT request to: http://localhost:8080/api/user/v1/change-password
+2026-05-21 10:33:35.972 [SwingWorker-pool-2-thread-8] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: PUT http://localhost:8080/api/user/v1/change-password
+2026-05-21 10:33:35.973 [SwingWorker-pool-2-thread-8] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:33:36.158 [SwingWorker-pool-2-thread-8] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:33:36.159 [SwingWorker-pool-2-thread-8] INFO  com.bachld.client.UserApiClient - Change password successful
+2026-05-21 10:33:40.329 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@606ebdbf[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@2b793268[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x000001f703329428@7b9ebb93]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@2c36dde1[Shutting down, pool size = 1, active threads = 0, queued tasks = 1, completed tasks = 8]
+2026-05-21 10:33:40.367 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@28262d47[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@4462d8bc[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x000001f703329428@26ea582a]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@2c36dde1[Shutting down, pool size = 1, active threads = 0, queued tasks = 1, completed tasks = 8]
+2026-05-21 10:33:40.425 [pool-3-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
+2026-05-21 10:33:55.082 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172244@e.tlu.edu.vn
+2026-05-21 10:33:55.083 [SwingWorker-pool-2-thread-9] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: http://localhost:8080/api/auth/v1/login
+2026-05-21 10:33:55.085 [SwingWorker-pool-2-thread-9] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/auth/v1/login
+2026-05-21 10:33:55.178 [SwingWorker-pool-2-thread-9] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:33:55.179 [SwingWorker-pool-2-thread-9] INFO  com.bachld.client.AuthApiClient - API response status: 200
+2026-05-21 10:33:55.226 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172244@e.tlu.edu.vn
+2026-05-21 10:33:55.281 [WebSocketClient-AsyncIO-9] INFO  com.bachld.service.WebSocketService - STOMP connection successful. SessionID: 18e387c0-ae97-4ee6-973f-a9124d350e02
+2026-05-21 10:33:55.282 [WebSocketClient-AsyncIO-9] INFO  com.bachld.service.WebSocketService - Subscribed to /topic/user/10/file
+2026-05-21 10:33:55.331 [AWT-EventQueue-0] INFO  com.bachld.service.SemesterService - Fetching semesters...
+2026-05-21 10:33:55.332 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
+2026-05-21 10:33:55.332 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Fetching student exam rooms...
+2026-05-21 10:33:55.332 [SwingWorker-pool-2-thread-1] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: http://localhost:8080/api/class/v1/student
+2026-05-21 10:33:55.332 [SwingWorker-pool-2-thread-10] DEBUG com.bachld.client.SemesterApiClient - Fetching semesters from: http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
+2026-05-21 10:33:55.333 [SwingWorker-pool-2-thread-10] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
+2026-05-21 10:33:55.333 [SwingWorker-pool-2-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/class/v1/student
+2026-05-21 10:33:55.333 [SwingWorker-pool-2-thread-10] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:33:55.333 [SwingWorker-pool-2-thread-4] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/exam-room/v1/student
+2026-05-21 10:33:55.333 [SwingWorker-pool-2-thread-1] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:33:55.333 [SwingWorker-pool-2-thread-4] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:33:55.346 [SwingWorker-pool-2-thread-10] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:33:55.353 [AWT-EventQueue-0] INFO  com.bachld.util.VpnUtil - VPN detected (Tailscale CGNAT): iftype53_32770 -> 100.124.227.3
+2026-05-21 10:33:55.353 [SwingWorker-pool-2-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:33:55.353 [SwingWorker-pool-2-thread-4] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:33:55.353 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Updating personal computer IP to: 100.124.227.3
+2026-05-21 10:33:55.353 [SwingWorker-pool-2-thread-1] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
+2026-05-21 10:33:55.353 [SwingWorker-pool-2-thread-4] INFO  com.bachld.client.ExamRoomApiClient - GET /exam-room/v1/student response status: 200
+2026-05-21 10:33:55.355 [SwingWorker-pool-2-thread-3] DEBUG c.b.client.PersonalComputerApiClient - Sending POST request to: http://localhost:8080/api/personal-computer/v1/update
+2026-05-21 10:33:55.355 [SwingWorker-pool-2-thread-3] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/personal-computer/v1/update
+2026-05-21 10:33:55.355 [SwingWorker-pool-2-thread-3] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:33:55.385 [SwingWorker-pool-2-thread-3] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:33:55.386 [SwingWorker-pool-2-thread-3] INFO  c.b.client.PersonalComputerApiClient - POST /update response status: 200
+2026-05-21 10:33:55.404 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
+2026-05-21 10:33:55.405 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Successfully fetched student exam rooms
+2026-05-21 10:33:55.435 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully updated personal computer IP
+2026-05-21 10:33:55.436 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
+2026-05-21 10:33:55.436 [SwingWorker-pool-2-thread-2] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: http://localhost:8080/api/personal-computer/v1/me
+2026-05-21 10:33:55.437 [SwingWorker-pool-2-thread-2] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/personal-computer/v1/me
+2026-05-21 10:33:55.437 [SwingWorker-pool-2-thread-2] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:33:55.453 [SwingWorker-pool-2-thread-2] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:33:55.454 [SwingWorker-pool-2-thread-2] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
+2026-05-21 10:33:55.497 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
+2026-05-21 10:33:55.518 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@1b9a4851[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@3d30eeb9[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x000001f703329428@6f45669b]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@2c36dde1[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 9]
+2026-05-21 10:33:56.511 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@7c85a985[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@2cf0270[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x000001f703329428@38b071b6]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@2c36dde1[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 9]
+2026-05-21 10:33:58.151 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@74341345[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@3514ae84[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x000001f703329428@4f32e6d4]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@2c36dde1[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 9]
+2026-05-21 10:33:58.978 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@6d80fb51[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@252c55c7[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x000001f703329428@355caf68]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@2c36dde1[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 9]
+2026-05-21 10:33:58.987 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@671a11d7[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@560626fc[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x000001f703329428@29895d35]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@2c91d29a[Shutting down, pool size = 1, active threads = 0, queued tasks = 1, completed tasks = 4]
+2026-05-21 10:33:58.987 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@2ec85c5a[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@39fa639f[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x000001f703329428@7ebf9b0a]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@2c36dde1[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 9]
+2026-05-21 10:33:59.024 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@552a5ab6[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@517f34a6[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x000001f703329428@3629d9b3]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@2c91d29a[Shutting down, pool size = 1, active threads = 0, queued tasks = 1, completed tasks = 4]
+2026-05-21 10:33:59.024 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@2c91ac35[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@44f870a1[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x000001f703329428@2e74053a]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@2c36dde1[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 9]
+2026-05-21 10:33:59.093 [pool-5-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
+2026-05-21 10:33:59.823 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@32670323[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@62897d6d[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x000001f703329428@4a7bbf9e]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@2c91d29a[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 5]
+2026-05-21 10:33:59.823 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@49fe82b8[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@40d71f71[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x000001f703329428@472d02b2]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@2c36dde1[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 9]
+2026-05-21 10:46:00.315 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172245@e.tlu.edu.vn
+2026-05-21 10:46:00.325 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: http://localhost:8080/api/auth/v1/login
+2026-05-21 10:46:00.406 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/auth/v1/login
+2026-05-21 10:46:00.506 [SwingWorker-pool-1-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:46:00.520 [SwingWorker-pool-1-thread-1] INFO  com.bachld.client.AuthApiClient - API response status: 200
+2026-05-21 10:46:00.558 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172245@e.tlu.edu.vn
+2026-05-21 10:46:00.736 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - STOMP connection successful. SessionID: 12a54c9f-5e54-49c5-e947-c5d1803390c0
+2026-05-21 10:46:00.737 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - Subscribed to /topic/user/3/file
+2026-05-21 10:46:01.092 [AWT-EventQueue-0] INFO  com.bachld.service.SemesterService - Fetching semesters...
+2026-05-21 10:46:01.094 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
+2026-05-21 10:46:01.094 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.client.SemesterApiClient - Fetching semesters from: http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
+2026-05-21 10:46:01.094 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Fetching student exam rooms...
+2026-05-21 10:46:01.096 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: http://localhost:8080/api/class/v1/student
+2026-05-21 10:46:01.105 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
+2026-05-21 10:46:01.105 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:46:01.108 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/class/v1/student
+2026-05-21 10:46:01.108 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:46:01.112 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/exam-room/v1/student
+2026-05-21 10:46:01.112 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:46:01.114 [AWT-EventQueue-0] INFO  com.bachld.util.VpnUtil - WireGuard VPN detected (by name): iftype53_32770 (Tailscale Tunnel) -> 100.124.227.3
+2026-05-21 10:46:01.115 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Updating personal computer IP to: 100.124.227.3
+2026-05-21 10:46:01.118 [SwingWorker-pool-1-thread-5] DEBUG c.b.client.PersonalComputerApiClient - Sending POST request to: http://localhost:8080/api/personal-computer/v1/update
+2026-05-21 10:46:01.136 [SwingWorker-pool-1-thread-4] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:46:01.136 [SwingWorker-pool-1-thread-2] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:46:01.139 [SwingWorker-pool-1-thread-4] INFO  com.bachld.client.ExamRoomApiClient - GET /exam-room/v1/student response status: 200
+2026-05-21 10:46:01.140 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/personal-computer/v1/update
+2026-05-21 10:46:01.143 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:46:01.152 [SwingWorker-pool-1-thread-3] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:46:01.154 [SwingWorker-pool-1-thread-3] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
+2026-05-21 10:46:01.174 [SwingWorker-pool-1-thread-5] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:46:01.175 [SwingWorker-pool-1-thread-5] INFO  c.b.client.PersonalComputerApiClient - POST /update response status: 200
+2026-05-21 10:46:01.197 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Successfully fetched student exam rooms
+2026-05-21 10:46:01.198 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
+2026-05-21 10:46:01.358 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully updated personal computer IP
+2026-05-21 10:46:01.359 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
+2026-05-21 10:46:01.361 [SwingWorker-pool-1-thread-6] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: http://localhost:8080/api/personal-computer/v1/me
+2026-05-21 10:46:01.362 [SwingWorker-pool-1-thread-6] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/personal-computer/v1/me
+2026-05-21 10:46:01.362 [SwingWorker-pool-1-thread-6] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:46:01.377 [SwingWorker-pool-1-thread-6] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:46:01.379 [SwingWorker-pool-1-thread-6] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
+2026-05-21 10:46:01.451 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
+2026-05-21 10:46:08.420 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
+2026-05-21 10:46:08.421 [SwingWorker-pool-1-thread-7] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: http://localhost:8080/api/personal-computer/v1/me
+2026-05-21 10:46:08.422 [SwingWorker-pool-1-thread-7] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/personal-computer/v1/me
+2026-05-21 10:46:08.422 [SwingWorker-pool-1-thread-7] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:46:08.437 [SwingWorker-pool-1-thread-7] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:46:08.438 [SwingWorker-pool-1-thread-7] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
+2026-05-21 10:46:08.521 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
+2026-05-21 10:48:11.051 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172245@e.tlu.edu.vn
+2026-05-21 10:48:11.058 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: http://localhost:8080/api/auth/v1/login
+2026-05-21 10:48:11.147 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/auth/v1/login
+2026-05-21 10:48:11.243 [SwingWorker-pool-1-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:48:11.264 [SwingWorker-pool-1-thread-1] INFO  com.bachld.client.AuthApiClient - API response status: 200
+2026-05-21 10:48:11.311 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172245@e.tlu.edu.vn
+2026-05-21 10:48:11.494 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - STOMP connection successful. SessionID: 4e43489b-c7a0-1c45-20c4-713a2af416d0
+2026-05-21 10:48:11.497 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - Subscribed to /topic/user/3/file
+2026-05-21 10:48:11.848 [AWT-EventQueue-0] INFO  com.bachld.service.SemesterService - Fetching semesters...
+2026-05-21 10:48:11.850 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
+2026-05-21 10:48:11.851 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Fetching student exam rooms...
+2026-05-21 10:48:11.851 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.client.SemesterApiClient - Fetching semesters from: http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
+2026-05-21 10:48:11.851 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: http://localhost:8080/api/class/v1/student
+2026-05-21 10:48:11.863 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
+2026-05-21 10:48:11.864 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:48:11.866 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/class/v1/student
+2026-05-21 10:48:11.867 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:48:11.869 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/exam-room/v1/student
+2026-05-21 10:48:11.869 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:48:11.886 [SwingWorker-pool-1-thread-2] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:48:11.892 [AWT-EventQueue-0] INFO  com.bachld.util.VpnUtil - WireGuard VPN detected (IP range 10.0.0.0/16): iftype53_32771 -> 10.0.1.1
+2026-05-21 10:48:11.892 [SwingWorker-pool-1-thread-4] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:48:11.894 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Updating personal computer IP to: 10.0.1.1
+2026-05-21 10:48:11.894 [SwingWorker-pool-1-thread-4] INFO  com.bachld.client.ExamRoomApiClient - GET /exam-room/v1/student response status: 200
+2026-05-21 10:48:11.896 [SwingWorker-pool-1-thread-5] DEBUG c.b.client.PersonalComputerApiClient - Sending POST request to: http://localhost:8080/api/personal-computer/v1/update
+2026-05-21 10:48:11.896 [SwingWorker-pool-1-thread-3] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:48:11.898 [SwingWorker-pool-1-thread-3] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
+2026-05-21 10:48:11.902 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/personal-computer/v1/update
+2026-05-21 10:48:11.902 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:48:11.931 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Successfully fetched student exam rooms
+2026-05-21 10:48:11.931 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
+2026-05-21 10:48:11.943 [SwingWorker-pool-1-thread-5] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:48:11.944 [SwingWorker-pool-1-thread-5] INFO  c.b.client.PersonalComputerApiClient - POST /update response status: 200
+2026-05-21 10:48:12.168 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully updated personal computer IP
+2026-05-21 10:48:12.169 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
+2026-05-21 10:48:12.170 [SwingWorker-pool-1-thread-6] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: http://localhost:8080/api/personal-computer/v1/me
+2026-05-21 10:48:12.171 [SwingWorker-pool-1-thread-6] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/personal-computer/v1/me
+2026-05-21 10:48:12.172 [SwingWorker-pool-1-thread-6] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-21 10:48:12.183 [SwingWorker-pool-1-thread-6] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-21 10:48:12.185 [SwingWorker-pool-1-thread-6] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
+2026-05-21 10:48:12.213 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
+2026-05-21 10:48:22.650 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@6b272ad4[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@650f4019[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x000001f327328af0@41a003d9]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@382b8ac[Shutting down, pool size = 1, active threads = 0, queued tasks = 1, completed tasks = 4]
+2026-05-21 10:48:22.686 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@403a9d5e[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@1ed56c3f[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x000001f327328af0@1c5e874]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@382b8ac[Shutting down, pool size = 1, active threads = 0, queued tasks = 1, completed tasks = 4]
+2026-05-21 10:48:22.740 [pool-2-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v1.0.0
+2026-05-21 10:48:24.140 [WindowsTrackingThread] ERROR c.b.service.WindowsTrackingService - Error processing window change: Task java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@9b09630[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@12196e07[Wrapped task = com.bachld.service.WindowsTrackingService$$Lambda/0x000001f327328af0@27184cef]] rejected from java.util.concurrent.ScheduledThreadPoolExecutor@382b8ac[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 5]

@@ -392,7 +392,12 @@ public class LoginPanel extends JPanel {
                     com.bachld.service.SemesterService semesterService =
                             new com.bachld.service.SemesterService(semesterApiClient);
 
-                    MainFrame mainFrame = new MainFrame(authService, pcService, classService, wsService, incidentService, examRoomService, semesterService);
+                    com.bachld.client.UserApiClient userApiClient =
+                            new com.bachld.client.UserApiClient(restClient);
+                    com.bachld.service.UserService userService =
+                            new com.bachld.service.UserService(userApiClient);
+
+                    MainFrame mainFrame = new MainFrame(authService, pcService, classService, wsService, incidentService, examRoomService, semesterService, userService);
                     mainFrame.setVisible(true);
 
                     Window ancestor = SwingUtilities.getWindowAncestor(LoginPanel.this);

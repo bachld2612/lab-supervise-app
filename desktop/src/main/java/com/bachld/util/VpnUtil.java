@@ -11,14 +11,13 @@ public class VpnUtil {
     private static final Logger logger = LoggerFactory.getLogger(VpnUtil.class);
 
     /**
-     * Returns the IPv4 address of any active VPN tunnel, or null if none is connected.
+     * Returns the IPv4 address of the active WireGuard VPN tunnel, or null if not connected.
      *
      * Detection order (first match wins):
-     *  1. isPointToPoint() — standard tunnel flag (OpenVPN tun, WireGuard, Cisco AnyConnect on Linux/macOS)
-     *  2. Tailscale CGNAT range 100.64.0.0/10 — Tailscale on Windows uses WinTUN which does NOT
-     *     set isPointToPoint(), so IP-range detection is the reliable fallback
-     *  3. Interface name / display name matching — catches TAP-mode OpenVPN and other named adapters
-     *     on Windows that set neither flag
+     *  1. WireGuard subnet 10.0.0.0/16 — matches the configured AllowedIPs range;
+     *     most reliable on Windows where WinTUN does NOT set isPointToPoint()
+     *  2. isPointToPoint() — standard tunnel flag (WireGuard on Linux/macOS)
+     *  3. Interface name / display name matching — fallback for named adapters
      */
     public static String getActiveVpnIp() {
         try {
@@ -38,18 +37,18 @@ public class VpnUtil {
 
                     String ip = addr.getHostAddress();
 
-                    if (iface.isPointToPoint()) {
-                        logger.info("VPN detected (point-to-point): {} -> {}", iface.getName(), ip);
+                    if (isWireGuardRange(addr)) {
+                        logger.info("WireGuard VPN detected (IP range 10.0.0.0/16): {} -> {}", iface.getName(), ip);
                         return ip;
                     }
 
-                    if (isTailscaleRange(addr)) {
-                        logger.info("VPN detected (Tailscale CGNAT): {} -> {}", iface.getName(), ip);
+                    if (iface.isPointToPoint()) {
+                        logger.info("WireGuard VPN detected (point-to-point): {} -> {}", iface.getName(), ip);
                         return ip;
                     }
 
                     if (isVpnByName(iface)) {
-                        logger.info("VPN detected (by name): {} ({}) -> {}", iface.getName(), iface.getDisplayName(), ip);
+                        logger.info("WireGuard VPN detected (by name): {} ({}) -> {}", iface.getName(), iface.getDisplayName(), ip);
                         return ip;
                     }
                 }
@@ -60,12 +59,10 @@ public class VpnUtil {
         return null;
     }
 
-    /** Tailscale CGNAT subnet: 100.64.0.0/10 → 100.64.x.x – 100.127.x.x */
-    private static boolean isTailscaleRange(InetAddress addr) {
+    /** WireGuard subnet: 10.0.0.0/16 → 10.0.x.x */
+    private static boolean isWireGuardRange(InetAddress addr) {
         byte[] b = addr.getAddress();
-        int first  = b[0] & 0xFF;
-        int second = b[1] & 0xFF;
-        return first == 100 && second >= 64 && second <= 127;
+        return (b[0] & 0xFF) == 10 && (b[1] & 0xFF) == 0;
     }
 
     /**
@@ -84,10 +81,11 @@ public class VpnUtil {
             return false;
         }
 
-        return name.startsWith("tun") || name.startsWith("tap") || name.startsWith("wg")
-                || name.equals("tailscale0")
+        return name.startsWith("wg")
+                || display.contains("wireguard")
+                || display.contains("wiretunnel")
+                || name.startsWith("tun") || name.startsWith("tap")
                 || display.contains("openvpn") || display.contains("tap-windows")
-                || display.contains("wireguard") || display.contains("tailscale")
                 || display.contains("cisco anyconnect") || display.contains("cisco vpn");
     }
 }
