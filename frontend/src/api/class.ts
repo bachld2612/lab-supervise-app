@@ -140,6 +140,24 @@ const sendFileToStudent = async (studentId: number, formData: FormData) => {
   }
 };
 
+const updateWifiSsid = async (classId: number, wifiSsid: string) => {
+  try {
+    const response = await axiosServices.put(`/api/class/v1/${classId}/wifi-ssid`, { wifiSsid });
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+const generateWifiSsid = async (classId: number) => {
+  try {
+    const response = await axiosServices.post(`/api/class/v1/${classId}/wifi-ssid/generate`);
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
 export {
   getList,
   getById,
@@ -154,5 +172,7 @@ export {
   downloadClassStudentImportTemplate,
   importStudentIntoClass,
   sendFileToClass,
-  sendFileToStudent
+  sendFileToStudent,
+  updateWifiSsid,
+  generateWifiSsid
 };

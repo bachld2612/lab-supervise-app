@@ -18,4 +18,5 @@ export interface Classes {
   studyStatus?: number;
   roomId?: number;
   roomName?: string;
+  wifiSsid?: string;
 }

@@ -1,7 +1,10 @@
 package com.bachld.ui;
 
+import com.bachld.client.WifiAuthApiClient;
+import com.bachld.config.RestClient;
 import com.bachld.model.response.AuthResponse;
 import com.bachld.service.AuthService;
+import com.bachld.service.WifiScannerService;
 import com.bachld.util.EmailValidator;
 import com.bachld.util.PasswordValidator;
 import com.bachld.util.ValidationResult;
@@ -18,6 +21,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 import java.awt.Window;
 
 @Slf4j
@@ -48,10 +52,15 @@ public class LoginPanel extends JPanel {
     private JLabel         lblEmailError;
     private JLabel         lblPasswordError;
     private JLabel         lblGeneralError;
+    private JCheckBox      chkAccessCode;
+    private JTextField     txtAccessCode;
+    private JPanel         pnlAccessCode;
 
     private boolean passwordVisible = false;
     private Color   passwordBorderColor = BORDER_NORM;
     private final AuthService authService;
+    private final WifiScannerService wifiScannerService = new WifiScannerService();
+    private final WifiAuthApiClient  wifiAuthApiClient  = new WifiAuthApiClient(RestClient.getInstance());
 
     // ─────────────────────────────────────────────────────────────────────────
     public LoginPanel(AuthService authService) {
@@ -93,7 +102,31 @@ public class LoginPanel extends JPanel {
 
         // Forgot password — right-aligned within FORM_W
         add(rightRow(buildForgotLink()));
-        add(Box.createVerticalStrut(12));
+        add(Box.createVerticalStrut(10));
+
+        // Access code checkbox
+        chkAccessCode = new JCheckBox("Đăng nhập bằng mã truy cập");
+        chkAccessCode.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        chkAccessCode.setForeground(TEXT_DARK);
+        chkAccessCode.setOpaque(false);
+        chkAccessCode.setFocusPainted(false);
+        chkAccessCode.addActionListener(e -> {
+            pnlAccessCode.setVisible(chkAccessCode.isSelected());
+            revalidate();
+            repaint();
+        });
+        add(leftRow(chkAccessCode));
+        add(Box.createVerticalStrut(6));
+
+        // Access code input (hidden by default)
+        txtAccessCode = buildTextField("Nhập mã truy cập...");
+        pnlAccessCode = new JPanel();
+        pnlAccessCode.setOpaque(false);
+        pnlAccessCode.setLayout(new BoxLayout(pnlAccessCode, BoxLayout.Y_AXIS));
+        pnlAccessCode.add(centeredRow(txtAccessCode));
+        pnlAccessCode.add(Box.createVerticalStrut(6));
+        pnlAccessCode.setVisible(false);
+        add(pnlAccessCode);
 
         // General error
         lblGeneralError = errorLabel();
@@ -348,16 +381,55 @@ public class LoginPanel extends JPanel {
         String email = txtEmail.getText().trim();
         char[] pwdChars = txtPassword.getPassword();
         String password = new String(pwdChars);
+        Arrays.fill(pwdChars, '\0');
 
         ValidationResult ev = EmailValidator.validate(email);
-        if (!ev.isValid()) { showEmailError(ev.getErrorMessage()); Arrays.fill(pwdChars, '\0'); return; }
+        if (!ev.isValid()) { showEmailError(ev.getErrorMessage()); return; }
 
         ValidationResult pv = PasswordValidator.validate(password);
-        if (!pv.isValid()) { showPasswordError(pv.getErrorMessage()); Arrays.fill(pwdChars, '\0'); return; }
+        if (!pv.isValid()) { showPasswordError(pv.getErrorMessage()); return; }
 
         setLoginEnabled(false);
 
-        authService.loginAsync(email, password, new AuthService.AuthCallback() {
+        if (chkAccessCode.isSelected()) {
+            String code = txtAccessCode.getText().trim();
+            if (code.isEmpty()) {
+                showGeneralError("Vui lòng nhập mã truy cập");
+                setLoginEnabled(true);
+                return;
+            }
+            doLogin(email, password, code);
+        } else {
+            btnLogin.setText("Đang xác minh...");
+            new SwingWorker<String, Void>() {
+                @Override
+                protected String doInBackground() {
+                    List<String> validSsids = wifiAuthApiClient.getValidSsids(email);
+                    if (validSsids.isEmpty()) return ""; // no WiFi requirement today
+                    return wifiScannerService.findMatchingSsid(validSsids); // null = not found
+                }
+                @Override
+                protected void done() {
+                    btnLogin.setText("Đăng Nhập");
+                    try {
+                        String ssid = get();
+                        if (ssid == null) {
+                            showGeneralError("Xác minh vị trí không thành công. Vui lòng đảm bảo bạn đang trong khu vực lớp học.");
+                            setLoginEnabled(true);
+                        } else {
+                            doLogin(email, password, ssid.isEmpty() ? null : ssid);
+                        }
+                    } catch (Exception ex) {
+                        showGeneralError("Lỗi xác minh vị trí. Vui lòng thử lại.");
+                        setLoginEnabled(true);
+                    }
+                }
+            }.execute();
+        }
+    }
+
+    private void doLogin(String email, String password, String wifiSsid) {
+        authService.loginAsync(email, password, wifiSsid, new AuthService.AuthCallback() {
             @Override public void onSuccess(AuthResponse response) {
                 setLoginEnabled(true);
                 SwingUtilities.invokeLater(() -> {
@@ -423,8 +495,6 @@ public class LoginPanel extends JPanel {
                 setLoginEnabled(true);
             }
         });
-
-        Arrays.fill(pwdChars, '\0');
     }
 
     // ── Public API ────────────────────────────────────────────────────────────

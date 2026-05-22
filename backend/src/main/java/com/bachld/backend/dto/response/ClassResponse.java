@@ -50,7 +50,9 @@ public class ClassResponse {
 
     String roomName;
 
-    public ClassResponse(Integer id, String name, Integer currentStudent, Integer maxStudent, Integer sessionNumber, Integer status, Integer subjectId, String subjectName, Integer teacherId, String teacherName, Integer scheduleId, String scheduleName, LocalDate startDate, LocalDate endDate, Integer semesterId, String semesterName, Integer roomId, String roomName) {
+    String wifiSsid;
+
+    public ClassResponse(Integer id, String name, Integer currentStudent, Integer maxStudent, Integer sessionNumber, Integer status, Integer subjectId, String subjectName, Integer teacherId, String teacherName, Integer scheduleId, String scheduleName, LocalDate startDate, LocalDate endDate, Integer semesterId, String semesterName, Integer roomId, String roomName, String wifiSsid) {
         this.id = id;
         this.name = name;
         this.currentStudent = currentStudent;
@@ -69,5 +71,6 @@ public class ClassResponse {
         this.semesterName = semesterName;
         this.roomId = roomId;
         this.roomName = roomName;
+        this.wifiSsid = wifiSsid;
     }
 }

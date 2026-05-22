@@ -31,6 +31,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -274,6 +275,24 @@ public class ExamRoomService {
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy phòng thi có id: " + examRoomId));
         examRoom.setTrackingEnabled(enabled);
         examRoomRepository.save(examRoom);
+    }
+
+    @Transactional
+    public void updateWifiSsid(int id, String wifiSsid) {
+        ExamRoom examRoom = examRoomRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy phòng thi có id: " + id));
+        examRoom.setWifiSsid(wifiSsid);
+        examRoomRepository.save(examRoom);
+    }
+
+    @Transactional
+    public String generateWifiSsid(int id) {
+        ExamRoom examRoom = examRoomRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy phòng thi có id: " + id));
+        String ssid = UUID.randomUUID().toString().replace("-", "");
+        examRoom.setWifiSsid(ssid);
+        examRoomRepository.save(examRoom);
+        return ssid;
     }
 
     public void importVeyonKey(Integer examRoomId, String keyName, String encryptedKeyData) {

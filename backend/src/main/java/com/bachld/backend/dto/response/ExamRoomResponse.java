@@ -33,6 +33,7 @@ public class ExamRoomResponse {
     Integer status;
     Boolean trackingEnabled;
     Integer studyStatus;
+    String wifiSsid;
 
     public ExamRoomResponse(Integer id, String code, Integer roomId, String roomName,
                              Integer teacher1Id, String teacher1Name,
@@ -41,7 +42,7 @@ public class ExamRoomResponse {
                              Integer semesterId, String semesterName,
                              Integer maxStudent, Long currentStudent,
                              LocalDate examDate, LocalTime startTime, LocalTime endTime,
-                             Integer status, Boolean trackingEnabled) {
+                             Integer status, Boolean trackingEnabled, String wifiSsid) {
         this.id = id;
         this.code = code;
         this.roomId = roomId;
@@ -61,5 +62,6 @@ public class ExamRoomResponse {
         this.endTime = endTime;
         this.status = status;
         this.trackingEnabled = trackingEnabled;
+        this.wifiSsid = wifiSsid;
     }
 }

@@ -22,11 +22,11 @@ import {
 import MainCard from 'components/MainCard';
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useClassTracking, StudentTrackingState } from 'hooks/useClassTracking';
-import { ArrowLeft, DocumentUpload, ExportCurve, Global, ImportCurve, Key, Lock1, MessageText, Timer1, Wifi } from 'iconsax-reactjs';
+import { ArrowLeft, Copy, DocumentUpload, ExportCurve, Global, ImportCurve, Key, Lock1, MessageText, Refresh, Timer1, Wifi } from 'iconsax-reactjs';
 import { useNavigate, useParams } from 'react-router';
 import StudentActionDialog from 'sections/extra-pages/class/student-action-dialog';
 import ImportVeyonKeyDialog from 'sections/extra-pages/class/import-veyon-key-dialog';
-import { importStudentIntoClass, downloadClassStudentImportTemplate, sendFileToClass, getClassStudyStatus } from 'api/class';
+import { importStudentIntoClass, downloadClassStudentImportTemplate, sendFileToClass, getClassStudyStatus, getById, updateWifiSsid, generateWifiSsid } from 'api/class';
 import { openWebsiteForClass, sendMessageToClass } from 'api/veyon';
 import { HttpStatusCode } from 'axios';
 import useAuth from 'hooks/useAuth';
@@ -62,6 +62,9 @@ export default function TeacherClassTrackingPage() {
   const [sendFileLoading, setSendFileLoading] = useState(false);
   const [reload, setReload] = useState(false);
   const [studyStatus, setStudyStatus] = useState<number | undefined>(undefined);
+  const [accessCodeDialogOpen, setAccessCodeDialogOpen] = useState(false);
+  const [accessCodeInput, setAccessCodeInput] = useState('');
+  const [accessCodeLoading, setAccessCodeLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const sendFileInputRef = useRef<HTMLInputElement>(null);
   const { logout } = useAuth();
@@ -72,6 +75,15 @@ export default function TeacherClassTrackingPage() {
       if (res?.statusCode === HttpStatusCode.Ok) setStudyStatus(res.data as number);
     });
   }, [classId]);
+
+  useEffect(() => {
+    if (!accessCodeDialogOpen || !classId) return;
+    getById(classId).then((res) => {
+      if (res?.statusCode === HttpStatusCode.Ok) {
+        setAccessCodeInput(res.data?.wifiSsid ?? '');
+      }
+    });
+  }, [accessCodeDialogOpen, classId]);
 
   const { students, loading, connectedStudentIds } = useClassTracking(
     classId,
@@ -236,6 +248,40 @@ export default function TeacherClassTrackingPage() {
     }
   };
 
+  const handleGenerateAccessCode = async () => {
+    if (!classId) return;
+    setAccessCodeLoading(true);
+    try {
+      const res = await generateWifiSsid(classId);
+      if (res?.statusCode === HttpStatusCode.Ok) {
+        setAccessCodeInput(res.data as string);
+        setAlert({ open: true, message: 'Đã tạo mã truy cập mới', severity: 'success' });
+      }
+    } catch {
+      setAlert({ open: true, message: 'Lỗi khi tạo mã truy cập', severity: 'error' });
+    } finally {
+      setAccessCodeLoading(false);
+    }
+  };
+
+  const handleSaveAccessCode = async () => {
+    if (!classId) return;
+    setAccessCodeLoading(true);
+    try {
+      const res = await updateWifiSsid(classId, accessCodeInput.trim());
+      if (res?.statusCode === HttpStatusCode.Ok) {
+        setAlert({ open: true, message: 'Đã cập nhật mã truy cập', severity: 'success' });
+        setAccessCodeDialogOpen(false);
+      } else {
+        setAlert({ open: true, message: res?.message ?? 'Lỗi hệ thống', severity: 'error' });
+      }
+    } catch {
+      setAlert({ open: true, message: 'Lỗi hệ thống, vui lòng thử lại sau', severity: 'error' });
+    } finally {
+      setAccessCodeLoading(false);
+    }
+  };
+
   const handleDownloadExcelForm = async () => {
     const response = await downloadClassStudentImportTemplate();
     const blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -317,6 +363,17 @@ export default function TeacherClassTrackingPage() {
               sx={{ whiteSpace: 'nowrap' }}
             >
               Import khóa Veyon
+            </Button>
+          )}
+          {classId && (
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<Wifi size={15} />}
+              onClick={() => setAccessCodeDialogOpen(true)}
+              sx={{ whiteSpace: 'nowrap' }}
+            >
+              Mã truy cập
             </Button>
           )}
           <Chip icon={chip.icon} label={chip.label} color={chip.color} size="small" variant="outlined" />
@@ -593,6 +650,83 @@ export default function TeacherClassTrackingPage() {
       )}
 
       {classId && <ImportVeyonKeyDialog open={importKeyOpen} onClose={() => setImportKeyOpen(false)} classId={classId} />}
+
+      <Dialog
+        open={accessCodeDialogOpen}
+        onClose={() => !accessCodeLoading && setAccessCodeDialogOpen(false)}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{ paper: { sx: { borderRadius: 3 } } }}
+      >
+        <DialogTitle>Quản lý mã truy cập</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2} sx={{ mt: 1 }}>
+            <Box
+              sx={{
+                p: 1.5,
+                bgcolor: 'primary.lighter',
+                borderRadius: 1.5,
+                border: '1px solid',
+                borderColor: 'primary.light'
+              }}
+            >
+              <Typography variant="body2" fontWeight="medium" color="primary.dark" sx={{ mb: 0.5 }}>
+                Cách thiết lập
+              </Typography>
+              <Typography variant="caption" color="text.secondary" display="block">
+                Đặt tên hotspot điện thoại hoặc máy tính của bạn <strong>chính xác bằng mã bên dưới</strong> — sinh viên sẽ tự động xác minh được vị trí khi đăng nhập.
+              </Typography>
+              <Typography variant="caption" color="text.disabled" display="block" sx={{ mt: 0.75 }}>
+                Nếu sinh viên không nhận diện được WiFi, chiếu mã lên màn hình để họ nhập thủ công qua tùy chọn "Đăng nhập bằng mã truy cập".
+              </Typography>
+            </Box>
+
+            <Stack direction="row" spacing={1} alignItems="center">
+              <TextField
+                fullWidth
+                placeholder="Nhập mã hoặc tạo tự động..."
+                value={accessCodeInput}
+                onChange={(e) => setAccessCodeInput(e.target.value)}
+                size="small"
+              />
+              <Tooltip title="Sao chép mã" arrow>
+                <span>
+                  <IconButton
+                    size="small"
+                    disabled={!accessCodeInput}
+                    onClick={() => {
+                      navigator.clipboard.writeText(accessCodeInput);
+                      setAlert({ open: true, message: 'Đã sao chép mã truy cập', severity: 'success' });
+                    }}
+                  >
+                    <Copy size={17} />
+                  </IconButton>
+                </span>
+              </Tooltip>
+              <Tooltip title="Tạo mã ngẫu nhiên" arrow>
+                <span>
+                  <IconButton size="small" disabled={accessCodeLoading} onClick={handleGenerateAccessCode}>
+                    {accessCodeLoading ? <CircularProgress size={15} color="inherit" /> : <Refresh size={17} />}
+                  </IconButton>
+                </span>
+              </Tooltip>
+            </Stack>
+          </Stack>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2.5 }}>
+          <Button onClick={() => setAccessCodeDialogOpen(false)} disabled={accessCodeLoading}>
+            Đóng
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleSaveAccessCode}
+            disabled={accessCodeLoading}
+            startIcon={accessCodeLoading ? <CircularProgress size={14} color="inherit" /> : undefined}
+          >
+            Lưu
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Dialog
         open={sendFileDialogOpen}

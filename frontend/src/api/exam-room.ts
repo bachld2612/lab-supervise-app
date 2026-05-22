@@ -118,4 +118,22 @@ const setTrackingEnabled = async (examRoomId: number, enabled: boolean) => {
   }
 };
 
-export { getList, getById, create, update, deleteById, importStudents, getTracking, importVeyonKey, getTeacherExamRooms, getConnectedStudents, getStudyStatus, setTrackingEnabled };
+const updateWifiSsid = async (examRoomId: number, wifiSsid: string) => {
+  try {
+    const response = await axiosServices.put(`/api/exam-room/v1/${examRoomId}/wifi-ssid`, { wifiSsid });
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+const generateWifiSsid = async (examRoomId: number) => {
+  try {
+    const response = await axiosServices.post(`/api/exam-room/v1/${examRoomId}/wifi-ssid/generate`);
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+export { getList, getById, create, update, deleteById, importStudents, getTracking, importVeyonKey, getTeacherExamRooms, getConnectedStudents, getStudyStatus, setTrackingEnabled, updateWifiSsid, generateWifiSsid };

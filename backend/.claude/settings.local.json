@@ -7,7 +7,10 @@
       "Bash(find E:\\\\lab_supervise\\\\frontend *)",
       "Bash(grep -E \"\\\\.java$\")",
       "Bash(Get-ChildItem *)",
-      "Bash(dir /s \"E:\\\\lab_supervise\\\\desktop\\\\src\\\\main\\\\java\\\\com\\\\bachld\\\\ui\\\\*.java\")"
+      "Bash(dir /s \"E:\\\\lab_supervise\\\\desktop\\\\src\\\\main\\\\java\\\\com\\\\bachld\\\\ui\\\\*.java\")",
+      "Read(//e/lab_supervise/desktop/**)",
+      "Bash(mvn package *)",
+      "Bash(mvn compile *)"
     ]
   }
 }

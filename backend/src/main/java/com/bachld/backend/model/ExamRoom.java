@@ -56,4 +56,7 @@ public class ExamRoom extends BaseEntity {
 
     @Column(name = "tracking_enabled")
     Boolean trackingEnabled = false;
+
+    @Column(name = "wifi_ssid")
+    String wifiSsid;
 }

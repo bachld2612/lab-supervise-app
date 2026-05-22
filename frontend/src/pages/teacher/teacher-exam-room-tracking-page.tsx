@@ -29,13 +29,13 @@ import {
 import MainCard from 'components/MainCard';
 import { useEffect, useMemo, useState } from 'react';
 import { useExamRoomTracking, StudentTrackingState } from 'hooks/useExamRoomTracking';
-import { Add, ArrowLeft, Global, Key, Lock1, MessageText, Timer1, Trash, Wifi } from 'iconsax-reactjs';
+import { Add, ArrowLeft, Copy, Global, Key, Lock1, MessageText, Refresh, Timer1, Trash, Wifi } from 'iconsax-reactjs';
 import { useNavigate, useParams } from 'react-router';
 import { HttpStatusCode } from 'axios';
 import { AllowedApplication } from 'types/allowed-application';
 import * as allowedApplicationApi from 'api/allowed-application';
 import { openWebsiteForExamRoom, sendMessageToExamRoom } from 'api/veyon';
-import { importVeyonKey as importVeyonKeyApi, getById as getExamRoomById, getStudyStatus as getExamStudyStatus, setTrackingEnabled as setTrackingEnabledApi } from 'api/exam-room';
+import { importVeyonKey as importVeyonKeyApi, getById as getExamRoomById, getStudyStatus as getExamStudyStatus, setTrackingEnabled as setTrackingEnabledApi, updateWifiSsid, generateWifiSsid } from 'api/exam-room';
 import ImportVeyonKeyDialog from 'sections/extra-pages/class/import-veyon-key-dialog';
 import StudentActionDialog from 'sections/extra-pages/class/student-action-dialog';
 import { StudentTrackingState as ClassStudentTrackingState } from 'hooks/useClassTracking';
@@ -76,6 +76,18 @@ export default function TeacherExamRoomTrackingPage() {
   const [examStatus, setExamStatus] = useState<number | undefined>(undefined);
   const [trackingEnabled, setTrackingEnabled] = useState(false);
   const [trackingToggleLoading, setTrackingToggleLoading] = useState(false);
+  const [accessCodeDialogOpen, setAccessCodeDialogOpen] = useState(false);
+  const [accessCodeInput, setAccessCodeInput] = useState('');
+  const [accessCodeLoading, setAccessCodeLoading] = useState(false);
+
+  useEffect(() => {
+    if (!accessCodeDialogOpen || !examRoomId) return;
+    getExamRoomById(examRoomId).then((res) => {
+      if (res?.statusCode === HttpStatusCode.Ok) {
+        setAccessCodeInput(res.data?.wifiSsid ?? '');
+      }
+    });
+  }, [accessCodeDialogOpen, examRoomId]);
 
   useEffect(() => {
     if (!examRoomId) return;
@@ -223,6 +235,40 @@ export default function TeacherExamRoomTrackingPage() {
     }
   };
 
+  const handleGenerateAccessCode = async () => {
+    if (!examRoomId) return;
+    setAccessCodeLoading(true);
+    try {
+      const res = await generateWifiSsid(examRoomId);
+      if (res?.statusCode === HttpStatusCode.Ok) {
+        setAccessCodeInput(res.data as string);
+        setAlert({ open: true, message: 'Đã tạo mã truy cập mới', severity: 'success' });
+      }
+    } catch {
+      setAlert({ open: true, message: 'Lỗi khi tạo mã truy cập', severity: 'error' });
+    } finally {
+      setAccessCodeLoading(false);
+    }
+  };
+
+  const handleSaveAccessCode = async () => {
+    if (!examRoomId) return;
+    setAccessCodeLoading(true);
+    try {
+      const res = await updateWifiSsid(examRoomId, accessCodeInput.trim());
+      if (res?.statusCode === HttpStatusCode.Ok) {
+        setAlert({ open: true, message: 'Đã cập nhật mã truy cập', severity: 'success' });
+        setAccessCodeDialogOpen(false);
+      } else {
+        setAlert({ open: true, message: res?.message ?? 'Lỗi hệ thống', severity: 'error' });
+      }
+    } catch {
+      setAlert({ open: true, message: 'Lỗi hệ thống, vui lòng thử lại sau', severity: 'error' });
+    } finally {
+      setAccessCodeLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight={400}>
@@ -260,6 +306,11 @@ export default function TeacherExamRoomTrackingPage() {
           {examRoomId && (
             <Button variant="outlined" size="small" startIcon={<Key size={15} />} onClick={() => setImportKeyOpen(true)} sx={{ whiteSpace: 'nowrap' }}>
               Import khóa Veyon
+            </Button>
+          )}
+          {examRoomId && (
+            <Button variant="outlined" size="small" startIcon={<Wifi size={15} />} onClick={() => setAccessCodeDialogOpen(true)} sx={{ whiteSpace: 'nowrap' }}>
+              Mã truy cập
             </Button>
           )}
           <Tooltip title={trackingEnabled ? 'Đang giám sát — click để tắt' : 'Chưa giám sát — click để bật'} arrow>
@@ -508,6 +559,73 @@ export default function TeacherExamRoomTrackingPage() {
           <Button onClick={() => { setMsgDialogOpen(false); setMsgInput(''); }} disabled={msgLoading}>Hủy</Button>
           <Button variant="contained" onClick={handleSendMessageToExamRoom} disabled={msgLoading || !msgInput.trim()} startIcon={msgLoading ? <CircularProgress size={14} color="inherit" /> : <MessageText size={15} />}>
             Gửi
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Access code dialog */}
+      <Dialog
+        open={accessCodeDialogOpen}
+        onClose={() => !accessCodeLoading && setAccessCodeDialogOpen(false)}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{ paper: { sx: { borderRadius: 3 } } }}
+      >
+        <DialogTitle>Quản lý mã truy cập</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2} sx={{ mt: 1 }}>
+            <Box sx={{ p: 1.5, bgcolor: 'primary.lighter', borderRadius: 1.5, border: '1px solid', borderColor: 'primary.light' }}>
+              <Typography variant="body2" fontWeight="medium" color="primary.dark" sx={{ mb: 0.5 }}>
+                Cách thiết lập
+              </Typography>
+              <Typography variant="caption" color="text.secondary" display="block">
+                Đặt tên hotspot điện thoại hoặc máy tính của bạn <strong>chính xác bằng mã bên dưới</strong> — sinh viên sẽ tự động xác minh được vị trí khi đăng nhập.
+              </Typography>
+              <Typography variant="caption" color="text.disabled" display="block" sx={{ mt: 0.75 }}>
+                Nếu sinh viên không nhận diện được WiFi, chiếu mã lên màn hình để họ nhập thủ công qua tùy chọn "Đăng nhập bằng mã truy cập".
+              </Typography>
+            </Box>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <TextField
+                fullWidth
+                placeholder="Nhập mã hoặc tạo tự động..."
+                value={accessCodeInput}
+                onChange={(e) => setAccessCodeInput(e.target.value)}
+                size="small"
+              />
+              <Tooltip title="Sao chép mã" arrow>
+                <span>
+                  <IconButton
+                    size="small"
+                    disabled={!accessCodeInput}
+                    onClick={() => {
+                      navigator.clipboard.writeText(accessCodeInput);
+                      setAlert({ open: true, message: 'Đã sao chép mã truy cập', severity: 'success' });
+                    }}
+                  >
+                    <Copy size={17} />
+                  </IconButton>
+                </span>
+              </Tooltip>
+              <Tooltip title="Tạo mã ngẫu nhiên" arrow>
+                <span>
+                  <IconButton size="small" disabled={accessCodeLoading} onClick={handleGenerateAccessCode}>
+                    {accessCodeLoading ? <CircularProgress size={15} color="inherit" /> : <Refresh size={17} />}
+                  </IconButton>
+                </span>
+              </Tooltip>
+            </Stack>
+          </Stack>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2.5 }}>
+          <Button onClick={() => setAccessCodeDialogOpen(false)} disabled={accessCodeLoading}>Đóng</Button>
+          <Button
+            variant="contained"
+            onClick={handleSaveAccessCode}
+            disabled={accessCodeLoading}
+            startIcon={accessCodeLoading ? <CircularProgress size={14} color="inherit" /> : undefined}
+          >
+            Lưu
           </Button>
         </DialogActions>
       </Dialog>

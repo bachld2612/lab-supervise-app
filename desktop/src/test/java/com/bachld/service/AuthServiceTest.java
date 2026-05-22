@@ -53,7 +53,7 @@ class AuthServiceTest {
         }
         
         @Override
-        public AuthResponse login(String email, String password, String device) 
+        public AuthResponse login(String email, String password, String device, String wifiSsid)
                 throws RestClientException {
             if (exceptionToThrow != null) {
                 throw exceptionToThrow;
@@ -102,7 +102,7 @@ class AuthServiceTest {
         AtomicReference<AuthResponse> capturedResponse = new AtomicReference<>();
         
         // Act
-        authService.loginAsync(email, password, new AuthService.AuthCallback() {
+        authService.loginAsync(email, password, null, new AuthService.AuthCallback() {
             @Override
             public void onSuccess(AuthResponse response) {
                 capturedResponse.set(response);
@@ -144,7 +144,7 @@ class AuthServiceTest {
         AtomicReference<String> capturedError = new AtomicReference<>();
         
         // Act
-        authService.loginAsync(email, password, new AuthService.AuthCallback() {
+        authService.loginAsync(email, password, null, new AuthService.AuthCallback() {
             @Override
             public void onSuccess(AuthResponse response) {
                 fail("onSuccess should not be called on error");
@@ -180,7 +180,7 @@ class AuthServiceTest {
         AtomicReference<String> capturedError = new AtomicReference<>();
         
         // Act
-        authService.loginAsync(email, password, new AuthService.AuthCallback() {
+        authService.loginAsync(email, password, null, new AuthService.AuthCallback() {
             @Override
             public void onSuccess(AuthResponse response) {
                 fail("onSuccess should not be called on error");
@@ -212,7 +212,7 @@ class AuthServiceTest {
         AtomicReference<String> capturedError = new AtomicReference<>();
         
         // Act
-        authService.loginAsync(email, password, new AuthService.AuthCallback() {
+        authService.loginAsync(email, password, null, new AuthService.AuthCallback() {
             @Override
             public void onSuccess(AuthResponse response) {
                 fail("onSuccess should not be called on error");
@@ -244,7 +244,7 @@ class AuthServiceTest {
         AtomicReference<String> capturedError = new AtomicReference<>();
         
         // Act
-        authService.loginAsync(email, password, new AuthService.AuthCallback() {
+        authService.loginAsync(email, password, null, new AuthService.AuthCallback() {
             @Override
             public void onSuccess(AuthResponse response) {
                 fail("onSuccess should not be called on error");
@@ -276,7 +276,7 @@ class AuthServiceTest {
         AtomicReference<String> capturedError = new AtomicReference<>();
         
         // Act
-        authService.loginAsync(email, password, new AuthService.AuthCallback() {
+        authService.loginAsync(email, password, null, new AuthService.AuthCallback() {
             @Override
             public void onSuccess(AuthResponse response) {
                 fail("onSuccess should not be called on error");
@@ -307,7 +307,7 @@ class AuthServiceTest {
         CountDownLatch latch = new CountDownLatch(1);
         
         // Act
-        authService.loginAsync(email, password, new AuthService.AuthCallback() {
+        authService.loginAsync(email, password, null, new AuthService.AuthCallback() {
             @Override
             public void onSuccess(AuthResponse response) {
                 latch.countDown();
@@ -343,7 +343,7 @@ class AuthServiceTest {
         CountDownLatch latch = new CountDownLatch(1);
         
         // Act
-        authService.loginAsync(email, password, new AuthService.AuthCallback() {
+        authService.loginAsync(email, password, null, new AuthService.AuthCallback() {
             @Override
             public void onSuccess(AuthResponse response) {
                 latch.countDown();
@@ -378,7 +378,7 @@ class AuthServiceTest {
         AtomicReference<String> capturedError = new AtomicReference<>();
         
         // Act
-        authService.loginAsync(email, password, new AuthService.AuthCallback() {
+        authService.loginAsync(email, password, null, new AuthService.AuthCallback() {
             @Override
             public void onSuccess(AuthResponse response) {
                 fail("onSuccess should not be called on error");
@@ -412,7 +412,7 @@ class AuthServiceTest {
         CountDownLatch latch = new CountDownLatch(1);
         
         // Act
-        authService.loginAsync(email, password, new AuthService.AuthCallback() {
+        authService.loginAsync(email, password, null, new AuthService.AuthCallback() {
             @Override
             public void onSuccess(AuthResponse response) {
                 latch.countDown();

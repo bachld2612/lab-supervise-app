@@ -136,18 +136,22 @@ export default function ImportVeyonKeyDialog({ open, onClose, classId, isExamRoo
           </Stack>
         </DialogTitle>
 
-        <DialogContent sx={{ pt: 1, pb: 2.5 }}>
+        <DialogContent sx={{ pt: 1.5, pb: 2.5 }}>
           <Stack spacing={2.5}>
-            <TextField
-              label="Tên khóa"
-              placeholder="Ví dụ: lab101-key"
-              value={keyName}
-              onChange={(e) => setKeyName(e.target.value)}
-              fullWidth
-              size="small"
-              disabled={loading}
-              onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-            />
+            <Stack spacing={0.75}>
+              <Typography variant="body2" color="text.secondary" fontWeight="medium">
+                Tên khóa
+              </Typography>
+              <TextField
+                placeholder="Ví dụ: lab101-key"
+                value={keyName}
+                onChange={(e) => setKeyName(e.target.value)}
+                fullWidth
+                size="small"
+                disabled={loading}
+                onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+              />
+            </Stack>
 
             <Stack spacing={0.75}>
               <Typography variant="body2" color="text.secondary" fontWeight="medium">

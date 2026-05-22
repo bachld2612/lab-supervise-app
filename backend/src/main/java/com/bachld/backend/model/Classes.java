@@ -51,4 +51,7 @@ public class Classes extends BaseEntity {
 
     @Column(name = "room_id")
     Integer roomId;
+
+    @Column(name = "wifi_ssid")
+    String wifiSsid;
 }

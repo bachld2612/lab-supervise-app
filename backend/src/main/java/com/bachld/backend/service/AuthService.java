@@ -4,9 +4,13 @@ import com.bachld.backend.dto.request.LoginRequest;
 import com.bachld.backend.dto.response.LoginResponse;
 import com.bachld.backend.dto.response.RoleResponse;
 import com.bachld.backend.model.User;
+import com.bachld.backend.repository.ClassRepository;
+import com.bachld.backend.repository.ExamRoomRepository;
 import com.bachld.backend.repository.RoleRepository;
 import com.bachld.backend.repository.UserRepository;
 import com.bachld.backend.util.enums.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -15,12 +19,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthService {
+
+    static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     UserRepository userRepository;
 
@@ -29,6 +37,10 @@ public class AuthService {
     RoleRepository roleRepository;
 
     JwtService jwtService;
+
+    ClassRepository classRepository;
+
+    ExamRoomRepository examRoomRepository;
 
     public LoginResponse login(LoginRequest loginRequest) {
         User user = userRepository.findByEmailAndStatus(loginRequest.getEmail(), Status.ACTIVE.getValue())
@@ -47,6 +59,22 @@ public class AuthService {
                 throw new IllegalArgumentException("Tài khoản hoặc mật khẩu không chính xác");
             }
 
+            if (Objects.equals(loginRequest.getDevice(), "desktop")) {
+                LocalDate today = LocalDate.now();
+                boolean hasActiveSchedule =
+                        classRepository.countActiveClassesToday(user.getId(), today) > 0
+                        || examRoomRepository.countActiveExamsTodayByUserId(user.getId(), today) > 0;
+                if (!hasActiveSchedule) {
+                    throw new IllegalArgumentException("Xác minh vị trí không thành công. Vui lòng đảm bảo bạn đang trong khu vực lớp học.");
+                }
+
+                List<String> validSsids = classRepository.findActiveWifiSsidsByStudentUserId(user.getId(), today);
+                String sent = loginRequest.getWifiSsid();
+                if (validSsids.isEmpty() || sent == null || sent.isBlank() || !validSsids.contains(sent)) {
+                    throw new IllegalArgumentException("Xác minh vị trí không thành công. Vui lòng đảm bảo bạn đang trong khu vực lớp học.");
+                }
+            }
+
             RoleResponse roleResponse = roleRepository.findRoleById(user.getRoleId());
             String token = jwtService.generateToken(String.valueOf(user.getId()));
 
@@ -57,5 +85,14 @@ public class AuthService {
                     .build();
         }
         throw new IllegalArgumentException("Tài khoản hoặc mật khẩu không chính xác");
+    }
+
+    public List<String> getValidWifiSsids(String email) {
+        var userOpt = userRepository.findByEmailAndStatus(email, Status.ACTIVE.getValue());
+        if (userOpt.isEmpty()) {
+            return List.of();
+        }
+        User user = userOpt.get();
+        return classRepository.findActiveWifiSsidsByStudentUserId(user.getId(), LocalDate.now());
     }
 }

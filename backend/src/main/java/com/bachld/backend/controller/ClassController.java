@@ -3,6 +3,7 @@ package com.bachld.backend.controller;
 import com.bachld.backend.config.ConnectedStudentRegistry;
 import com.bachld.backend.dto.request.ClassCreateRequest;
 import com.bachld.backend.dto.request.ClassUpdateRequest;
+import com.bachld.backend.dto.request.ClassWifiSsidRequest;
 import com.bachld.backend.dto.response.BaseResponse;
 import com.bachld.backend.service.ClassService;
 import com.bachld.backend.util.auth.AuthFilter;
@@ -47,7 +48,7 @@ public class ClassController {
     }
 
     @GetMapping("/v1/{id}")
-    @AuthFilter(role = "ADMIN")
+    @AuthFilter(role = "ADMIN,TEACHER")
     public ResponseEntity<?> getById(@PathVariable int id) {
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), classService.getById(id)));
     }
@@ -114,6 +115,19 @@ public class ClassController {
     @AuthFilter(role = "ADMIN,TEACHER")
     public ResponseEntity<InputStreamResource> downloadClassStudentImportTemplate() throws IOException {
         return classService.downloadClassStudentImportTemplate();
+    }
+
+    @PutMapping("/v1/{id}/wifi-ssid")
+    @AuthFilter(role = "TEACHER")
+    public ResponseEntity<?> updateWifiSsid(@PathVariable int id, @RequestBody ClassWifiSsidRequest request) {
+        classService.updateWifiSsid(id, request.getWifiSsid());
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+    }
+
+    @PostMapping("/v1/{id}/wifi-ssid/generate")
+    @AuthFilter(role = "TEACHER")
+    public ResponseEntity<?> generateWifiSsid(@PathVariable int id) {
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), classService.generateWifiSsid(id)));
     }
 
     @PostMapping("/v1/{classId}/student/import")
