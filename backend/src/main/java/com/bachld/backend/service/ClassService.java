@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -326,6 +327,24 @@ public class ClassService {
             keyword = "%%";
         }
         return studentRepository.findByClassId(pageable, classId, keyword);
+    }
+
+    @Transactional
+    public void updateWifiSsid(int id, String wifiSsid) {
+        Classes classes = classRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp học có id: " + id));
+        classes.setWifiSsid(wifiSsid);
+        classRepository.save(classes);
+    }
+
+    @Transactional
+    public String generateWifiSsid(int id) {
+        Classes classes = classRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp học có id: " + id));
+        String ssid = UUID.randomUUID().toString().replace("-", "");
+        classes.setWifiSsid(ssid);
+        classRepository.save(classes);
+        return ssid;
     }
 
     public void delete(Integer id) {

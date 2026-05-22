@@ -1,5 +1,6 @@
 package com.bachld.backend.controller;
 
+import com.bachld.backend.dto.request.ClassWifiSsidRequest;
 import com.bachld.backend.dto.request.ExamRoomCreateRequest;
 import com.bachld.backend.dto.request.ExamRoomUpdateRequest;
 import com.bachld.backend.dto.request.ImportVeyonKeyForExamRoomRequest;
@@ -120,6 +121,19 @@ public class ExamRoomController {
     ) {
         examRoomService.setTrackingEnabled(examRoomId, enabled);
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+    }
+
+    @PutMapping("/v1/{id}/wifi-ssid")
+    @AuthFilter(role = "TEACHER")
+    public ResponseEntity<?> updateWifiSsid(@PathVariable int id, @RequestBody ClassWifiSsidRequest request) {
+        examRoomService.updateWifiSsid(id, request.getWifiSsid());
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+    }
+
+    @PostMapping("/v1/{id}/wifi-ssid/generate")
+    @AuthFilter(role = "TEACHER")
+    public ResponseEntity<?> generateWifiSsid(@PathVariable int id) {
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), examRoomService.generateWifiSsid(id)));
     }
 
     @PostMapping("/v1/{examRoomId}/veyon/import-key")

@@ -1,5 +1,7 @@
 package com.bachld.service;
 
+import com.sun.jna.Library;
+import com.sun.jna.Native;
 import com.sun.jna.platform.win32.*;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinNT.HANDLE;
@@ -9,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -21,17 +24,25 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class WindowsTrackingService implements TrackingService {
     private static final Logger log = LoggerFactory.getLogger(WindowsTrackingService.class);
-    
-    // Windows constants for hook
+
     private static final int EVENT_SYSTEM_FOREGROUND = 0x0003;
     private static final int EVENT_OBJECT_NAMECHANGE = 0x800C;
     private static final int WINEVENT_OUTOFCONTEXT = 0x0000;
     private static final int OBJID_WINDOW = 0x00000000;
+    private static final int WM_QUIT = 0x0012;
+
+    // PostThreadMessage is not in JNA's built-in User32 interface, so define it here.
+    interface User32Ex extends Library {
+        User32Ex INSTANCE = Native.load("user32", User32Ex.class);
+        boolean PostThreadMessageW(int idThread, int Msg, WinDef.WPARAM wParam, WinDef.LPARAM lParam);
+    }
 
     private final WebSocketService webSocketService;
-    private HANDLE hHook; // Using HANDLE as HWINEVENTHOOK might not be directly exposed in some JNA versions
+    private HANDLE hHook;
     private HANDLE hNameChangeHook;
     private WinEventProc listener;
+    private Thread hookThread;
+    private volatile int nativeHookThreadId = 0;
     private final AtomicReference<String> lastApp = new AtomicReference<>("");
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
@@ -44,9 +55,9 @@ public class WindowsTrackingService implements TrackingService {
      * Note: This requires a Windows message loop to function.
      */
     public void start() {
-        Thread hookThread = new Thread(() -> {
+        hookThread = new Thread(() -> {
+            nativeHookThreadId = Kernel32.INSTANCE.GetCurrentThreadId();
 
-            // Define the event processor
             listener = new WinEventProc() {
                 @Override
                 public void callback(HANDLE hWinEventHook, WinDef.DWORD event, HWND hwnd, 
@@ -118,21 +129,23 @@ public class WindowsTrackingService implements TrackingService {
         // Skip if same as last app to avoid redundant events
         if (!currentAppInfo.equals(lastApp.get())) {
             lastApp.set(currentAppInfo);
-            
-            // Optimization: Debounce 500ms as per real-time-tracking.md
-            scheduler.schedule(() -> {
-                // Verify the app/window is still in focus after the delay
-                HWND activeHwnd = User32.INSTANCE.GetForegroundWindow();
-                String activeProc = getProcessName(activeHwnd);
-                String activeTitle = getWindowTitle(activeHwnd);
-                String activeAppInfo = (activeTitle != null && !activeTitle.isEmpty()) 
-                        ? activeTitle 
-                        : activeProc;
-                
-                if (currentAppInfo.equals(activeAppInfo)) {
-                    webSocketService.sendPCInfo(currentAppInfo);
-                }
-            }, 100, TimeUnit.MILLISECONDS);
+
+            try {
+                scheduler.schedule(() -> {
+                    HWND activeHwnd = User32.INSTANCE.GetForegroundWindow();
+                    String activeProc = getProcessName(activeHwnd);
+                    String activeTitle = getWindowTitle(activeHwnd);
+                    String activeAppInfo = (activeTitle != null && !activeTitle.isEmpty())
+                            ? activeTitle
+                            : activeProc;
+
+                    if (currentAppInfo.equals(activeAppInfo)) {
+                        webSocketService.sendPCInfo(currentAppInfo);
+                    }
+                }, 100, TimeUnit.MILLISECONDS);
+            } catch (RejectedExecutionException ignored) {
+                // scheduler was shut down — service is stopping, safe to discard
+            }
         }
     }
 
@@ -179,6 +192,12 @@ public class WindowsTrackingService implements TrackingService {
      * Stops the hook and shuts down the scheduler.
      */
     public void stop() {
+        // Shutdown executor first so queued callbacks from still-pending WinEvents
+        // are discarded silently (RejectedExecutionException caught in handleWindowChange).
+        scheduler.shutdown();
+
+        // Unhook after shutdown — WINEVENT_OUTOFCONTEXT events already in the thread's
+        // message queue will still fire, but the catch block above absorbs them.
         if (hHook != null) {
             User32.INSTANCE.UnhookWinEvent(hHook);
             hHook = null;
@@ -187,6 +206,12 @@ public class WindowsTrackingService implements TrackingService {
             User32.INSTANCE.UnhookWinEvent(hNameChangeHook);
             hNameChangeHook = null;
         }
-        scheduler.shutdown();
+
+        // Post WM_QUIT to the hook thread's message queue so GetMessage returns 0
+        // and the loop exits cleanly, terminating the thread.
+        if (nativeHookThreadId != 0) {
+            User32Ex.INSTANCE.PostThreadMessageW(nativeHookThreadId, WM_QUIT,
+                    new WinDef.WPARAM(0), new WinDef.LPARAM(0));
+        }
     }
 }

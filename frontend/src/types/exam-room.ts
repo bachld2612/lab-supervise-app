@@ -19,4 +19,5 @@ export interface ExamRoom {
   status: number;
   trackingEnabled?: boolean;
   studyStatus?: number;
+  wifiSsid?: string;
 }

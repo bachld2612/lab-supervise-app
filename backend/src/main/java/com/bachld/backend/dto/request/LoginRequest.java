@@ -23,4 +23,6 @@ public class LoginRequest {
 
     @NotEmpty(message = "Nền tảng không được phép bỏ trống")
     String device;
+
+    String wifiSsid;
 }

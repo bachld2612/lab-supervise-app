@@ -46,11 +46,10 @@ public class AuthApiClient {
      * @return AuthResponse containing authentication data on success
      * @throws RestClientException if the API call fails or returns an error
      */
-    public AuthResponse login(String email, String password, String device) 
+    public AuthResponse login(String email, String password, String device, String wifiSsid)
             throws RestClientException {
         try {
-            // Create login request
-            LoginRequest loginRequest = new LoginRequest(email, password, device);
+            LoginRequest loginRequest = new LoginRequest(email, password, device, wifiSsid);
             
             // Set Content-Type header to application/json
             HttpHeaders headers = new HttpHeaders();

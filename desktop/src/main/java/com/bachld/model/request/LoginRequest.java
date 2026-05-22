@@ -18,14 +18,18 @@ public class LoginRequest {
     
     @JsonProperty("device")
     private String device;
-    
+
+    @JsonProperty("wifiSsid")
+    private String wifiSsid;
+
     public LoginRequest() {
     }
-    
-    public LoginRequest(String email, String password, String device) {
+
+    public LoginRequest(String email, String password, String device, String wifiSsid) {
         this.email = email;
         this.password = password;
         this.device = device;
+        this.wifiSsid = wifiSsid;
     }
     
     public String getEmail() {
@@ -47,8 +51,16 @@ public class LoginRequest {
     public String getdevice() {
         return device;
     }
-    
+
     public void setdevice(String device) {
         this.device = device;
+    }
+
+    public String getWifiSsid() {
+        return wifiSsid;
+    }
+
+    public void setWifiSsid(String wifiSsid) {
+        this.wifiSsid = wifiSsid;
     }
 }

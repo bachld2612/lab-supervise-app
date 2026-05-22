@@ -40,11 +40,10 @@ class LoginPanelTest {
         }
         
         @Override
-        public void loginAsync(String email, String password, AuthCallback callback) {
+        public void loginAsync(String email, String password, String wifiSsid, AuthCallback callback) {
             this.loginAsyncCalled = true;
             this.lastEmail = email;
             this.lastPassword = password;
-            // Don't actually call the callback in tests
         }
         
         public boolean wasLoginAsyncCalled() {

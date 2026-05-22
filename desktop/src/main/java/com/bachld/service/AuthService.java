@@ -51,9 +51,9 @@ public class AuthService {
      * @param password the user's password
      * @param callback the callback to invoke on success or error
      */
-    public void loginAsync(String email, String password, AuthCallback callback) {
+    public void loginAsync(String email, String password, String wifiSsid, AuthCallback callback) {
         logger.info("Authentication attempt for email: {}", email);
-        LoginWorker worker = new LoginWorker(email, password, callback);
+        LoginWorker worker = new LoginWorker(email, password, wifiSsid, callback);
         worker.execute();
     }
     
@@ -82,14 +82,16 @@ public class AuthService {
      * Extracts result and invokes callback on EDT in done() method.
      */
     private class LoginWorker extends SwingWorker<AuthResponse, Void> {
-        
+
         private final String email;
         private final String password;
+        private final String wifiSsid;
         private final AuthCallback callback;
-        
-        public LoginWorker(String email, String password, AuthCallback callback) {
+
+        public LoginWorker(String email, String password, String wifiSsid, AuthCallback callback) {
             this.email = email;
             this.password = password;
+            this.wifiSsid = wifiSsid;
             this.callback = callback;
         }
         
@@ -101,7 +103,7 @@ public class AuthService {
          */
         @Override
         protected AuthResponse doInBackground() throws Exception {
-            return authApiClient.login(email, password, "desktop");
+            return authApiClient.login(email, password, "desktop", wifiSsid);
         }
         
         /**
