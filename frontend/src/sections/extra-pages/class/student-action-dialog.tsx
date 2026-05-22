@@ -705,7 +705,7 @@ export default function StudentActionDialog({
           {screenshotData && (
             <Box
               component="img"
-              src={`data:image/png;base64,${screenshotData}`}
+              src={`data:image/jpeg;base64,${screenshotData}`}
               alt={`Screenshot — ${student.fullName}`}
               sx={{ width: '100%', display: 'block', borderRadius: 1 }}
             />

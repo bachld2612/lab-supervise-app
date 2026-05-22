@@ -14,8 +14,8 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -60,6 +60,13 @@ public class VeyonClientService {
     @NonFinal
     RestTemplate screenshotRestTemplate;
 
+    private record CachedConnection(String uid, long expiresAt) {
+        boolean isValid() { return System.currentTimeMillis() < expiresAt; }
+    }
+
+    private final ConcurrentHashMap<String, CachedConnection> connectionCache = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, CachedConnection> screenshotConnectionCache = new ConcurrentHashMap<>();
+
     @PostConstruct
     void init() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
@@ -98,6 +105,53 @@ public class VeyonClientService {
         }
 
         return responseBody.get("connection-uid").toString();
+    }
+
+    /**
+     * Returns a cached connection-uid if still valid (within 27s window), otherwise authenticates fresh.
+     * Veyon connection-uids are valid for ~30s; caching eliminates repeated TCP handshakes between
+     * consecutive screenshot requests for the same student.
+     */
+    public String getOrReuseConnectionUid(String keyName, String privateKeyContent, String teacherIp, String studentIp) {
+        String cacheKey = keyName + "|" + teacherIp + "|" + studentIp;
+        CachedConnection cached = connectionCache.get(cacheKey);
+        if (cached != null && cached.isValid()) {
+            return cached.uid();
+        }
+        String uid = getConnectionUid(keyName, privateKeyContent, teacherIp, studentIp);
+        // Cache for 27s — 3s buffer before Veyon's 30s expiry
+        connectionCache.put(cacheKey, new CachedConnection(uid, System.currentTimeMillis() + 27_000));
+        return uid;
+    }
+
+    public void evictConnection(String keyName, String teacherIp, String studentIp) {
+        connectionCache.remove(keyName + "|" + teacherIp + "|" + studentIp);
+    }
+
+    /**
+     * Screenshot-specific cache (10s TTL). On cache miss: auth + 300ms warmup delay so VNC
+     * completes its initial framebuffer sync before the first capture, reducing tearing artifacts.
+     * On cache hit: VNC is already warm, fetch immediately.
+     */
+    public String getOrReuseConnectionUidForScreenshot(String keyName, String privateKeyContent, String teacherIp, String studentIp) {
+        String cacheKey = keyName + "|" + teacherIp + "|" + studentIp;
+        CachedConnection cached = screenshotConnectionCache.get(cacheKey);
+        if (cached != null && cached.isValid()) {
+            try { Thread.sleep(200  ); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+            return cached.uid();
+        }
+        String uid = getConnectionUid(keyName, privateKeyContent, teacherIp, studentIp);
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+        screenshotConnectionCache.put(cacheKey, new CachedConnection(uid, System.currentTimeMillis() + 10_000));
+        return uid;
+    }
+
+    public void evictScreenshotConnection(String keyName, String teacherIp, String studentIp) {
+        screenshotConnectionCache.remove(keyName + "|" + teacherIp + "|" + studentIp);
     }
 
     public void openWebsite(String connectionUid, String websiteUrl, String teacherIp) {
@@ -139,6 +193,13 @@ public class VeyonClientService {
         HttpHeaders headers = new HttpHeaders();
         headers.set("connection-uid", connectionUid);
         HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        // Throwaway fetch: triggers VNC to flush its tile queue and start a fresh full-screen
+        // capture cycle. The actual fetch below will get a consistent frame.
+        try {
+            screenshotRestTemplate.exchange(url, HttpMethod.GET, entity, byte[].class);
+        } catch (Exception ignored) {}
+        try { Thread.sleep(200); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
 
         for (int attempt = 1; attempt <= screenshotMaxRetries; attempt++) {
             boolean needRetry = false;

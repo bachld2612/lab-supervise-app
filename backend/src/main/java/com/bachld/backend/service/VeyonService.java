@@ -77,7 +77,7 @@ public class VeyonService {
     public void lockScreen(LockScreenRequest request) {
         String[] credentials = getVeyonCredentials(request.getClassId());
         String studentIp = getStudentIp(request.getStudentUserId());
-        String connectionUid = veyonClientService.getConnectionUid(credentials[0], credentials[1], credentials[2], studentIp);
+        String connectionUid = veyonClientService.getOrReuseConnectionUid(credentials[0], credentials[1], credentials[2], studentIp);
         veyonClientService.lockScreen(connectionUid, request.getActive(), credentials[2]);
     }
 
@@ -87,7 +87,7 @@ public class VeyonService {
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sinh viên có id: " + studentId));
         PersonalComputer pc = personalComputerRepository.findByUserId(student.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("Sinh viên chưa đăng ký máy tính cá nhân"));
-        String connectionUid = veyonClientService.getConnectionUid(credentials[0], credentials[1], credentials[2], pc.getIpAddress());
+        String connectionUid = veyonClientService.getOrReuseConnectionUid(credentials[0], credentials[1], credentials[2], pc.getIpAddress());
         veyonClientService.openWebsite(connectionUid, request.getWebsiteUrl(), credentials[2]);
     }
 
@@ -103,7 +103,7 @@ public class VeyonService {
                 PersonalComputer pc = personalComputerRepository.findByUserId(student.getUserId()).orElse(null);
                 if (pc == null) continue;
 
-                String connectionUid = veyonClientService.getConnectionUid(credentials[0], credentials[1], credentials[2], pc.getIpAddress());
+                String connectionUid = veyonClientService.getOrReuseConnectionUid(credentials[0], credentials[1], credentials[2], pc.getIpAddress());
                 veyonClientService.openWebsite(connectionUid, request.getWebsiteUrl(), credentials[2]);
             } catch (Exception ignored) {
             }
@@ -116,7 +116,7 @@ public class VeyonService {
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sinh viên có id: " + studentId));
         PersonalComputer pc = personalComputerRepository.findByUserId(student.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("Sinh viên chưa đăng ký máy tính cá nhân"));
-        String connectionUid = veyonClientService.getConnectionUid(credentials[0], credentials[1], credentials[2], pc.getIpAddress());
+        String connectionUid = veyonClientService.getOrReuseConnectionUid(credentials[0], credentials[1], credentials[2], pc.getIpAddress());
         veyonClientService.sendMessage(connectionUid, request.getText(), credentials[2]);
     }
 
@@ -132,7 +132,7 @@ public class VeyonService {
                 PersonalComputer pc = personalComputerRepository.findByUserId(student.getUserId()).orElse(null);
                 if (pc == null) continue;
 
-                String connectionUid = veyonClientService.getConnectionUid(credentials[0], credentials[1], credentials[2], pc.getIpAddress());
+                String connectionUid = veyonClientService.getOrReuseConnectionUid(credentials[0], credentials[1], credentials[2], pc.getIpAddress());
                 veyonClientService.sendMessage(connectionUid, request.getText(), credentials[2]);
             } catch (Exception ignored) {
             }
@@ -142,9 +142,14 @@ public class VeyonService {
     public String getScreenshot(Integer classId, Integer studentUserId) {
         String[] credentials = getVeyonCredentials(classId);
         String studentIp = getStudentIp(studentUserId);
-        String connectionUid = veyonClientService.getConnectionUid(credentials[0], credentials[1], credentials[2], studentIp);
-        byte[] imageBytes = veyonClientService.getScreenshot(connectionUid, credentials[2]);
-        return Base64.getEncoder().encodeToString(imageBytes);
+        try {
+            String connectionUid = veyonClientService.getOrReuseConnectionUidForScreenshot(credentials[0], credentials[1], credentials[2], studentIp);
+            byte[] imageBytes = veyonClientService.getScreenshot(connectionUid, credentials[2]);
+            return Base64.getEncoder().encodeToString(imageBytes);
+        } catch (RuntimeException e) {
+            veyonClientService.evictScreenshotConnection(credentials[0], credentials[2], studentIp);
+            throw e;
+        }
     }
 
     // ===== EXAM ROOM VEYON METHODS =====
@@ -176,16 +181,21 @@ public class VeyonService {
     public void lockScreenForExamRoom(LockScreenExamRoomRequest request) {
         String[] credentials = getVeyonCredentialsForExamRoom(request.getExamRoomId());
         String studentIp = getStudentIp(request.getStudentUserId());
-        String connectionUid = veyonClientService.getConnectionUid(credentials[0], credentials[1], credentials[2], studentIp);
+        String connectionUid = veyonClientService.getOrReuseConnectionUid(credentials[0], credentials[1], credentials[2], studentIp);
         veyonClientService.lockScreen(connectionUid, request.getActive(), credentials[2]);
     }
 
     public String getScreenshotForExamRoom(Integer examRoomId, Integer studentUserId) {
         String[] credentials = getVeyonCredentialsForExamRoom(examRoomId);
         String studentIp = getStudentIp(studentUserId);
-        String connectionUid = veyonClientService.getConnectionUid(credentials[0], credentials[1], credentials[2], studentIp);
-        byte[] imageBytes = veyonClientService.getScreenshot(connectionUid, credentials[2]);
-        return Base64.getEncoder().encodeToString(imageBytes);
+        try {
+            String connectionUid = veyonClientService.getOrReuseConnectionUidForScreenshot(credentials[0], credentials[1], credentials[2], studentIp);
+            byte[] imageBytes = veyonClientService.getScreenshot(connectionUid, credentials[2]);
+            return Base64.getEncoder().encodeToString(imageBytes);
+        } catch (RuntimeException e) {
+            veyonClientService.evictScreenshotConnection(credentials[0], credentials[2], studentIp);
+            throw e;
+        }
     }
 
     public void openWebsiteForExamRoom(Integer examRoomId, OpenWebsiteRequest request) {
@@ -197,7 +207,7 @@ public class VeyonService {
                 if (student == null) continue;
                 PersonalComputer pc = personalComputerRepository.findByUserId(student.getUserId()).orElse(null);
                 if (pc == null) continue;
-                String connectionUid = veyonClientService.getConnectionUid(credentials[0], credentials[1], credentials[2], pc.getIpAddress());
+                String connectionUid = veyonClientService.getOrReuseConnectionUid(credentials[0], credentials[1], credentials[2], pc.getIpAddress());
                 veyonClientService.openWebsite(connectionUid, request.getWebsiteUrl(), credentials[2]);
             } catch (Exception ignored) {
             }
@@ -210,7 +220,7 @@ public class VeyonService {
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sinh viên có id: " + studentId));
         PersonalComputer pc = personalComputerRepository.findByUserId(student.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("Sinh viên chưa đăng ký máy tính cá nhân"));
-        String connectionUid = veyonClientService.getConnectionUid(credentials[0], credentials[1], credentials[2], pc.getIpAddress());
+        String connectionUid = veyonClientService.getOrReuseConnectionUid(credentials[0], credentials[1], credentials[2], pc.getIpAddress());
         veyonClientService.openWebsite(connectionUid, request.getWebsiteUrl(), credentials[2]);
     }
 
@@ -223,7 +233,7 @@ public class VeyonService {
                 if (student == null) continue;
                 PersonalComputer pc = personalComputerRepository.findByUserId(student.getUserId()).orElse(null);
                 if (pc == null) continue;
-                String connectionUid = veyonClientService.getConnectionUid(credentials[0], credentials[1], credentials[2], pc.getIpAddress());
+                String connectionUid = veyonClientService.getOrReuseConnectionUid(credentials[0], credentials[1], credentials[2], pc.getIpAddress());
                 veyonClientService.sendMessage(connectionUid, request.getText(), credentials[2]);
             } catch (Exception ignored) {
             }
@@ -236,7 +246,7 @@ public class VeyonService {
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sinh viên có id: " + studentId));
         PersonalComputer pc = personalComputerRepository.findByUserId(student.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("Sinh viên chưa đăng ký máy tính cá nhân"));
-        String connectionUid = veyonClientService.getConnectionUid(credentials[0], credentials[1], credentials[2], pc.getIpAddress());
+        String connectionUid = veyonClientService.getOrReuseConnectionUid(credentials[0], credentials[1], credentials[2], pc.getIpAddress());
         veyonClientService.sendMessage(connectionUid, request.getText(), credentials[2]);
     }
 
