@@ -63,7 +63,11 @@ export default function PersonalComputerPage() {
         onClose={() => setAlert({ ...alert, open: false })}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        <Alert severity={alert.severity} variant="filled" sx={{ width: '100%', borderRadius: 2, fontSize: 15, textAlign: 'center', py: 1.5, px: 2 }}>
+        <Alert
+          severity={alert.severity}
+          variant="filled"
+          sx={{ width: '100%', borderRadius: 2, fontSize: 15, textAlign: 'center', py: 1.5, px: 2 }}
+        >
           {alert.message}
         </Alert>
       </Snackbar>

@@ -620,7 +620,12 @@ export default function ManageClassPage() {
           </Typography>
         </Stack>
 
-        <DndContext collisionDetection={closestCenter} modifiers={[restrictToHorizontalAxis]} onDragEnd={handleColumnDragEnd} sensors={columnSensors}>
+        <DndContext
+          collisionDetection={closestCenter}
+          modifiers={[restrictToHorizontalAxis]}
+          onDragEnd={handleColumnDragEnd}
+          sensors={columnSensors}
+        >
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -636,7 +641,12 @@ export default function ManageClassPage() {
               </TableHead>
 
               <TableBody>
-                <DndContext collisionDetection={closestCenter} modifiers={[restrictToVerticalAxis]} onDragEnd={handleRowDragEnd} sensors={rowSensors}>
+                <DndContext
+                  collisionDetection={closestCenter}
+                  modifiers={[restrictToVerticalAxis]}
+                  onDragEnd={handleRowDragEnd}
+                  sensors={rowSensors}
+                >
                   {table.getRowModel().rows.length > 0 ? (
                     <SortableContext items={dataIds} strategy={verticalListSortingStrategy}>
                       {table.getRowModel().rows.map((row) => (

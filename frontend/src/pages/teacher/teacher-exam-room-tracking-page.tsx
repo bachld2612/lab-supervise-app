@@ -35,7 +35,13 @@ import { HttpStatusCode } from 'axios';
 import { AllowedApplication } from 'types/allowed-application';
 import * as allowedApplicationApi from 'api/allowed-application';
 import { openWebsiteForExamRoom, sendMessageToExamRoom } from 'api/veyon';
-import { importVeyonKey as importVeyonKeyApi, getById as getExamRoomById, getStudyStatus as getExamStudyStatus, setTrackingEnabled as setTrackingEnabledApi, updateWifiSsid, generateWifiSsid } from 'api/exam-room';
+import {
+  getById as getExamRoomById,
+  getStudyStatus as getExamStudyStatus,
+  setTrackingEnabled as setTrackingEnabledApi,
+  updateWifiSsid,
+  generateWifiSsid
+} from 'api/exam-room';
 import ImportVeyonKeyDialog from 'sections/extra-pages/class/import-veyon-key-dialog';
 import StudentActionDialog from 'sections/extra-pages/class/student-action-dialog';
 import { StudentTrackingState as ClassStudentTrackingState } from 'hooks/useClassTracking';
@@ -164,9 +170,19 @@ export default function TeacherExamRoomTrackingPage() {
     for (const s of students) {
       for (const e of s.appHistory) {
         if (e.connectionType) {
-          entries.push({ eventType: e.connectionType === 'CONNECT' ? 'connect' : 'disconnect', studentName: s.fullName, createdAt: e.createdAt });
+          entries.push({
+            eventType: e.connectionType === 'CONNECT' ? 'connect' : 'disconnect',
+            studentName: s.fullName,
+            createdAt: e.createdAt
+          });
         } else {
-          entries.push({ eventType: 'app', studentName: s.fullName, applicationName: e.applicationName, banApplication: e.banApplication, createdAt: e.createdAt });
+          entries.push({
+            eventType: 'app',
+            studentName: s.fullName,
+            applicationName: e.applicationName,
+            banApplication: e.banApplication,
+            createdAt: e.createdAt
+          });
         }
       }
     }
@@ -177,7 +193,11 @@ export default function TeacherExamRoomTrackingPage() {
     if (!examRoomId || !newAppName.trim()) return;
     setAddAppLoading(true);
     try {
-      const res = await allowedApplicationApi.create({ examRoomId, applicationName: newAppName.trim(), imageUrl: newAppImageUrl.trim() || null });
+      const res = await allowedApplicationApi.create({
+        examRoomId,
+        applicationName: newAppName.trim(),
+        imageUrl: newAppImageUrl.trim() || null
+      });
       if (res?.statusCode === HttpStatusCode.Ok) {
         setAlert({ open: true, message: 'Đã thêm ứng dụng vào danh sách cho phép', severity: 'success' });
         setAddAppDialogOpen(false);
@@ -304,12 +324,24 @@ export default function TeacherExamRoomTrackingPage() {
 
         <Stack direction="row" spacing={1.5} alignItems="center">
           {examRoomId && (
-            <Button variant="outlined" size="small" startIcon={<Key size={15} />} onClick={() => setImportKeyOpen(true)} sx={{ whiteSpace: 'nowrap' }}>
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<Key size={15} />}
+              onClick={() => setImportKeyOpen(true)}
+              sx={{ whiteSpace: 'nowrap' }}
+            >
               Import khóa Veyon
             </Button>
           )}
           {examRoomId && (
-            <Button variant="outlined" size="small" startIcon={<Wifi size={15} />} onClick={() => setAccessCodeDialogOpen(true)} sx={{ whiteSpace: 'nowrap' }}>
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<Wifi size={15} />}
+              onClick={() => setAccessCodeDialogOpen(true)}
+              sx={{ whiteSpace: 'nowrap' }}
+            >
               Mã truy cập
             </Button>
           )}
@@ -333,9 +365,12 @@ export default function TeacherExamRoomTrackingPage() {
             />
           </Tooltip>
           {(() => {
-            if (examStatus === undefined) return <Chip icon={<Wifi size={14} />} label="Đang kết nối" color="warning" size="small" variant="outlined" />;
-            if (examStatus === 1) return <Chip icon={<Wifi size={14} />} label="Đang diễn ra" color="success" size="small" variant="outlined" />;
-            if (examStatus === 2) return <Chip icon={<Timer1 size={14} />} label="Đã kết thúc" color="default" size="small" variant="outlined" />;
+            if (examStatus === undefined)
+              return <Chip icon={<Wifi size={14} />} label="Đang kết nối" color="warning" size="small" variant="outlined" />;
+            if (examStatus === 1)
+              return <Chip icon={<Wifi size={14} />} label="Đang diễn ra" color="success" size="small" variant="outlined" />;
+            if (examStatus === 2)
+              return <Chip icon={<Timer1 size={14} />} label="Đã kết thúc" color="default" size="small" variant="outlined" />;
             return <Chip icon={<Timer1 size={14} />} label="Chờ đến giờ thi" color="warning" size="small" variant="outlined" />;
           })()}
         </Stack>
@@ -346,7 +381,17 @@ export default function TeacherExamRoomTrackingPage() {
           <Tooltip title="Gửi thông báo tới cả phòng" arrow placement="top">
             <IconButton
               onClick={() => setMsgDialogOpen(true)}
-              sx={{ width: 56, height: 56, bgcolor: 'background.paper', border: '1.5px solid', borderColor: 'divider', borderRadius: 2, color: 'text.secondary', transition: 'all 0.2s', '&:hover': { bgcolor: 'primary.lighter', borderColor: 'primary.main', color: 'primary.main', transform: 'scale(1.05)' } }}
+              sx={{
+                width: 56,
+                height: 56,
+                bgcolor: 'background.paper',
+                border: '1.5px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+                color: 'text.secondary',
+                transition: 'all 0.2s',
+                '&:hover': { bgcolor: 'primary.lighter', borderColor: 'primary.main', color: 'primary.main', transform: 'scale(1.05)' }
+              }}
             >
               <MessageText size={26} />
             </IconButton>
@@ -354,7 +399,17 @@ export default function TeacherExamRoomTrackingPage() {
           <Tooltip title="Mở trang web cho cả phòng" arrow placement="top">
             <IconButton
               onClick={() => setOpenWebDialogOpen(true)}
-              sx={{ width: 56, height: 56, bgcolor: 'background.paper', border: '1.5px solid', borderColor: 'divider', borderRadius: 2, color: 'text.secondary', transition: 'all 0.2s', '&:hover': { bgcolor: 'primary.lighter', borderColor: 'primary.main', color: 'primary.main', transform: 'scale(1.05)' } }}
+              sx={{
+                width: 56,
+                height: 56,
+                bgcolor: 'background.paper',
+                border: '1.5px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+                color: 'text.secondary',
+                transition: 'all 0.2s',
+                '&:hover': { bgcolor: 'primary.lighter', borderColor: 'primary.main', color: 'primary.main', transform: 'scale(1.05)' }
+              }}
             >
               <Global size={26} />
             </IconButton>
@@ -369,7 +424,9 @@ export default function TeacherExamRoomTrackingPage() {
             <Box sx={{ p: 2 }}>
               {students.length === 0 ? (
                 <Box textAlign="center" py={6}>
-                  <Typography color="text.secondary" variant="h6">Không có sinh viên nào trong phòng thi này</Typography>
+                  <Typography color="text.secondary" variant="h6">
+                    Không có sinh viên nào trong phòng thi này
+                  </Typography>
                 </Box>
               ) : (
                 <Grid container spacing={1.5}>
@@ -400,15 +457,32 @@ export default function TeacherExamRoomTrackingPage() {
                                     {`PC-${String(idx + 1).padStart(2, '0')}`}
                                   </Typography>
                                   <Stack direction="row" spacing={0.5} alignItems="center">
-                                    {isLocked && <Box sx={{ color: 'warning.main', display: 'flex', alignItems: 'center' }}><Lock1 size={12} /></Box>}
-                                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: isViolation ? 'error.main' : isOnline ? 'success.main' : 'text.disabled' }} />
+                                    {isLocked && (
+                                      <Box sx={{ color: 'warning.main', display: 'flex', alignItems: 'center' }}>
+                                        <Lock1 size={12} />
+                                      </Box>
+                                    )}
+                                    <Box
+                                      sx={{
+                                        width: 8,
+                                        height: 8,
+                                        borderRadius: '50%',
+                                        bgcolor: isViolation ? 'error.main' : isOnline ? 'success.main' : 'text.disabled'
+                                      }}
+                                    />
                                   </Stack>
                                 </Stack>
-                                <Typography variant="body2" fontWeight="bold" noWrap title={student.fullName}>{student.fullName}</Typography>
-                                <Typography variant="caption" color="text.secondary">{student.code}</Typography>
+                                <Typography variant="body2" fontWeight="bold" noWrap title={student.fullName}>
+                                  {student.fullName}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                  {student.code}
+                                </Typography>
                                 <Divider />
                                 {isViolation ? (
-                                  <Typography variant="caption" color="error.main" noWrap fontWeight="medium">{latestEntry!.applicationName}</Typography>
+                                  <Typography variant="caption" color="error.main" noWrap fontWeight="medium">
+                                    {latestEntry!.applicationName}
+                                  </Typography>
                                 ) : !isOnline ? (
                                   <Typography variant="caption" color="text.disabled" sx={{ fontStyle: 'italic' }}>
                                     {student.appHistory.length === 0 ? 'Chưa kết nối' : 'Offline'}
@@ -451,26 +525,70 @@ export default function TeacherExamRoomTrackingPage() {
                   }}
                 >
                   {activityFeed.length === 0 ? (
-                    <Typography variant="caption" color="text.disabled" sx={{ fontStyle: 'italic' }}>Chưa có hoạt động</Typography>
+                    <Typography variant="caption" color="text.disabled" sx={{ fontStyle: 'italic' }}>
+                      Chưa có hoạt động
+                    </Typography>
                   ) : (
                     <Stack spacing={0}>
                       {activityFeed.map((entry, feedIdx) => (
-                        <Stack key={feedIdx} direction="row" spacing={1} alignItems="flex-start" sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
-                          <Typography variant="caption" color="text.disabled" sx={{ fontFamily: 'monospace', flexShrink: 0, lineHeight: 1.8 }}>
+                        <Stack
+                          key={feedIdx}
+                          direction="row"
+                          spacing={1}
+                          alignItems="flex-start"
+                          sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider' }}
+                        >
+                          <Typography
+                            variant="caption"
+                            color="text.disabled"
+                            sx={{ fontFamily: 'monospace', flexShrink: 0, lineHeight: 1.8 }}
+                          >
                             {formatTime(entry.createdAt)}
                           </Typography>
                           <Box
                             sx={{
-                              width: 6, height: 6, borderRadius: '50%', flexShrink: 0, mt: '5px',
-                              bgcolor: entry.eventType === 'connect' ? 'success.main' : entry.eventType === 'disconnect' ? 'warning.main' : entry.banApplication ? 'error.main' : 'primary.main'
+                              width: 6,
+                              height: 6,
+                              borderRadius: '50%',
+                              flexShrink: 0,
+                              mt: '5px',
+                              bgcolor:
+                                entry.eventType === 'connect'
+                                  ? 'success.main'
+                                  : entry.eventType === 'disconnect'
+                                    ? 'warning.main'
+                                    : entry.banApplication
+                                      ? 'error.main'
+                                      : 'primary.main'
                             }}
                           />
                           <Typography
                             variant="caption"
-                            color={entry.eventType === 'connect' ? 'success.main' : entry.eventType === 'disconnect' ? 'warning.main' : entry.banApplication ? 'error.main' : 'text.primary'}
+                            color={
+                              entry.eventType === 'connect'
+                                ? 'success.main'
+                                : entry.eventType === 'disconnect'
+                                  ? 'warning.main'
+                                  : entry.banApplication
+                                    ? 'error.main'
+                                    : 'text.primary'
+                            }
                             sx={{ lineHeight: 1.6 }}
                           >
-                            {entry.eventType === 'connect' ? <><strong>{entry.studentName}</strong> đã kết nối</> : entry.eventType === 'disconnect' ? <><strong>{entry.studentName}</strong> đã ngắt kết nối</> : <><strong>{entry.studentName}</strong> mở {entry.applicationName}{entry.banApplication ? ' ⚠️ vi phạm' : ''}</>}
+                            {entry.eventType === 'connect' ? (
+                              <>
+                                <strong>{entry.studentName}</strong> đã kết nối
+                              </>
+                            ) : entry.eventType === 'disconnect' ? (
+                              <>
+                                <strong>{entry.studentName}</strong> đã ngắt kết nối
+                              </>
+                            ) : (
+                              <>
+                                <strong>{entry.studentName}</strong> mở {entry.applicationName}
+                                {entry.banApplication ? ' ⚠️ vi phạm' : ''}
+                              </>
+                            )}
                           </Typography>
                         </Stack>
                       ))}
@@ -484,7 +602,9 @@ export default function TeacherExamRoomTrackingPage() {
             {rightTab === 1 && (
               <Box sx={{ p: 2 }}>
                 <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5 }}>
-                  <Typography variant="body2" color="text.secondary">Ứng dụng được phép sử dụng</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Ứng dụng được phép sử dụng
+                  </Typography>
                   <Button size="small" variant="contained" startIcon={<Add size={14} />} onClick={() => setAddAppDialogOpen(true)}>
                     Thêm
                   </Button>
@@ -507,10 +627,7 @@ export default function TeacherExamRoomTrackingPage() {
                           }
                           sx={{ py: 0.5, borderBottom: '1px solid', borderColor: 'divider' }}
                         >
-                          <ListItemText
-                            primary={app.applicationName}
-                            primaryTypographyProps={{ variant: 'body2', noWrap: true }}
-                          />
+                          <ListItemText primary={app.applicationName} primaryTypographyProps={{ variant: 'body2', noWrap: true }} />
                         </ListItem>
                       ))}
                     </List>
@@ -523,41 +640,103 @@ export default function TeacherExamRoomTrackingPage() {
       </Stack>
 
       {/* Veyon key import dialog (reuse existing) */}
-      {examRoomId && (
-        <ImportVeyonKeyDialog
-          open={importKeyOpen}
-          onClose={() => setImportKeyOpen(false)}
-          classId={examRoomId}
-          isExamRoom
-        />
-      )}
+      {examRoomId && <ImportVeyonKeyDialog open={importKeyOpen} onClose={() => setImportKeyOpen(false)} classId={examRoomId} isExamRoom />}
 
       {/* Add allowed app dialog */}
-      <Dialog open={addAppDialogOpen} onClose={() => { setAddAppDialogOpen(false); setNewAppName(''); setNewAppImageUrl(''); }} maxWidth="xs" fullWidth slotProps={{ paper: { sx: { borderRadius: 3 } } }}>
+      <Dialog
+        open={addAppDialogOpen}
+        onClose={() => {
+          setAddAppDialogOpen(false);
+          setNewAppName('');
+          setNewAppImageUrl('');
+        }}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{ paper: { sx: { borderRadius: 3 } } }}
+      >
         <DialogTitle>Thêm ứng dụng được phép</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
-            <TextField autoFocus fullWidth label="Tên ứng dụng" placeholder="VD: Chrome, Word, Calculator..." value={newAppName} onChange={(e) => setNewAppName(e.target.value)} />
-            <TextField fullWidth label="URL hình ảnh (tuỳ chọn)" placeholder="https://..." value={newAppImageUrl} onChange={(e) => setNewAppImageUrl(e.target.value)} />
+            <TextField
+              autoFocus
+              fullWidth
+              label="Tên ứng dụng"
+              placeholder="VD: Chrome, Word, Calculator..."
+              value={newAppName}
+              onChange={(e) => setNewAppName(e.target.value)}
+            />
+            <TextField
+              fullWidth
+              label="URL hình ảnh (tuỳ chọn)"
+              placeholder="https://..."
+              value={newAppImageUrl}
+              onChange={(e) => setNewAppImageUrl(e.target.value)}
+            />
           </Stack>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2.5 }}>
-          <Button onClick={() => { setAddAppDialogOpen(false); setNewAppName(''); setNewAppImageUrl(''); }} disabled={addAppLoading}>Hủy</Button>
-          <Button variant="contained" onClick={handleAddApp} disabled={addAppLoading || !newAppName.trim()} startIcon={addAppLoading ? <CircularProgress size={14} color="inherit" /> : <Add size={15} />}>
+          <Button
+            onClick={() => {
+              setAddAppDialogOpen(false);
+              setNewAppName('');
+              setNewAppImageUrl('');
+            }}
+            disabled={addAppLoading}
+          >
+            Hủy
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleAddApp}
+            disabled={addAppLoading || !newAppName.trim()}
+            startIcon={addAppLoading ? <CircularProgress size={14} color="inherit" /> : <Add size={15} />}
+          >
             Thêm
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Send message dialog */}
-      <Dialog open={msgDialogOpen} onClose={() => { setMsgDialogOpen(false); setMsgInput(''); }} maxWidth="xs" fullWidth slotProps={{ paper: { sx: { borderRadius: 3 } } }}>
+      <Dialog
+        open={msgDialogOpen}
+        onClose={() => {
+          setMsgDialogOpen(false);
+          setMsgInput('');
+        }}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{ paper: { sx: { borderRadius: 3 } } }}
+      >
         <DialogTitle>Gửi thông báo tới cả phòng thi</DialogTitle>
         <DialogContent>
-          <TextField autoFocus fullWidth multiline rows={3} label="Nội dung thông báo" placeholder="Nhập nội dung..." value={msgInput} onChange={(e) => setMsgInput(e.target.value)} sx={{ mt: 1 }} />
+          <TextField
+            autoFocus
+            fullWidth
+            multiline
+            rows={3}
+            label="Nội dung thông báo"
+            placeholder="Nhập nội dung..."
+            value={msgInput}
+            onChange={(e) => setMsgInput(e.target.value)}
+            sx={{ mt: 1 }}
+          />
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2.5 }}>
-          <Button onClick={() => { setMsgDialogOpen(false); setMsgInput(''); }} disabled={msgLoading}>Hủy</Button>
-          <Button variant="contained" onClick={handleSendMessageToExamRoom} disabled={msgLoading || !msgInput.trim()} startIcon={msgLoading ? <CircularProgress size={14} color="inherit" /> : <MessageText size={15} />}>
+          <Button
+            onClick={() => {
+              setMsgDialogOpen(false);
+              setMsgInput('');
+            }}
+            disabled={msgLoading}
+          >
+            Hủy
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleSendMessageToExamRoom}
+            disabled={msgLoading || !msgInput.trim()}
+            startIcon={msgLoading ? <CircularProgress size={14} color="inherit" /> : <MessageText size={15} />}
+          >
             Gửi
           </Button>
         </DialogActions>
@@ -579,10 +758,12 @@ export default function TeacherExamRoomTrackingPage() {
                 Cách thiết lập
               </Typography>
               <Typography variant="caption" color="text.secondary" display="block">
-                Đặt tên hotspot điện thoại hoặc máy tính của bạn <strong>chính xác bằng mã bên dưới</strong> — sinh viên sẽ tự động xác minh được vị trí khi đăng nhập.
+                Đặt tên hotspot điện thoại hoặc máy tính của bạn <strong>chính xác bằng mã bên dưới</strong> — sinh viên sẽ tự động xác minh
+                được vị trí khi đăng nhập.
               </Typography>
               <Typography variant="caption" color="text.disabled" display="block" sx={{ mt: 0.75 }}>
-                Nếu sinh viên không nhận diện được WiFi, chiếu mã lên màn hình để họ nhập thủ công qua tùy chọn "Đăng nhập bằng mã truy cập".
+                Nếu sinh viên không nhận diện được WiFi, chiếu mã lên màn hình để họ nhập thủ công qua tùy chọn "Đăng nhập bằng mã truy
+                cập".
               </Typography>
             </Box>
             <Stack direction="row" spacing={1} alignItems="center">
@@ -618,7 +799,9 @@ export default function TeacherExamRoomTrackingPage() {
           </Stack>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2.5 }}>
-          <Button onClick={() => setAccessCodeDialogOpen(false)} disabled={accessCodeLoading}>Đóng</Button>
+          <Button onClick={() => setAccessCodeDialogOpen(false)} disabled={accessCodeLoading}>
+            Đóng
+          </Button>
           <Button
             variant="contained"
             onClick={handleSaveAccessCode}
@@ -631,14 +814,47 @@ export default function TeacherExamRoomTrackingPage() {
       </Dialog>
 
       {/* Open website dialog */}
-      <Dialog open={openWebDialogOpen} onClose={() => { setOpenWebDialogOpen(false); setWebUrlInput(''); }} maxWidth="xs" fullWidth slotProps={{ paper: { sx: { borderRadius: 3 } } }}>
+      <Dialog
+        open={openWebDialogOpen}
+        onClose={() => {
+          setOpenWebDialogOpen(false);
+          setWebUrlInput('');
+        }}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{ paper: { sx: { borderRadius: 3 } } }}
+      >
         <DialogTitle>Mở trang web cho cả phòng thi</DialogTitle>
         <DialogContent>
-          <TextField autoFocus fullWidth label="Địa chỉ trang web" placeholder="https://example.com" value={webUrlInput} onChange={(e) => setWebUrlInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') handleOpenWebForExamRoom(); }} sx={{ mt: 1 }} />
+          <TextField
+            autoFocus
+            fullWidth
+            label="Địa chỉ trang web"
+            placeholder="https://example.com"
+            value={webUrlInput}
+            onChange={(e) => setWebUrlInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleOpenWebForExamRoom();
+            }}
+            sx={{ mt: 1 }}
+          />
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2.5 }}>
-          <Button onClick={() => { setOpenWebDialogOpen(false); setWebUrlInput(''); }} disabled={webUrlLoading}>Hủy</Button>
-          <Button variant="contained" onClick={handleOpenWebForExamRoom} disabled={webUrlLoading || !webUrlInput.trim()} startIcon={webUrlLoading ? <CircularProgress size={14} color="inherit" /> : <Global size={15} />}>
+          <Button
+            onClick={() => {
+              setOpenWebDialogOpen(false);
+              setWebUrlInput('');
+            }}
+            disabled={webUrlLoading}
+          >
+            Hủy
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleOpenWebForExamRoom}
+            disabled={webUrlLoading || !webUrlInput.trim()}
+            startIcon={webUrlLoading ? <CircularProgress size={14} color="inherit" /> : <Global size={15} />}
+          >
             Mở web
           </Button>
         </DialogActions>

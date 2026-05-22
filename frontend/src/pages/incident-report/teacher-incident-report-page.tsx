@@ -110,9 +110,7 @@ function IncidentReportFormDialog({
   report: IncidentReport | null;
   reload: boolean;
   setReload: (e: boolean) => void;
-  setAlert: React.Dispatch<
-    React.SetStateAction<{ open: boolean; message: string; severity: 'success' | 'error' | 'info' | 'warning' }>
-  >;
+  setAlert: React.Dispatch<React.SetStateAction<{ open: boolean; message: string; severity: 'success' | 'error' | 'info' | 'warning' }>>;
 }) {
   const { logout } = useAuth();
   const [title, setTitle] = useState('');
@@ -253,13 +251,7 @@ function IncidentReportFormDialog({
 
 // ==============================|| EDIT ACTION ||============================== //
 
-function EditAction({
-  row,
-  onEdit
-}: {
-  row: Row<IncidentReport>;
-  onEdit: (report: IncidentReport) => void;
-}) {
+function EditAction({ row, onEdit }: { row: Row<IncidentReport>; onEdit: (report: IncidentReport) => void }) {
   if (row.original.status !== 0) return null;
 
   return (
@@ -470,7 +462,7 @@ export default function TeacherIncidentReportPage() {
         meta: { className: 'cell-center', width: '10%' }
       }
     ],
-    [reload]
+    []
   );
 
   const options: number[] = [10, 25, 50, 100];
@@ -674,7 +666,10 @@ export default function TeacherIncidentReportPage() {
 
             <Select
               value={statusFilter}
-              onChange={(e) => { setStatusFilter(e.target.value); setPage(0); }}
+              onChange={(e) => {
+                setStatusFilter(e.target.value);
+                setPage(0);
+              }}
               displayEmpty
               input={<OutlinedInput />}
               slotProps={{ input: { 'aria-label': 'Status Filter' } }}

@@ -60,7 +60,19 @@ import IconButton from 'components/@extended/IconButton';
 import { EmptyTable, HeaderSort, RowEditable } from 'components/third-party/react-table';
 
 import { ArrowDown2, ArrowRight2, Command, TableDocument, TickCircle, CloseCircle } from 'iconsax-reactjs';
-import { Alert, Button, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, Grid, Snackbar } from '@mui/material';
+import {
+  Alert,
+  Button,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControl,
+  Grid,
+  Snackbar
+} from '@mui/material';
 import { useIntl } from 'react-intl';
 import { HttpStatusCode } from 'axios';
 import useAuth from 'hooks/useAuth';
@@ -137,9 +149,7 @@ function RowActions({
   row: Row<IncidentReport>;
   reload: boolean;
   setReload: (e: boolean) => void;
-  setAlert: React.Dispatch<
-    React.SetStateAction<{ open: boolean; message: string; severity: 'success' | 'error' | 'info' | 'warning' }>
-  >;
+  setAlert: React.Dispatch<React.SetStateAction<{ open: boolean; message: string; severity: 'success' | 'error' | 'info' | 'warning' }>>;
 }) {
   const { logout } = useAuth();
   const [working, setWorking] = useState(false);
@@ -441,9 +451,17 @@ export default function ItCenterIncidentReportPage() {
   const [globalFilter, setGlobalFilter] = useState('');
 
   const location = useLocation();
-  const [columnOrder, setColumnOrder] = useState<string[]>(() =>
-    ['id', 'title', 'roomName', 'reporter', 'reporterRole', 'status', 'handlerName', 'createdAt', 'edit']
-  );
+  const [columnOrder, setColumnOrder] = useState<string[]>(() => [
+    'id',
+    'title',
+    'roomName',
+    'reporter',
+    'reporterRole',
+    'status',
+    'handlerName',
+    'createdAt',
+    'edit'
+  ]);
   const dataIds = useMemo<UniqueIdentifier[]>(() => data?.map(({ id }: any) => id), [data]);
 
   const [rowSelection, setRowSelection] = useState({});
@@ -629,7 +647,10 @@ export default function ItCenterIncidentReportPage() {
 
             <Select
               value={statusFilter}
-              onChange={(e) => { setStatusFilter(e.target.value); setPage(0); }}
+              onChange={(e) => {
+                setStatusFilter(e.target.value);
+                setPage(0);
+              }}
               displayEmpty
               input={<OutlinedInput />}
               slotProps={{ input: { 'aria-label': 'Status Filter' } }}
@@ -643,7 +664,10 @@ export default function ItCenterIncidentReportPage() {
 
             <Select
               value={roomFilter}
-              onChange={(e) => { setRoomFilter(e.target.value); setPage(0); }}
+              onChange={(e) => {
+                setRoomFilter(e.target.value);
+                setPage(0);
+              }}
               displayEmpty
               input={<OutlinedInput />}
               slotProps={{ input: { 'aria-label': 'Room Filter' } }}
