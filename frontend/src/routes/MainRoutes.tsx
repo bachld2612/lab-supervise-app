@@ -68,6 +68,7 @@ const PersonalComputerPage = Loadable(lazy(() => import('pages/teacher/personal-
 const RoomPage = Loadable(lazy(() => import('pages/room/room-page')));
 const ItCenterIncidentReportPage = Loadable(lazy(() => import('pages/incident-report/it-center-incident-report-page')));
 const TeacherIncidentReportPage = Loadable(lazy(() => import('pages/incident-report/teacher-incident-report-page')));
+const StudentPcManagementPage = Loadable(lazy(() => import('pages/pc-management/student-pc-management-page')));
 
 // ==============================|| MAIN ROUTES ||============================== //
 
@@ -261,6 +262,10 @@ const MainRoutes = {
         {
           path: 'incident-report/teacher',
           element: <TeacherIncidentReportPage />
+        },
+        {
+          path: 'pc-management',
+          element: <StudentPcManagementPage />
         }
       ]
     },

@@ -1,5 +1,5 @@
 // assets
-import { Buildings, Danger } from 'iconsax-reactjs';
+import { Buildings, Danger, Cpu } from 'iconsax-reactjs';
 
 // types
 import { NavItemType } from 'types/menu';
@@ -7,7 +7,8 @@ import { NavItemType } from 'types/menu';
 // icons
 const icons = {
   room: Buildings,
-  incident: Danger
+  incident: Danger,
+  cpu: Cpu
 };
 
 // ==============================|| MENU ITEMS - IT CENTER ||============================== //
@@ -30,6 +31,13 @@ const itCenterMenu: NavItemType = {
       type: 'item',
       url: '/incident-report',
       icon: icons.incident
+    },
+    {
+      id: 'pc-management',
+      title: 'Quản lý máy tính sinh viên',
+      type: 'item',
+      url: '/pc-management',
+      icon: icons.cpu
     }
   ]
 };

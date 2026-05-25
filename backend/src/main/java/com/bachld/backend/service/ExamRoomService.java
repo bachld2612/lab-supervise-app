@@ -71,6 +71,11 @@ public class ExamRoomService {
 
     public List<ExamRoomResponse> getTeacherExamRooms() {
         User currentUser = util.getCurrentUser();
+        if (com.bachld.backend.util.enums.Role.IT_CENTER.getValue() == currentUser.getRoleId()) {
+            List<ExamRoomResponse> rooms = examRoomRepository.findAllActive();
+            fillStudyStatus(rooms);
+            return rooms;
+        }
         Teacher teacher = teacherRepository.findByUserId(currentUser.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy giảng viên"));
         List<ExamRoomResponse> rooms = examRoomRepository.findByTeacher(teacher.getId());

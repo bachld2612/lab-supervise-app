@@ -38,10 +38,10 @@ const teacherMenu: NavItemType = {
       icon: icons.stop
     },
     {
-      id: 'personal-computer',
-      title: 'Quản lý máy tính cá nhân',
+      id: 'pc-management',
+      title: 'Quản lý máy tính sinh viên',
       type: 'item',
-      url: 'teacher/personal-computer',
+      url: 'pc-management',
       icon: icons.cpu
     },
     {

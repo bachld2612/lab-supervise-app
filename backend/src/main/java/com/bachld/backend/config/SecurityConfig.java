@@ -60,7 +60,8 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
-                                "/ws/**"
+                                "/ws/**",
+                                "/vnc-relay/**"
                         ).permitAll()
 
                         // Role-based endpoints

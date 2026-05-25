@@ -2,9 +2,6 @@ package com.bachld.model.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * Payload for real-time tracking via WebSocket.
- */
 public class PCInfoPayload {
 
     @JsonProperty("applicationName")
@@ -17,11 +14,6 @@ public class PCInfoPayload {
         this.applicationName = applicationName;
     }
 
-    public String getApplicationName() {
-        return applicationName;
-    }
-
-    public void setApplicationName(String applicationName) {
-        this.applicationName = applicationName;
-    }
+    public String getApplicationName() { return applicationName; }
+    public void setApplicationName(String applicationName) { this.applicationName = applicationName; }
 }

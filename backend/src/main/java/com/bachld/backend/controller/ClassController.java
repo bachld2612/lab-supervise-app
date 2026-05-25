@@ -38,7 +38,7 @@ public class ClassController {
     }
 
     @GetMapping("/v1")
-    @AuthFilter(role = "ADMIN")
+    @AuthFilter(role = "ADMIN,IT_CENTER")
     public ResponseEntity<?> getList(
             @PageableDefault Pageable pageable,
             @RequestParam(required = false) String keyword,
@@ -81,7 +81,7 @@ public class ClassController {
     }
 
     @GetMapping("/v1/teacher")
-    @AuthFilter(role = "TEACHER")
+    @AuthFilter(role = "TEACHER,IT_CENTER")
     public ResponseEntity<?> getListByTeacherUserId() {
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), classService.getListByTeacherUserId()));
     }

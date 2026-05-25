@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Card,
-  CardContent,
   Chip,
   CircularProgress,
   Dialog,
@@ -20,13 +19,35 @@ import {
   Typography
 } from '@mui/material';
 import MainCard from 'components/MainCard';
+import VncViewer from 'components/VncViewer';
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useClassTracking, StudentTrackingState } from 'hooks/useClassTracking';
-import { ArrowLeft, Copy, DocumentUpload, ExportCurve, Global, ImportCurve, Key, Lock1, MessageText, Refresh, Timer1, Wifi } from 'iconsax-reactjs';
+import {
+  ArrowLeft,
+  Copy,
+  DocumentUpload,
+  ExportCurve,
+  Global,
+  ImportCurve,
+  Key,
+  Lock1,
+  MessageText,
+  Refresh,
+  Timer1,
+  Wifi
+} from 'iconsax-reactjs';
 import { useNavigate, useParams } from 'react-router';
 import StudentActionDialog from 'sections/extra-pages/class/student-action-dialog';
 import ImportVeyonKeyDialog from 'sections/extra-pages/class/import-veyon-key-dialog';
-import { importStudentIntoClass, downloadClassStudentImportTemplate, sendFileToClass, getClassStudyStatus, getById, updateWifiSsid, generateWifiSsid } from 'api/class';
+import {
+  importStudentIntoClass,
+  downloadClassStudentImportTemplate,
+  sendFileToClass,
+  getClassStudyStatus,
+  getById,
+  updateWifiSsid,
+  generateWifiSsid
+} from 'api/class';
 import { openWebsiteForClass, sendMessageToClass } from 'api/veyon';
 import { HttpStatusCode } from 'axios';
 import useAuth from 'hooks/useAuth';
@@ -468,72 +489,64 @@ export default function TeacherClassTrackingPage() {
                 </Box>
               ) : (
                 <Grid container spacing={1.5}>
-                  {students.map((student, idx) => {
+                  {students.map((student) => {
                     const isLocked = lockedStudents.has(student.userId);
                     const isOnline = connectedStudentIds.has(student.studentId);
                     const latestEntry = student.appHistory.find((e) => !e.connectionType) ?? null;
                     const isBanned = isOnline && latestEntry?.banApplication === true;
+                    const borderColor = isBanned ? 'error.main' : isOnline ? 'success.main' : 'divider';
+                    const dotColor = isBanned ? 'error.main' : isOnline ? 'success.main' : 'text.disabled';
                     return (
-                      <Grid key={student.studentId} size={{ xs: 12, sm: 6, md: 3 }}>
-                        <Tooltip title="Bấm để xem chi tiết và điều khiển máy" placement="top" arrow>
-                          <Card
-                            onClick={() => handleCardClick(student)}
+                      <Grid key={student.studentId} size={{ xs: 12, sm: 6 }}>
+                        <Card
+                          sx={{
+                            border: '2px solid',
+                            borderColor,
+                            borderRadius: 2,
+                            bgcolor: isBanned ? 'rgba(255,86,48,0.04)' : 'background.paper',
+                            overflow: 'hidden'
+                          }}
+                        >
+                          {/* Header */}
+                          <Box
                             sx={{
-                              border: '2px solid',
-                              borderColor: isBanned ? 'error.main' : isOnline ? 'success.main' : 'divider',
-                              borderRadius: 2,
-                              cursor: 'pointer',
-                              bgcolor: isBanned ? 'rgba(255,86,48,0.08)' : 'background.paper',
-                              transition: 'transform 0.15s, box-shadow 0.15s',
-                              '&:hover': { transform: 'translateY(-2px)', boxShadow: 3 }
+                              px: 1.5,
+                              py: 0.75,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              borderBottom: '1px solid',
+                              borderColor: 'divider',
+                              minHeight: 40
                             }}
                           >
-                            <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
-                              <Stack spacing={0.75}>
-                                <Stack direction="row" alignItems="center" justifyContent="space-between">
-                                  <Typography variant="caption" color="text.disabled" fontFamily="monospace" fontWeight="bold">
-                                    {`PC-${String(idx + 1).padStart(2, '0')}`}
-                                  </Typography>
-                                  <Stack direction="row" spacing={0.5} alignItems="center">
-                                    {isLocked && (
-                                      <Box sx={{ color: 'warning.main', display: 'flex', alignItems: 'center' }}>
-                                        <Lock1 size={12} />
-                                      </Box>
-                                    )}
-                                    <Box
-                                      sx={{
-                                        width: 8,
-                                        height: 8,
-                                        borderRadius: '50%',
-                                        bgcolor: isBanned ? 'error.main' : isOnline ? 'success.main' : 'text.disabled'
-                                      }}
-                                    />
-                                  </Stack>
-                                </Stack>
-                                <Typography variant="body2" fontWeight="bold" noWrap title={student.fullName}>
-                                  {student.fullName}
-                                </Typography>
-                                <Typography variant="caption" color="text.secondary">
-                                  {student.code}
-                                </Typography>
-                                <Divider />
-                                {isBanned ? (
-                                  <Typography variant="caption" color="error.main" noWrap fontWeight="medium">
-                                    {latestEntry.applicationName}
-                                  </Typography>
-                                ) : !isOnline ? (
-                                  <Typography variant="caption" color="text.disabled" sx={{ fontStyle: 'italic' }}>
-                                    {student.appHistory.length === 0 ? 'Chưa kết nối' : 'Offline'}
-                                  </Typography>
-                                ) : (
-                                  <Typography variant="caption" color={latestEntry ? 'primary.main' : 'text.disabled'} noWrap>
-                                    {latestEntry?.applicationName ?? 'Chưa có dữ liệu'}
-                                  </Typography>
-                                )}
-                              </Stack>
-                            </CardContent>
-                          </Card>
-                        </Tooltip>
+                            <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0, flex: 1 }}>
+                              <Box sx={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, bgcolor: dotColor }} />
+                              {isLocked && (
+                                <Box sx={{ color: 'warning.main', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+                                  <Lock1 size={12} />
+                                </Box>
+                              )}
+                              <Typography variant="body2" fontWeight="bold" noWrap sx={{ flex: 1 }}>
+                                {student.fullName}
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary" noWrap sx={{ flexShrink: 0 }}>
+                                {student.code}
+                              </Typography>
+                            </Stack>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              onClick={() => handleCardClick(student)}
+                              sx={{ ml: 1, flexShrink: 0, py: 0.25, px: 1, fontSize: '0.7rem', lineHeight: 1.5 }}
+                            >
+                              Chi tiết
+                            </Button>
+                          </Box>
+
+                          {/* VNC screen */}
+                          {classId && <VncViewer classId={classId} studentUserId={student.userId} isOnline={isOnline} />}
+                        </Card>
                       </Grid>
                     );
                   })}
@@ -674,10 +687,12 @@ export default function TeacherClassTrackingPage() {
                 Cách thiết lập
               </Typography>
               <Typography variant="caption" color="text.secondary" display="block">
-                Đặt tên hotspot điện thoại hoặc máy tính của bạn <strong>chính xác bằng mã bên dưới</strong> — sinh viên sẽ tự động xác minh được vị trí khi đăng nhập.
+                Đặt tên hotspot điện thoại hoặc máy tính của bạn <strong>chính xác bằng mã bên dưới</strong> — sinh viên sẽ tự động xác minh
+                được vị trí khi đăng nhập.
               </Typography>
               <Typography variant="caption" color="text.disabled" display="block" sx={{ mt: 0.75 }}>
-                Nếu sinh viên không nhận diện được WiFi, chiếu mã lên màn hình để họ nhập thủ công qua tùy chọn "Đăng nhập bằng mã truy cập".
+                Nếu sinh viên không nhận diện được WiFi, chiếu mã lên màn hình để họ nhập thủ công qua tùy chọn "Đăng nhập bằng mã truy
+                cập".
               </Typography>
             </Box>
 

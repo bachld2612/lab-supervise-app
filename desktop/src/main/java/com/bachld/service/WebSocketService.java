@@ -108,19 +108,12 @@ public class WebSocketService {
         }
     }
 
-    /**
-     * Sends the currently active application name to the server.
-     * @param applicationName the name of the active window/application
-     */
     public void sendPCInfo(String applicationName) {
         if (stompSession != null && stompSession.isConnected()) {
             PCInfoPayload payload = new PCInfoPayload(applicationName);
-            // Sending to /app prefix triggers @MessageMapping in Spring controller
             stompSession.send("/app/pc-info", payload);
         } else {
             log.warn("WebSocket disconnected. PC info update lost: {}", applicationName);
-            // Attempt to reconnect in background if allowed by business logic
-            // for now just log and wait for next event or manual reconnect
         }
     }
 

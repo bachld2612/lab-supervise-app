@@ -24,6 +24,7 @@ public class MainFrame extends JFrame {
     private final com.bachld.service.SemesterService semesterService;
     private final UserService userService;
     private com.bachld.service.TrackingService trackingService;
+    private final com.bachld.service.VncService vncService = new com.bachld.service.VncService();
     private JPanel contentArea;
     private CardLayout cardLayout;
     private SidebarPanel sidebarPanel;
@@ -55,6 +56,11 @@ public class MainFrame extends JFrame {
         if (this.trackingService != null) {
             this.trackingService.start();
         }
+
+        Runtime.getRuntime().addShutdownHook(new Thread(vncService::stop));
+        Thread vncThread = new Thread(vncService::start, "vnc-start");
+        vncThread.setDaemon(true);
+        vncThread.start();
 
         initFrame();
         setupSystemTray();
@@ -158,6 +164,7 @@ public class MainFrame extends JFrame {
         if (webSocketService != null) {
             webSocketService.disconnect();
         }
+        vncService.stop();
         com.bachld.service.TokenManager.getInstance().clearToken();
         removeTrayIcon();
         System.exit(0);
@@ -253,6 +260,7 @@ public class MainFrame extends JFrame {
             if (webSocketService != null) {
                 webSocketService.disconnect();
             }
+            vncService.stop();
             com.bachld.service.TokenManager.getInstance().clearToken();
             removeTrayIcon();
             this.dispose();
@@ -315,26 +323,23 @@ public class MainFrame extends JFrame {
     }
 
     private void showIpExistsDialog(String storedIp) {
-        int choice = JOptionPane.showConfirmDialog(
+        JOptionPane.showMessageDialog(
                 this,
-                "Thông tin địa chỉ IP hiện tại của bạn là: " + storedIp + "\nBạn có muốn cập nhật không?",
+                "Địa chỉ IP hiện tại của bạn là: " + storedIp
+                        + "\nNếu địa chỉ IP chưa chính xác, vui lòng báo cáo lại giáo viên để được thay đổi.",
                 "Thông tin địa chỉ IP",
-                JOptionPane.YES_NO_OPTION,
                 JOptionPane.INFORMATION_MESSAGE
         );
-        if (choice == JOptionPane.YES_OPTION) {
-            showPage("PC_MGMT");
-        }
     }
 
     private void showIpMissingDialog() {
         JOptionPane.showMessageDialog(
                 this,
-                "Bạn chưa cập nhật địa chỉ IP, vui lòng cập nhật ngay.",
+                "Chưa có thông tin địa chỉ IP cho máy tính của bạn."
+                        + "\nVui lòng báo cáo lại giáo viên để được cập nhật.",
                 "Chưa có địa chỉ IP",
                 JOptionPane.WARNING_MESSAGE
         );
-        showPage("PC_MGMT");
     }
 
     public void showPage(String pageId) {

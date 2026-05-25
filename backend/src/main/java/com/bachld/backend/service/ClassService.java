@@ -238,6 +238,9 @@ public class ClassService {
 
     public List<ClassResponse> getListByTeacherUserId() {
         User currentUser = util.getCurrentUser();
+        if (com.bachld.backend.util.enums.Role.IT_CENTER.getValue() == currentUser.getRoleId()) {
+            return classRepository.findAllActiveClasses();
+        }
         LocalDate today = LocalDate.now();
         List<ClassResponse> response = classRepository.findActiveClassByTeacherUserId(currentUser.getId(), today);
 
