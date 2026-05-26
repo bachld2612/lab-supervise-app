@@ -12,15 +12,18 @@ import com.bachld.backend.repository.StudentExamRoomRepository;
 import com.bachld.backend.repository.StudentRepository;
 import com.bachld.backend.repository.UserRepository;
 import com.bachld.backend.util.Util;
+import com.bachld.backend.util.VncPasswordCipher;
 import com.bachld.backend.util.enums.Status;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -31,6 +34,7 @@ public class PersonalComputerService {
     StudentExamRoomRepository studentExamRoomRepository;
     StudentRepository studentRepository;
     UserRepository userRepository;
+    VncPasswordCipher vncPasswordCipher;
     Util util;
 
     public void update(PersonalComputerUpdateRequest request) {
@@ -50,6 +54,12 @@ public class PersonalComputerService {
                 });
 
         pc.setIpAddress(request.getIpAddress());
+
+        if (request.getVncPassword() != null && !request.getVncPassword().isBlank()) {
+            pc.setVncPasswordEncrypted(request.getVncPassword());
+            log.info("VNC password updated for user {} via /v1/update", userId);
+        }
+
         personalComputerRepository.save(pc);
     }
 
@@ -76,6 +86,34 @@ public class PersonalComputerService {
                 .map(ser -> buildStudentPcInfo(ser.getStudentId()))
                 .filter(r -> r != null)
                 .collect(Collectors.toList());
+    }
+
+    public void registerVncPassword(String vncPasswordPlaintext) {
+        User currentUser = util.getCurrentUser();
+        if (currentUser == null) {
+            throw new IllegalArgumentException("Người dùng không hợp lệ");
+        }
+
+        Integer userId = currentUser.getId();
+
+        PersonalComputer pc = personalComputerRepository.findByUserId(userId)
+                .orElseGet(() -> {
+                    PersonalComputer newPc = new PersonalComputer();
+                    newPc.setUserId(userId);
+                    newPc.setStatus(Status.ACTIVE.getValue());
+                    return newPc;
+                });
+
+        pc.setVncPasswordEncrypted(vncPasswordPlaintext);
+        personalComputerRepository.save(pc);
+        log.info("VNC password registered for user {}", userId);
+    }
+
+    public String resolveVncPasswordByUserId(Integer userId) {
+        return personalComputerRepository.findByUserId(userId)
+                .map(PersonalComputer::getVncPasswordEncrypted)
+                .filter(pwd -> pwd != null && !pwd.isEmpty())
+                .orElse(null);
     }
 
     public void updateStudentPcByUserId(Integer targetUserId, String ipAddress) {

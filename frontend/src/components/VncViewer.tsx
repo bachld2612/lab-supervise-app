@@ -1,11 +1,12 @@
 import { Box, CircularProgress, Typography } from '@mui/material';
-import { createVncSession } from 'api/vnc';
+import { createExamRoomVncSession, createVncSession } from 'api/vnc';
 import { useEffect, useRef, useState } from 'react';
 
 interface VncViewerProps {
   classId: number;
   studentUserId: number;
   isOnline: boolean;
+  mode?: 'class' | 'exam-room';
 }
 
 type Status = 'idle' | 'connecting' | 'connected' | 'error';
@@ -21,7 +22,7 @@ const WS_BASE = (() => {
 const MAX_RETRIES = 5;
 const RETRY_DELAY_MS = 3000;
 
-export default function VncViewer({ classId, studentUserId, isOnline }: VncViewerProps) {
+export default function VncViewer({ classId, studentUserId, isOnline, mode = 'class' }: VncViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const rfbRef = useRef<InstanceType<typeof import('@novnc/novnc/core/rfb').default> | null>(null);
   const [status, setStatus] = useState<Status>('idle');
@@ -57,7 +58,10 @@ export default function VncViewer({ classId, studentUserId, isOnline }: VncViewe
       };
 
       try {
-        const res = await createVncSession(classId, studentUserId);
+        const res =
+          mode === 'exam-room'
+            ? await createExamRoomVncSession(classId, studentUserId)
+            : await createVncSession(classId, studentUserId);
         if (cancelled || !containerRef.current) return;
 
         const { default: RFB } = await import('@novnc/novnc/core/rfb');
@@ -93,7 +97,7 @@ export default function VncViewer({ classId, studentUserId, isOnline }: VncViewe
       rfbRef.current?.disconnect();
       rfbRef.current = null;
     };
-  }, [classId, studentUserId, isOnline]);
+  }, [classId, studentUserId, isOnline, mode]);
 
   return (
     <Box sx={{ width: '100%', aspectRatio: '16/9', bgcolor: '#111', position: 'relative', overflow: 'hidden' }}>

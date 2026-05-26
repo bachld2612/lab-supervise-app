@@ -1,6 +1,7 @@
 package com.bachld.backend.websocket;
 
 import com.bachld.backend.service.VncSessionService;
+import com.bachld.backend.service.VncSessionService.VncSessionData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,14 +33,12 @@ public class VncWebSocketHandler extends BinaryWebSocketHandler {
     @Value("${vnc.server.port:5900}")
     private int vncPort;
 
-    @Value("${vnc.server.password:}")
-    private String vncPassword;
-
     private record RelayContext(
         Socket vncSocket,
         Thread relayThread,
         AtomicBoolean handshakeDone,
-        LinkedBlockingQueue<byte[]> wsQueue
+        LinkedBlockingQueue<byte[]> wsQueue,
+        String vncPassword
     ) {}
 
     private final ConcurrentHashMap<String, RelayContext> relays = new ConcurrentHashMap<>();
@@ -49,8 +48,12 @@ public class VncWebSocketHandler extends BinaryWebSocketHandler {
         String token = extractToken(ws.getUri());
         if (token == null) { ws.close(CloseStatus.POLICY_VIOLATION); return; }
 
-        String studentIp = vncSessionService.consumeSession(token);
-        if (studentIp == null) { ws.close(CloseStatus.POLICY_VIOLATION); return; }
+        VncSessionData session = vncSessionService.consumeSession(token);
+        if (session == null) { ws.close(CloseStatus.POLICY_VIOLATION); return; }
+
+        String studentIp = session.studentIp();
+        String pwd = session.vncPassword();
+        log.debug("VNC session password length={} value={}", pwd != null ? pwd.length() : -1, pwd);
 
         try {
             Socket vncSocket = new Socket(studentIp, vncPort);
@@ -60,13 +63,13 @@ public class VncWebSocketHandler extends BinaryWebSocketHandler {
             AtomicBoolean handshakeDone = new AtomicBoolean(false);
 
             Thread relay = new Thread(
-                () -> proxyAndRelay(ws, vncSocket, wsQueue, handshakeDone),
+                () -> proxyAndRelay(ws, vncSocket, wsQueue, handshakeDone, pwd),
                 "vnc-" + ws.getId()
             );
             relay.setDaemon(true);
             relay.start();
 
-            relays.put(ws.getId(), new RelayContext(vncSocket, relay, handshakeDone, wsQueue));
+            relays.put(ws.getId(), new RelayContext(vncSocket, relay, handshakeDone, wsQueue, pwd));
             log.debug("VNC relay started → {}:{}", studentIp, vncPort);
         } catch (Exception e) {
             log.warn("Cannot connect to VNC at {}:{} — {}", studentIp, vncPort, e.getMessage());
@@ -91,7 +94,8 @@ public class VncWebSocketHandler extends BinaryWebSocketHandler {
 
     private void proxyAndRelay(WebSocketSession ws, Socket vncSocket,
                                 LinkedBlockingQueue<byte[]> wsQueue,
-                                AtomicBoolean handshakeDone) {
+                                AtomicBoolean handshakeDone,
+                                String vncPassword) {
         try {
             InputStream vncIn = vncSocket.getInputStream();
             OutputStream vncOut = vncSocket.getOutputStream();
@@ -119,7 +123,7 @@ public class VncWebSocketHandler extends BinaryWebSocketHandler {
             byte[] types = readExact(vncIn, numTypes);
             log.debug("VNC security types: {}", java.util.Arrays.toString(types));
 
-            boolean authOk = performVncAuth(vncIn, vncOut, types);
+            boolean authOk = performVncAuth(vncIn, vncOut, types, vncPassword);
             if (!authOk) {
                 ws.close(CloseStatus.SERVER_ERROR);
                 return;
@@ -161,7 +165,7 @@ public class VncWebSocketHandler extends BinaryWebSocketHandler {
     }
 
     /** Handles VNC security negotiation internally. Returns true if auth succeeded. */
-    private boolean performVncAuth(InputStream vncIn, OutputStream vncOut, byte[] types) throws Exception {
+    private boolean performVncAuth(InputStream vncIn, OutputStream vncOut, byte[] types, String vncPassword) throws Exception {
         boolean hasNone = false;
         boolean hasVncAuth = false;
         for (byte t : types) {

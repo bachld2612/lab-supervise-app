@@ -20,4 +20,7 @@ public class PersonalComputer extends BaseEntity {
 
     @Column(name = "user_id")
     Integer userId;
+
+    @Column(name = "vnc_password_encrypted", length = 512)
+    String vncPasswordEncrypted;
 }

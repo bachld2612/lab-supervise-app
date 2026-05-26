@@ -1,10 +1,25 @@
 package com.bachld.backend.controller;
 
+import com.bachld.backend.dto.request.VncBootstrapRequest;
 import com.bachld.backend.dto.response.BaseResponse;
+import com.bachld.backend.model.Classes;
+import com.bachld.backend.model.ExamRoom;
 import com.bachld.backend.model.PersonalComputer;
+import com.bachld.backend.model.Student;
+import com.bachld.backend.model.Teacher;
+import com.bachld.backend.model.User;
+import com.bachld.backend.repository.ClassRepository;
+import com.bachld.backend.repository.ExamRoomRepository;
 import com.bachld.backend.repository.PersonalComputerRepository;
+import com.bachld.backend.repository.StudentClassRepository;
+import com.bachld.backend.repository.StudentExamRoomRepository;
+import com.bachld.backend.repository.StudentRepository;
+import com.bachld.backend.repository.TeacherRepository;
+import com.bachld.backend.service.PersonalComputerService;
 import com.bachld.backend.service.VncSessionService;
+import com.bachld.backend.util.Util;
 import com.bachld.backend.util.auth.AuthFilter;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -13,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +38,14 @@ public class VncController {
 
     VncSessionService vncSessionService;
     PersonalComputerRepository personalComputerRepository;
+    PersonalComputerService personalComputerService;
+    ClassRepository classRepository;
+    ExamRoomRepository examRoomRepository;
+    StudentRepository studentRepository;
+    StudentClassRepository studentClassRepository;
+    StudentExamRoomRepository studentExamRoomRepository;
+    TeacherRepository teacherRepository;
+    Util util;
 
     @PostMapping("/v1/session/{classId}/{studentUserId}")
     @AuthFilter(role = "TEACHER")
@@ -29,13 +53,92 @@ public class VncController {
             @PathVariable int classId,
             @PathVariable int studentUserId) {
 
-        PersonalComputer pc = personalComputerRepository.findByUserId(studentUserId)
-                .orElseThrow(() -> new IllegalArgumentException("Sinh viên chưa đăng ký máy tính"));
-
-        String token = vncSessionService.createSession(pc.getIpAddress());
-
+        validateClassAccess(classId, studentUserId);
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), Map.of(
-                "token", token
+                "token", createRelayToken(studentUserId)
         )));
+    }
+
+    @PostMapping("/v1/exam-room-session/{examRoomId}/{studentUserId}")
+    @AuthFilter(role = "TEACHER")
+    public ResponseEntity<?> createExamRoomSession(
+            @PathVariable int examRoomId,
+            @PathVariable int studentUserId) {
+
+        validateExamRoomAccess(examRoomId, studentUserId);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), Map.of(
+                "token", createRelayToken(studentUserId)
+        )));
+    }
+
+    @PostMapping("/v1/register")
+    @AuthFilter(role = "STUDENT,TEACHER,IT_CENTER")
+    public ResponseEntity<?> registerVncPassword(@RequestBody Map<String, String> body) {
+        String vncPassword = body.get("vncPassword");
+        if (vncPassword == null || vncPassword.isBlank()) {
+            return ResponseEntity.badRequest().body(
+                    new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), "vncPassword is required"));
+        }
+        personalComputerService.registerVncPassword(vncPassword);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), Map.of(
+                "registered", true
+        )));
+    }
+
+    private String createRelayToken(Integer studentUserId) {
+        PersonalComputer pc = personalComputerRepository.findByUserId(studentUserId)
+                .orElseThrow(() -> new IllegalArgumentException("Student computer is not registered"));
+
+        if (pc.getIpAddress() == null || pc.getIpAddress().isBlank()) {
+            throw new IllegalStateException("Student computer has no IP address");
+        }
+
+        String vncPassword = personalComputerService.resolveVncPasswordByUserId(studentUserId);
+        if (vncPassword == null) {
+            throw new IllegalStateException("Student computer has no VNC password. Run the desktop app again on that machine");
+        }
+
+        return vncSessionService.createSession(pc.getIpAddress(), vncPassword);
+    }
+
+    private void validateClassAccess(Integer classId, Integer studentUserId) {
+        Teacher teacher = getCurrentTeacher();
+        Classes classes = classRepository.findById(classId)
+                .orElseThrow(() -> new IllegalArgumentException("Class not found"));
+        if (!Objects.equals(teacher.getId(), classes.getTeacherId())) {
+            throw new IllegalArgumentException("Teacher cannot view this class");
+        }
+
+        Student student = getStudentByUserId(studentUserId);
+        studentClassRepository.findByStudentIdAndClassId(student.getId(), classId)
+                .orElseThrow(() -> new IllegalArgumentException("Student is not in this class"));
+    }
+
+    private void validateExamRoomAccess(Integer examRoomId, Integer studentUserId) {
+        Teacher teacher = getCurrentTeacher();
+        ExamRoom examRoom = examRoomRepository.findById(examRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("Exam room not found"));
+        if (!Objects.equals(teacher.getId(), examRoom.getTeacher1Id())
+                && !Objects.equals(teacher.getId(), examRoom.getTeacher2Id())) {
+            throw new IllegalArgumentException("Teacher cannot view this exam room");
+        }
+
+        Student student = getStudentByUserId(studentUserId);
+        studentExamRoomRepository.findByStudentIdAndExamRoomId(student.getId(), examRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("Student is not in this exam room"));
+    }
+
+    private Teacher getCurrentTeacher() {
+        User currentUser = util.getCurrentUser();
+        if (currentUser == null) {
+            throw new IllegalArgumentException("Invalid user");
+        }
+        return teacherRepository.findByUserId(currentUser.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Current teacher not found"));
+    }
+
+    private Student getStudentByUserId(Integer studentUserId) {
+        return studentRepository.findByUserId(studentUserId)
+                .orElseThrow(() -> new IllegalArgumentException("Student not found"));
     }
 }

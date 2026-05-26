@@ -8,16 +8,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * Desktop app gửi lên sau khi installer cài UltraVNC xong và sinh ra
+ * password cho máy. Password được desktop encrypt rồi mới gửi.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PersonalComputerUpdateRequest {
+public class VncBootstrapRequest {
 
-    @NotEmpty(message = "Địa chỉ IP không được phép bỏ trống")
-    String ipAddress;
-
-    /** Optional: plaintext VNC password 8 ký tự. Nếu có thì backend sẽ encrypt và lưu. */
-    @Size(max = 8, message = "Password VNC tối đa 8 ký tự")
+    @NotEmpty(message = "Password không được phép bỏ trống")
     String vncPassword;
 }

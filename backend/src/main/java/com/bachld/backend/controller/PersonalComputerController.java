@@ -21,7 +21,7 @@ public class PersonalComputerController {
     PersonalComputerService personalComputerService;
 
     @PostMapping("/v1/update")
-    @AuthFilter(role = "IT_CENTER,TEACHER")
+    @AuthFilter(role = "IT_CENTER,TEACHER,STUDENT")
     public ResponseEntity<?> update(@RequestBody @Valid PersonalComputerUpdateRequest request) {
         personalComputerService.update(request);
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));

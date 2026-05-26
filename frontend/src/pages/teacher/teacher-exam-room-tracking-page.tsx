@@ -27,6 +27,7 @@ import {
   Typography
 } from '@mui/material';
 import MainCard from 'components/MainCard';
+import VncViewer from 'components/VncViewer';
 import { useEffect, useMemo, useState } from 'react';
 import { useExamRoomTracking, StudentTrackingState } from 'hooks/useExamRoomTracking';
 import { Add, ArrowLeft, Copy, Global, Key, Lock1, MessageText, Refresh, Timer1, Trash, Wifi } from 'iconsax-reactjs';
@@ -436,7 +437,7 @@ export default function TeacherExamRoomTrackingPage() {
                     const latestEntry = student.appHistory.find((e) => !e.connectionType) ?? null;
                     const isViolation = isOnline && latestEntry?.banApplication === true;
                     return (
-                      <Grid key={student.studentId} size={{ xs: 12, sm: 6, md: 3 }}>
+                      <Grid key={student.studentId} size={{ xs: 12, sm: 6 }}>
                         <Tooltip title="Bấm để xem chi tiết và điều khiển máy" placement="top" arrow>
                           <Card
                             onClick={() => setSelectedStudent(student)}
@@ -479,6 +480,16 @@ export default function TeacherExamRoomTrackingPage() {
                                   {student.code}
                                 </Typography>
                                 <Divider />
+                                <Box onClick={(e) => e.stopPropagation()} sx={{ mx: -1.5, mt: 0.75 }}>
+                                  {examRoomId && (
+                                    <VncViewer
+                                      classId={examRoomId}
+                                      studentUserId={student.userId}
+                                      isOnline={isOnline}
+                                      mode="exam-room"
+                                    />
+                                  )}
+                                </Box>
                                 {isViolation ? (
                                   <Typography variant="caption" color="error.main" noWrap fontWeight="medium">
                                     {latestEntry!.applicationName}
