@@ -1,7 +1,6 @@
 package com.bachld.backend.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,8 +15,4 @@ public class PersonalComputerUpdateRequest {
 
     @NotEmpty(message = "Địa chỉ IP không được phép bỏ trống")
     String ipAddress;
-
-    /** Optional: plaintext VNC password 8 ký tự. Nếu có thì backend sẽ encrypt và lưu. */
-    @Size(max = 8, message = "Password VNC tối đa 8 ký tự")
-    String vncPassword;
 }

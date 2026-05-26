@@ -24,8 +24,7 @@ public class MainFrame extends JFrame {
     private final com.bachld.service.SemesterService semesterService;
     private final UserService userService;
     private com.bachld.service.TrackingService trackingService;
-    private final com.bachld.service.VncService vncService = new com.bachld.service.VncService();
-    private com.bachld.service.VncBootstrapService vncBootstrapService;
+    private final com.bachld.service.VncService vncService = com.bachld.service.VncService.getInstance();
     private com.bachld.service.VncWatchdog vncWatchdog;
     private JPanel contentArea;
     private CardLayout cardLayout;
@@ -60,28 +59,9 @@ public class MainFrame extends JFrame {
         }
 
         if (os.contains("win")) {
-            // Start UltraVNC and keep registering its password until backend accepts it.
-            com.bachld.client.VncBootstrapApiClient bootstrapClient =
-                    new com.bachld.client.VncBootstrapApiClient(com.bachld.config.RestClient.getInstance());
-            vncBootstrapService = new com.bachld.service.VncBootstrapService(bootstrapClient);
-
-            Thread vncThread = new Thread(() -> {
-                String password = vncService.start();
-                if (password != null) {
-                    vncBootstrapService.registerPasswordWithRetry(password);
-                } else {
-                    SwingUtilities.invokeLater(() ->
-                        JOptionPane.showMessageDialog(this,
-                            "UltraVNC could not be started.\nRemote desktop will be unavailable.\n" +
-                            "Check logs for details.",
-                            "VNC Warning", JOptionPane.WARNING_MESSAGE));
-                }
-            }, "vnc-start");
-            vncThread.setDaemon(true);
-            vncThread.start();
-
-            // If winvnc is killed, restart it and overwrite backend with the new password.
-            vncWatchdog = new com.bachld.service.VncWatchdog(vncService, vncBootstrapService::registerPasswordWithRetry);
+            // UltraVNC bootstrap already ran in LabMonitorApp.main() before login.
+            // Watchdog handles self-healing if the service goes down at runtime.
+            vncWatchdog = new com.bachld.service.VncWatchdog(vncService);
             vncWatchdog.start();
         }
 
@@ -189,7 +169,6 @@ public class MainFrame extends JFrame {
         }
         vncService.stop();
         if (vncWatchdog != null) vncWatchdog.stop();
-        if (vncBootstrapService != null) vncBootstrapService.stop();
         com.bachld.service.TokenManager.getInstance().clearToken();
         removeTrayIcon();
         System.exit(0);
@@ -286,7 +265,6 @@ public class MainFrame extends JFrame {
                 webSocketService.disconnect();
             }
             if (vncWatchdog != null) vncWatchdog.stop();
-            if (vncBootstrapService != null) vncBootstrapService.stop();
             vncService.stop();
             com.bachld.service.TokenManager.getInstance().clearToken();
             removeTrayIcon();

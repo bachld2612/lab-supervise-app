@@ -9,25 +9,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tự healing UltraVNC: nếu port 5900 không listen (winvnc bị kill / crash),
- * gọi {@link VncService#start()} để khởi động lại.
- *
- * <p>Lưu ý: restart sẽ sinh password MỚI → cần gọi lại bootstrap để update backend. Caller
- * pass vào {@link RecoveryHook} để xử lý việc đăng ký lại với backend.
- */
 public class VncWatchdog {
 
     private static final Logger log = LoggerFactory.getLogger(VncWatchdog.class);
-
     private static final long CHECK_INTERVAL_SECONDS = 60;
-
-    public interface RecoveryHook {
-        void onPasswordChanged(String newPassword);
-    }
+    private static final int VNC_PORT = 5900;
 
     private final VncService vncService;
-    private final RecoveryHook recoveryHook;
     private final ScheduledExecutorService scheduler =
             Executors.newSingleThreadScheduledExecutor(r -> {
                 Thread t = new Thread(r, "vnc-watchdog");
@@ -35,9 +23,8 @@ public class VncWatchdog {
                 return t;
             });
 
-    public VncWatchdog(VncService vncService, RecoveryHook recoveryHook) {
+    public VncWatchdog(VncService vncService) {
         this.vncService = vncService;
-        this.recoveryHook = recoveryHook;
     }
 
     public void start() {
@@ -53,15 +40,14 @@ public class VncWatchdog {
     private void checkHealth() {
         if (isPortListening()) return;
 
-        log.warn("Watchdog: port 5900 not listening — restarting UltraVNC");
-        String newPassword = vncService.start();
-        if (newPassword != null && recoveryHook != null) {
-            recoveryHook.onPasswordChanged(newPassword);
+        log.warn("Watchdog: port {} not listening - restarting UltraVNC", VNC_PORT);
+        if (!vncService.start()) {
+            log.error("Watchdog: UltraVNC restart failed");
         }
     }
 
     private boolean isPortListening() {
-        try (Socket probe = new Socket("127.0.0.1", 5900)) {
+        try (Socket probe = new Socket("127.0.0.1", VNC_PORT)) {
             return true;
         } catch (IOException e) {
             return false;

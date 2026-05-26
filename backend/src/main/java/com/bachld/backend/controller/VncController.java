@@ -1,6 +1,5 @@
 package com.bachld.backend.controller;
 
-import com.bachld.backend.dto.request.VncBootstrapRequest;
 import com.bachld.backend.dto.response.BaseResponse;
 import com.bachld.backend.model.Classes;
 import com.bachld.backend.model.ExamRoom;
@@ -15,11 +14,9 @@ import com.bachld.backend.repository.StudentClassRepository;
 import com.bachld.backend.repository.StudentExamRoomRepository;
 import com.bachld.backend.repository.StudentRepository;
 import com.bachld.backend.repository.TeacherRepository;
-import com.bachld.backend.service.PersonalComputerService;
 import com.bachld.backend.service.VncSessionService;
 import com.bachld.backend.util.Util;
 import com.bachld.backend.util.auth.AuthFilter;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -38,7 +35,6 @@ public class VncController {
 
     VncSessionService vncSessionService;
     PersonalComputerRepository personalComputerRepository;
-    PersonalComputerService personalComputerService;
     ClassRepository classRepository;
     ExamRoomRepository examRoomRepository;
     StudentRepository studentRepository;
@@ -71,20 +67,6 @@ public class VncController {
         )));
     }
 
-    @PostMapping("/v1/register")
-    @AuthFilter(role = "STUDENT,TEACHER,IT_CENTER")
-    public ResponseEntity<?> registerVncPassword(@RequestBody Map<String, String> body) {
-        String vncPassword = body.get("vncPassword");
-        if (vncPassword == null || vncPassword.isBlank()) {
-            return ResponseEntity.badRequest().body(
-                    new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), "vncPassword is required"));
-        }
-        personalComputerService.registerVncPassword(vncPassword);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), Map.of(
-                "registered", true
-        )));
-    }
-
     private String createRelayToken(Integer studentUserId) {
         PersonalComputer pc = personalComputerRepository.findByUserId(studentUserId)
                 .orElseThrow(() -> new IllegalArgumentException("Student computer is not registered"));
@@ -93,12 +75,7 @@ public class VncController {
             throw new IllegalStateException("Student computer has no IP address");
         }
 
-        String vncPassword = personalComputerService.resolveVncPasswordByUserId(studentUserId);
-        if (vncPassword == null) {
-            throw new IllegalStateException("Student computer has no VNC password. Run the desktop app again on that machine");
-        }
-
-        return vncSessionService.createSession(pc.getIpAddress(), vncPassword);
+        return vncSessionService.createSession(pc.getIpAddress());
     }
 
     private void validateClassAccess(Integer classId, Integer studentUserId) {
