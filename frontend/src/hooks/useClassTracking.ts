@@ -33,7 +33,19 @@ interface StudentClassInfoResponse {
   applicationName: string;
   createdAt: string;
   banApplication: boolean;
-  type?: 'CONNECT' | 'DISCONNECT' | null;
+  type?: 'CONNECT' | 'DISCONNECT' | 'SCREENSHOT_READY' | null;
+  screenshotId?: number;
+  studentUserId?: number;
+  imageUrl?: string;
+}
+
+export interface ScreenshotReadyMessage {
+  type: 'SCREENSHOT_READY';
+  screenshotId: number;
+  studentId: number;
+  studentUserId: number;
+  imageUrl?: string;
+  createdAt?: string;
 }
 
 interface ClassStudentTrackingResponse {
@@ -58,7 +70,8 @@ export function useClassTracking(
   onBanDetected?: (message: string) => void,
   reload?: boolean,
   onStudentConnect?: (studentName: string, studentCode: string) => void,
-  onStudentDisconnect?: (studentName: string, studentCode: string) => void
+  onStudentDisconnect?: (studentName: string, studentCode: string) => void,
+  onScreenshotReady?: (message: ScreenshotReadyMessage) => void
 ) {
   const [students, setStudents] = useState<StudentTrackingState[]>([]);
   const [connected, setConnected] = useState(false);
@@ -115,6 +128,13 @@ export function useClassTracking(
         client.subscribe(`/topic/class/${classId}`, (message: IMessage) => {
           try {
             const data: StudentClassInfoResponse = JSON.parse(message.body);
+
+            if (data.type === 'SCREENSHOT_READY') {
+              if (data.screenshotId && data.studentUserId) {
+                onScreenshotReady?.(data as ScreenshotReadyMessage);
+              }
+              return;
+            }
 
             if (data.type === 'CONNECT') {
               setConnectedStudentIds((prev) => new Set(prev).add(data.studentId));

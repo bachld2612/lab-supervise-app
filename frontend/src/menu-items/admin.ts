@@ -84,6 +84,13 @@ const adminMenu: NavItemType = {
       icon: icons.table
     },
     {
+      id: 'screenshot-history',
+      title: 'Lịch sử ảnh màn hình',
+      type: 'item',
+      url: '/screenshot-history',
+      icon: icons.table
+    },
+    {
       id: 'department-management',
       title: 'Quản lý thông tin trường',
       type: 'collapse',

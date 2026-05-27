@@ -34,9 +34,21 @@ interface StudentClassInfoResponse {
   applicationName: string;
   createdAt: string;
   banApplication: boolean;
-  type?: 'CONNECT' | 'DISCONNECT' | 'WHITELIST_UPDATE' | 'EXAM' | null;
+  type?: 'CONNECT' | 'DISCONNECT' | 'WHITELIST_UPDATE' | 'EXAM' | 'SCREENSHOT_READY' | null;
   allowedApplications?: AllowedApplication[];
   examRoomId?: number;
+  screenshotId?: number;
+  studentUserId?: number;
+  imageUrl?: string;
+}
+
+export interface ScreenshotReadyMessage {
+  type: 'SCREENSHOT_READY';
+  screenshotId: number;
+  studentId: number;
+  studentUserId: number;
+  imageUrl?: string;
+  createdAt?: string;
 }
 
 interface ExamRoomTrackingResponse {
@@ -62,7 +74,8 @@ export function useExamRoomTracking(
   reload?: boolean,
   onStudentConnect?: (studentName: string, studentCode: string) => void,
   onStudentDisconnect?: (studentName: string, studentCode: string) => void,
-  onWhitelistUpdate?: (apps: AllowedApplication[]) => void
+  onWhitelistUpdate?: (apps: AllowedApplication[]) => void,
+  onScreenshotReady?: (message: ScreenshotReadyMessage) => void
 ) {
   const [students, setStudents] = useState<StudentTrackingState[]>([]);
   const [connected, setConnected] = useState(false);
@@ -119,6 +132,13 @@ export function useExamRoomTracking(
         client.subscribe(`/topic/exam/${examRoomId}`, (message: IMessage) => {
           try {
             const data: StudentClassInfoResponse = JSON.parse(message.body);
+
+            if (data.type === 'SCREENSHOT_READY') {
+              if (data.screenshotId && data.studentUserId) {
+                onScreenshotReady?.(data as ScreenshotReadyMessage);
+              }
+              return;
+            }
 
             // Whitelist update broadcast from backend
             if (data.type === 'WHITELIST_UPDATE' && data.allowedApplications) {

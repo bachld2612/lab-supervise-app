@@ -1,5 +1,10 @@
 import axiosServices from 'utils/axios';
 
+export interface ScreenshotCaptureResponse {
+  id: number;
+  imageUrl: string | null;
+}
+
 export const getVeyonPublicKey = async (): Promise<{ statusCode: number; data: string }> => {
   const response = await axiosServices.get('/api/veyon/v1/teacher/keys/public-key');
   return response.data;
@@ -19,7 +24,10 @@ export const lockScreen = async (classId: number, studentUserId: number, active:
   return response.data;
 };
 
-export const getScreenshot = async (classId: number, studentUserId: number): Promise<{ statusCode: number; data: string }> => {
+export const getScreenshot = async (
+  classId: number,
+  studentUserId: number
+): Promise<{ statusCode: number; data: ScreenshotCaptureResponse }> => {
   const response = await axiosServices.get('/api/veyon/v1/class/screenshot', { params: { classId, studentUserId } });
   return response.data;
 };
@@ -59,7 +67,10 @@ export const lockScreenForExamRoom = async (examRoomId: number, studentUserId: n
   return response.data;
 };
 
-export const getScreenshotForExamRoom = async (examRoomId: number, studentUserId: number) => {
+export const getScreenshotForExamRoom = async (
+  examRoomId: number,
+  studentUserId: number
+): Promise<{ statusCode: number; data: ScreenshotCaptureResponse }> => {
   const response = await axiosServices.get('/api/veyon/v1/exam-room/screenshot', { params: { examRoomId, studentUserId } });
   return response.data;
 };

@@ -6,6 +6,7 @@ import com.bachld.backend.dto.request.LockScreenExamRoomRequest;
 import com.bachld.backend.dto.request.LockScreenRequest;
 import com.bachld.backend.dto.request.OpenWebsiteRequest;
 import com.bachld.backend.dto.request.SendMessageRequest;
+import com.bachld.backend.dto.response.ScreenshotCaptureResponse;
 import com.bachld.backend.model.*;
 import com.bachld.backend.repository.*;
 import com.bachld.backend.util.AesEncryptionUtil;
@@ -16,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Base64;
 import java.util.List;
 
 @Slf4j
@@ -30,6 +30,8 @@ public class VeyonService {
     AesEncryptionUtil aesEncryptionUtil;
 
     VeyonClientService veyonClientService;
+
+    ScreenshotCaptureService screenshotCaptureService;
 
     ClassRepository classRepository;
 
@@ -139,17 +141,8 @@ public class VeyonService {
         }
     }
 
-    public String getScreenshot(Integer classId, Integer studentUserId) {
-        String[] credentials = getVeyonCredentials(classId);
-        String studentIp = getStudentIp(studentUserId);
-        try {
-            String connectionUid = veyonClientService.getOrReuseConnectionUidForScreenshot(credentials[0], credentials[1], credentials[2], studentIp);
-            byte[] imageBytes = veyonClientService.getScreenshot(connectionUid, credentials[2]);
-            return Base64.getEncoder().encodeToString(imageBytes);
-        } catch (RuntimeException e) {
-            veyonClientService.evictScreenshotConnection(credentials[0], credentials[2], studentIp);
-            throw e;
-        }
+    public ScreenshotCaptureResponse getScreenshot(Integer classId, Integer studentUserId) {
+        return screenshotCaptureService.requestClassScreenshot(classId, studentUserId);
     }
 
     // ===== EXAM ROOM VEYON METHODS =====
@@ -185,17 +178,8 @@ public class VeyonService {
         veyonClientService.lockScreen(connectionUid, request.getActive(), credentials[2]);
     }
 
-    public String getScreenshotForExamRoom(Integer examRoomId, Integer studentUserId) {
-        String[] credentials = getVeyonCredentialsForExamRoom(examRoomId);
-        String studentIp = getStudentIp(studentUserId);
-        try {
-            String connectionUid = veyonClientService.getOrReuseConnectionUidForScreenshot(credentials[0], credentials[1], credentials[2], studentIp);
-            byte[] imageBytes = veyonClientService.getScreenshot(connectionUid, credentials[2]);
-            return Base64.getEncoder().encodeToString(imageBytes);
-        } catch (RuntimeException e) {
-            veyonClientService.evictScreenshotConnection(credentials[0], credentials[2], studentIp);
-            throw e;
-        }
+    public ScreenshotCaptureResponse getScreenshotForExamRoom(Integer examRoomId, Integer studentUserId) {
+        return screenshotCaptureService.requestExamRoomScreenshot(examRoomId, studentUserId);
     }
 
     public void openWebsiteForExamRoom(Integer examRoomId, OpenWebsiteRequest request) {

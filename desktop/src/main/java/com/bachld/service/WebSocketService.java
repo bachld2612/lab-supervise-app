@@ -1,8 +1,11 @@
 package com.bachld.service;
 
+import com.bachld.client.ScreenshotApiClient;
 import com.bachld.config.AppConfig;
+import com.bachld.config.RestClient;
 import com.bachld.model.request.PCInfoPayload;
 import com.bachld.model.response.FilePayload;
+import com.bachld.model.response.RemoteCommandMessage;
 import jakarta.websocket.ContainerProvider;
 import jakarta.websocket.WebSocketContainer;
 import org.slf4j.Logger;
@@ -37,6 +40,10 @@ public class WebSocketService {
     private StompSession stompSession;
     private final TokenManager tokenManager;
     private final String wsUrl;
+    private final RemoteCommandExecutor remoteCommandExecutor = new RemoteCommandExecutor();
+    private final ScreenshotApiClient screenshotApiClient = new ScreenshotApiClient(RestClient.getInstance());
+    private final Object sendLock = new Object();
+    private static final String SCREENSHOT_COMMAND = "SCREENSHOT";
     
     private static volatile WebSocketService instance;
 
@@ -109,10 +116,8 @@ public class WebSocketService {
     }
 
     public void sendPCInfo(String applicationName) {
-        if (stompSession != null && stompSession.isConnected()) {
-            PCInfoPayload payload = new PCInfoPayload(applicationName);
-            stompSession.send("/app/pc-info", payload);
-        } else {
+        PCInfoPayload payload = new PCInfoPayload(applicationName);
+        if (!sendToServer("/app/pc-info", payload)) {
             log.warn("WebSocket disconnected. PC info update lost: {}", applicationName);
         }
     }
@@ -187,6 +192,20 @@ public class WebSocketService {
                     }
                 });
                 log.info("Subscribed to {}", topic);
+
+                String commandTopic = "/topic/user/" + currentUser.getId() + "/command";
+                session.subscribe(commandTopic, new StompFrameHandler() {
+                    @Override
+                    public Type getPayloadType(StompHeaders headers) {
+                        return RemoteCommandMessage.class;
+                    }
+
+                    @Override
+                    public void handleFrame(StompHeaders headers, Object payload) {
+                        handleRemoteCommand((RemoteCommandMessage) payload);
+                    }
+                });
+                log.info("Subscribed to {}", commandTopic);
             }
         }
 
@@ -198,6 +217,67 @@ public class WebSocketService {
         @Override
         public void handleTransportError(StompSession session, Throwable exception) {
             log.warn("WebSocket transport error. Session may be lost: {}", exception.getMessage());
+        }
+    }
+
+    private void handleRemoteCommand(RemoteCommandMessage command) {
+        Thread worker = new Thread(() -> {
+            if (command == null || !SCREENSHOT_COMMAND.equals(command.getType())) {
+                log.warn("Unsupported remote command: {}", command == null ? null : command.getType());
+                return;
+            }
+
+            Integer screenshotId = extractScreenshotId(command);
+            if (screenshotId == null) {
+                log.warn("Screenshot command missing screenshotId. commandId={}", command.getCommandId());
+                return;
+            }
+
+            try {
+                byte[] imageBytes = remoteCommandExecutor.captureScreenshotJpeg();
+                screenshotApiClient.uploadScreenshot(screenshotId, imageBytes);
+                log.info("Uploaded screenshot {}", screenshotId);
+            } catch (Exception e) {
+                log.warn("Screenshot command failed. screenshotId={}: {}", screenshotId, e.getMessage(), e);
+            }
+        }, "remote-command-" + (command == null ? "unknown" : command.getCommandId()));
+        worker.setDaemon(true);
+        worker.start();
+    }
+
+    private Integer extractScreenshotId(RemoteCommandMessage command) {
+        if (command.getArguments() == null) {
+            return null;
+        }
+
+        Object value = command.getArguments().get("screenshotId");
+        if (value instanceof Number number) {
+            return number.intValue();
+        }
+        if (value instanceof String text) {
+            try {
+                return Integer.parseInt(text);
+            } catch (NumberFormatException ignored) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private boolean sendToServer(String destination, Object payload) {
+        synchronized (sendLock) {
+            StompSession session = stompSession;
+            if (session == null || !session.isConnected()) {
+                return false;
+            }
+
+            try {
+                session.send(destination, payload);
+                return true;
+            } catch (Exception e) {
+                log.warn("STOMP send failed to {}: {}", destination, e.getMessage());
+                return false;
+            }
         }
     }
 }

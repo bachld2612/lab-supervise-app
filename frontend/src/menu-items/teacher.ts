@@ -1,5 +1,5 @@
 // assets
-import { CalendarTick, ElementPlus, Profile, Teacher, Danger, Monitor, Stop, Cpu } from 'iconsax-reactjs';
+import { CalendarTick, ElementPlus, Profile, Teacher, Danger, Monitor, Stop, Cpu, Camera } from 'iconsax-reactjs';
 
 // types
 import { NavItemType } from 'types/menu';
@@ -13,7 +13,8 @@ const icons = {
   danger: Danger,
   monitor: Monitor,
   stop: Stop,
-  cpu: Cpu
+  cpu: Cpu,
+  camera: Camera
 };
 
 // ==============================|| MENU ITEMS - TEACHER ||============================== //
@@ -43,6 +44,13 @@ const teacherMenu: NavItemType = {
       type: 'item',
       url: 'pc-management',
       icon: icons.cpu
+    },
+    {
+      id: 'screenshot-history',
+      title: 'Lịch sử ảnh màn hình',
+      type: 'item',
+      url: 'screenshot-history',
+      icon: icons.camera
     },
     {
       id: 'teacher-incident-report',

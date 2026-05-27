@@ -2,6 +2,7 @@ package com.bachld.backend.controller;
 
 import com.bachld.backend.dto.request.StudentClassInfoCreateRequest;
 import com.bachld.backend.dto.response.StudentClassInfoResponse;
+import com.bachld.backend.service.ScreenshotCaptureService;
 import com.bachld.backend.service.TrackingService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
 @RequiredArgsConstructor
@@ -19,9 +23,15 @@ import java.security.Principal;
 @Slf4j
 public class TrackingWebSocketController {
 
+    static final long VIOLATION_SCREENSHOT_COOLDOWN_SECONDS = 30;
+
     TrackingService trackingService;
 
+    ScreenshotCaptureService screenshotCaptureService;
+
     SimpMessagingTemplate messagingTemplate;
+
+    ConcurrentHashMap<String, Instant> violationScreenshotTimes = new ConcurrentHashMap<>();
 
     @MessageMapping("/pc-info")
     public void handlePcInfo(StudentClassInfoCreateRequest request, Principal principal) {
@@ -40,9 +50,36 @@ public class TrackingWebSocketController {
                 } else {
                     messagingTemplate.convertAndSend("/topic/class/" + response.getClassId(), response);
                 }
+                captureViolationScreenshot(Integer.valueOf(username), response);
             }
         } catch (Exception e) {
             log.error("!!! [WS-TEST] LỖI XỬ LÝ MESSAGE: {}", e.getMessage(), e);
+        }
+    }
+
+    private void captureViolationScreenshot(Integer studentUserId, StudentClassInfoResponse response) {
+        if (!response.isBanApplication()) {
+            return;
+        }
+
+        String cooldownKey = response.getType() + ":" + response.getClassId() + ":" + studentUserId + ":" + response.getApplicationName();
+        Instant now = Instant.now();
+        Instant lastCapturedAt = violationScreenshotTimes.get(cooldownKey);
+        if (lastCapturedAt != null
+                && Duration.between(lastCapturedAt, now).getSeconds() < VIOLATION_SCREENSHOT_COOLDOWN_SECONDS) {
+            return;
+        }
+        violationScreenshotTimes.put(cooldownKey, now);
+
+        try {
+            if ("EXAM".equals(response.getType())) {
+                screenshotCaptureService.requestExamRoomViolationScreenshot(response.getClassId(), studentUserId);
+            } else {
+                screenshotCaptureService.requestClassViolationScreenshot(response.getClassId(), studentUserId);
+            }
+        } catch (Exception e) {
+            log.warn("Không thể tự động chụp màn hình vi phạm. studentUserId={}, contextId={}: {}",
+                    studentUserId, response.getClassId(), e.getMessage(), e);
         }
     }
 }

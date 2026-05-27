@@ -21,9 +21,10 @@ import {
 import MainCard from 'components/MainCard';
 import VncViewer from 'components/VncViewer';
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { useClassTracking, StudentTrackingState } from 'hooks/useClassTracking';
+import { useClassTracking, StudentTrackingState, ScreenshotReadyMessage } from 'hooks/useClassTracking';
 import {
   ArrowLeft,
+  CloseCircle,
   Copy,
   DocumentUpload,
   ExportCurve,
@@ -71,6 +72,10 @@ export default function TeacherClassTrackingPage() {
   const [alert, setAlert] = useState({ open: false, message: '', severity: 'error' as 'success' | 'error' | 'info' | 'warning' });
   const [selectedStudent, setSelectedStudent] = useState<StudentTrackingState | null>(null);
   const [lockedStudents, setLockedStudents] = useState<Set<number>>(new Set());
+  const [readyScreenshot, setReadyScreenshot] = useState<ScreenshotReadyMessage | null>(null);
+  const [autoScreenshots, setAutoScreenshots] = useState<Array<{ screenshotId: number; imageUrl: string; fullName: string; code: string }>>([]);
+  const pendingManualScreenshotIdsRef = useRef<Set<number>>(new Set());
+  const handledScreenshotIdsRef = useRef<Set<number>>(new Set());
   const [importKeyOpen, setImportKeyOpen] = useState(false);
   const [openWebDialogOpen, setOpenWebDialogOpen] = useState(false);
   const [webUrlInput, setWebUrlInput] = useState('');
@@ -116,8 +121,31 @@ export default function TeacherClassTrackingPage() {
         open: true,
         message: `Sinh viên ${studentName} có mã sinh viên ${studentCode} đã mất kết nối với server`,
         severity: 'warning'
-      })
+      }),
+    (message) => setReadyScreenshot(message)
   );
+
+  useEffect(() => {
+    if (!readyScreenshot?.screenshotId || !readyScreenshot.imageUrl) return;
+    if (handledScreenshotIdsRef.current.has(readyScreenshot.screenshotId)) return;
+
+    handledScreenshotIdsRef.current.add(readyScreenshot.screenshotId);
+    if (pendingManualScreenshotIdsRef.current.delete(readyScreenshot.screenshotId)) {
+      return;
+    }
+
+    const imageUrl = readyScreenshot.imageUrl;
+    const student = students.find((item) => item.studentId === readyScreenshot.studentId);
+    setAutoScreenshots((prev) => [
+      ...prev,
+      {
+        screenshotId: readyScreenshot.screenshotId,
+        imageUrl,
+        fullName: student?.fullName ?? 'Sinh viên',
+        code: student?.code ?? ''
+      }
+    ]);
+  }, [readyScreenshot, students]);
 
   const chip =
     studyStatus === undefined
@@ -659,8 +687,43 @@ export default function TeacherClassTrackingPage() {
           isOnline={connectedStudentIds.has(liveSelectedStudent.studentId)}
           onLockChange={handleLockChange}
           isActive={studyStatus === 1}
+          onScreenshotRequested={(screenshotId) => pendingManualScreenshotIdsRef.current.add(screenshotId)}
+          readyScreenshot={readyScreenshot}
         />
       )}
+
+      {autoScreenshots.map((screenshot) => (
+        <Dialog
+          key={screenshot.screenshotId}
+          open
+          onClose={() => setAutoScreenshots((prev) => prev.filter((item) => item.screenshotId !== screenshot.screenshotId))}
+          maxWidth="lg"
+          slotProps={{ paper: { sx: { borderRadius: 2 } } }}
+        >
+          <DialogTitle sx={{ py: 1.5 }}>
+            <Stack direction="row" alignItems="center" justifyContent="space-between">
+              <Typography variant="h6">
+                Màn hình — {screenshot.fullName} — {screenshot.code}
+              </Typography>
+              <IconButton
+                onClick={() => setAutoScreenshots((prev) => prev.filter((item) => item.screenshotId !== screenshot.screenshotId))}
+                size="small"
+                sx={{ color: 'text.secondary' }}
+              >
+                <CloseCircle size={20} />
+              </IconButton>
+            </Stack>
+          </DialogTitle>
+          <DialogContent sx={{ p: 1.5, pt: 0 }}>
+            <Box
+              component="img"
+              src={screenshot.imageUrl}
+              alt={`Screenshot — ${screenshot.fullName}`}
+              sx={{ width: '100%', display: 'block', borderRadius: 1 }}
+            />
+          </DialogContent>
+        </Dialog>
+      ))}
 
       {classId && <ImportVeyonKeyDialog open={importKeyOpen} onClose={() => setImportKeyOpen(false)} classId={classId} />}
 
