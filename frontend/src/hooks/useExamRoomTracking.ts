@@ -11,6 +11,8 @@ export interface AppUsageEntry {
   applicationName: string;
   createdAt: string;
   banApplication: boolean;
+  action?: number;
+  clipboardText?: string;
   connectionType?: string;
 }
 
@@ -34,6 +36,8 @@ interface StudentClassInfoResponse {
   applicationName: string;
   createdAt: string;
   banApplication: boolean;
+  action?: number;
+  clipboardText?: string;
   type?: 'CONNECT' | 'DISCONNECT' | 'WHITELIST_UPDATE' | 'EXAM' | 'SCREENSHOT_READY' | null;
   allowedApplications?: AllowedApplication[];
   examRoomId?: number;
@@ -64,6 +68,8 @@ interface ExamRoomTrackingResponse {
     applicationName: string;
     createdAt: string;
     banApplication: boolean;
+    action?: number;
+    clipboardText?: string;
     connectionType?: string;
   }>;
 }
@@ -75,7 +81,8 @@ export function useExamRoomTracking(
   onStudentConnect?: (studentName: string, studentCode: string) => void,
   onStudentDisconnect?: (studentName: string, studentCode: string) => void,
   onWhitelistUpdate?: (apps: AllowedApplication[]) => void,
-  onScreenshotReady?: (message: ScreenshotReadyMessage) => void
+  onScreenshotReady?: (message: ScreenshotReadyMessage) => void,
+  onClipboardEvent?: (message: string) => void
 ) {
   const [students, setStudents] = useState<StudentTrackingState[]>([]);
   const [connected, setConnected] = useState(false);
@@ -104,6 +111,8 @@ export function useExamRoomTracking(
                 applicationName: e.applicationName,
                 createdAt: e.createdAt,
                 banApplication: e.banApplication,
+                action: e.action ?? 0,
+                clipboardText: e.clipboardText,
                 connectionType: e.connectionType
               }))
             }))
@@ -198,13 +207,23 @@ export function useExamRoomTracking(
                   ? {
                       ...s,
                       appHistory: [
-                        { applicationName: data.applicationName, createdAt: data.createdAt, banApplication: data.banApplication },
+                        {
+                          applicationName: data.applicationName,
+                          createdAt: data.createdAt,
+                          banApplication: data.banApplication,
+                          action: data.action ?? 0,
+                          clipboardText: data.clipboardText
+                        },
                         ...s.appHistory
                       ]
                     }
                   : s
               )
             );
+            if ((data.action ?? 0) !== 0) {
+              const actionText = data.action === 1 ? 'SAO CHÉP' : data.action === 3 ? 'CẮT' : 'DÁN';
+              onClipboardEvent?.(`Sinh viên ${data.studentName} - ${data.studentCode} đã ${actionText} nội dung từ ${data.applicationName}`);
+            }
             if (data.banApplication) {
               onViolationDetected?.(
                 `Sinh viên ${data.studentName} mã ${data.studentCode} vừa mở ứng dụng không được phép: ${data.applicationName}`

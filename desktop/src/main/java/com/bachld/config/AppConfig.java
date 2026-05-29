@@ -72,6 +72,18 @@ public class AppConfig {
                 properties.getProperty("monitoring.interval", "10"));
     }
 
+    public int getRemoteCommandThreadPoolSize() {
+        String rawValue = properties.getProperty("remote-command.thread-pool-size", "10");
+        try {
+            int value = Integer.parseInt(rawValue);
+            if (value < 1) return 1;
+            return Math.min(value, 32);
+        } catch (NumberFormatException e) {
+            log.warn("Invalid remote-command.thread-pool-size '{}'. Using default 10.", rawValue);
+            return 10;
+        }
+    }
+
     public String getAppVersion() {
         return properties.getProperty("app.version", "1.0.0");
     }

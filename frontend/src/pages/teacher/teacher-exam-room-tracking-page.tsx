@@ -29,7 +29,7 @@ import MainCard from 'components/MainCard';
 import VncViewer from 'components/VncViewer';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useExamRoomTracking, StudentTrackingState, ScreenshotReadyMessage } from 'hooks/useExamRoomTracking';
-import { Add, ArrowLeft, CloseCircle, Copy, Global, Key, Lock1, MessageText, Refresh, Timer1, Trash, Wifi } from 'iconsax-reactjs';
+import { Add, ArrowLeft, CloseCircle, Copy, Global, Key, Lock1, MessageText, Refresh, Timer1, Trash, VideoTick, Wifi } from 'iconsax-reactjs';
 import { useNavigate, useParams } from 'react-router';
 import { HttpStatusCode } from 'axios';
 import { AllowedApplication } from 'types/allowed-application';
@@ -65,6 +65,7 @@ export default function TeacherExamRoomTrackingPage() {
   const [alert, setAlert] = useState({ open: false, message: '', severity: 'error' as 'success' | 'error' | 'info' | 'warning' });
   const [selectedStudent, setSelectedStudent] = useState<StudentTrackingState | null>(null);
   const [lockedStudents, setLockedStudents] = useState<Set<number>>(new Set());
+  const [pinnedStudentIds, setPinnedStudentIds] = useState<Set<number>>(new Set());
   const [readyScreenshot, setReadyScreenshot] = useState<ScreenshotReadyMessage | null>(null);
   const [autoScreenshots, setAutoScreenshots] = useState<Array<{ screenshotId: number; imageUrl: string; fullName: string; code: string }>>([]);
   const pendingManualScreenshotIdsRef = useRef<Set<number>>(new Set());
@@ -89,6 +90,21 @@ export default function TeacherExamRoomTrackingPage() {
   const [accessCodeDialogOpen, setAccessCodeDialogOpen] = useState(false);
   const [accessCodeInput, setAccessCodeInput] = useState('');
   const [accessCodeLoading, setAccessCodeLoading] = useState(false);
+
+  useEffect(() => {
+    if (!examRoomId) {
+      setPinnedStudentIds(new Set());
+      return;
+    }
+
+    try {
+      const raw = sessionStorage.getItem(`exam-room-tracking-pinned:${examRoomId}`);
+      const ids = raw ? (JSON.parse(raw) as number[]) : [];
+      setPinnedStudentIds(new Set(ids));
+    } catch {
+      setPinnedStudentIds(new Set());
+    }
+  }, [examRoomId]);
 
   useEffect(() => {
     if (!accessCodeDialogOpen || !examRoomId) return;
@@ -152,6 +168,17 @@ export default function TeacherExamRoomTrackingPage() {
     setSelectedStudent(student);
   };
 
+  const handleTogglePin = (studentId: number) => {
+    if (!examRoomId) return;
+    setPinnedStudentIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(studentId)) next.delete(studentId);
+      else next.add(studentId);
+      sessionStorage.setItem(`exam-room-tracking-pinned:${examRoomId}`, JSON.stringify(Array.from(next)));
+      return next;
+    });
+  };
+
   const { students, loading, connectedStudentIds } = useExamRoomTracking(
     examRoomId,
     (message) => setAlert({ open: true, message, severity: 'error' }),
@@ -164,7 +191,8 @@ export default function TeacherExamRoomTrackingPage() {
         severity: 'warning'
       }),
     (apps) => setAllowedApps(apps),
-    (message) => setReadyScreenshot(message)
+    (message) => setReadyScreenshot(message),
+    (message) => setAlert({ open: true, message, severity: 'warning' })
   );
 
   useEffect(() => {
@@ -190,13 +218,19 @@ export default function TeacherExamRoomTrackingPage() {
   }, [readyScreenshot, students]);
 
   const liveSelectedStudent = selectedStudent ? (students.find((student) => student.studentId === selectedStudent.studentId) ?? selectedStudent) : null;
+  const orderedStudents = useMemo(
+    () => [...students].sort((a, b) => Number(pinnedStudentIds.has(b.studentId)) - Number(pinnedStudentIds.has(a.studentId))),
+    [students, pinnedStudentIds]
+  );
 
   const activityFeed = useMemo(() => {
     type FeedEntry = {
-      eventType: 'app' | 'connect' | 'disconnect';
+      eventType: 'app' | 'connect' | 'disconnect' | 'copy' | 'paste' | 'cut';
       studentName: string;
+      studentCode: string;
       applicationName?: string;
       banApplication?: boolean;
+      clipboardText?: string;
       createdAt: string;
     };
     const entries: FeedEntry[] = [];
@@ -206,12 +240,23 @@ export default function TeacherExamRoomTrackingPage() {
           entries.push({
             eventType: e.connectionType === 'CONNECT' ? 'connect' : 'disconnect',
             studentName: s.fullName,
+            studentCode: s.code,
+            createdAt: e.createdAt
+          });
+        } else if ((e.action ?? 0) !== 0) {
+          entries.push({
+            eventType: e.action === 1 ? 'copy' : e.action === 3 ? 'cut' : 'paste',
+            studentName: s.fullName,
+            studentCode: s.code,
+            applicationName: e.applicationName,
+            clipboardText: e.clipboardText,
             createdAt: e.createdAt
           });
         } else {
           entries.push({
             eventType: 'app',
             studentName: s.fullName,
+            studentCode: s.code,
             applicationName: e.applicationName,
             banApplication: e.banApplication,
             createdAt: e.createdAt
@@ -463,22 +508,24 @@ export default function TeacherExamRoomTrackingPage() {
                 </Box>
               ) : (
                 <Grid container spacing={1.5}>
-                  {students.map((student) => {
+                  {orderedStudents.map((student) => {
                     const isLocked = lockedStudents.has(student.userId);
+                    const isPinned = pinnedStudentIds.has(student.studentId);
                     const isOnline = connectedStudentIds.has(student.studentId);
-                    const latestEntry = student.appHistory.find((e) => !e.connectionType) ?? null;
+                    const latestEntry = student.appHistory.find((e) => !e.connectionType && (e.action ?? 0) === 0) ?? null;
                     const isViolation = isOnline && latestEntry?.banApplication === true;
                     const borderColor = isViolation ? 'error.main' : isOnline ? 'success.main' : 'divider';
                     const dotColor = isViolation ? 'error.main' : isOnline ? 'success.main' : 'text.disabled';
                     return (
-                      <Grid key={student.studentId} size={{ xs: 12, sm: 6 }}>
+                      <Grid key={student.studentId} size={{ xs: 12, sm: isPinned ? 12 : 6 }}>
                         <Card
                           sx={{
                             border: '2px solid',
                             borderColor,
                             borderRadius: 2,
                             bgcolor: isViolation ? 'rgba(255,86,48,0.04)' : 'background.paper',
-                            overflow: 'hidden'
+                            overflow: 'hidden',
+                            boxShadow: isPinned ? 3 : 0
                           }}
                         >
                           <Box
@@ -507,6 +554,16 @@ export default function TeacherExamRoomTrackingPage() {
                                 {student.code}
                               </Typography>
                             </Stack>
+                            <Tooltip title={isPinned ? 'Bỏ ghim màn hình' : 'Ghim màn hình'} arrow>
+                              <IconButton
+                                size="small"
+                                color={isPinned ? 'primary' : 'default'}
+                                onClick={() => handleTogglePin(student.studentId)}
+                                sx={{ ml: 0.75, flexShrink: 0, p: 0.5 }}
+                              >
+                                <VideoTick size={17} variant={isPinned ? 'Bold' : 'Outline'} />
+                              </IconButton>
+                            </Tooltip>
                             <Button
                               size="small"
                               variant="outlined"
@@ -580,11 +637,14 @@ export default function TeacherExamRoomTrackingPage() {
                                   ? 'success.main'
                                   : entry.eventType === 'disconnect'
                                     ? 'warning.main'
-                                    : entry.banApplication
-                                      ? 'error.main'
-                                      : 'primary.main'
+                                    : entry.eventType === 'copy' || entry.eventType === 'paste' || entry.eventType === 'cut'
+                                      ? 'warning.main'
+                                      : entry.banApplication
+                                        ? 'error.main'
+                                        : 'primary.main'
                             }}
                           />
+                          <Tooltip title={entry.clipboardText ?? ''} arrow placement="left">
                           <Typography
                             variant="caption"
                             color={
@@ -592,9 +652,11 @@ export default function TeacherExamRoomTrackingPage() {
                                 ? 'success.main'
                                 : entry.eventType === 'disconnect'
                                   ? 'warning.main'
-                                  : entry.banApplication
-                                    ? 'error.main'
-                                    : 'text.primary'
+                                  : entry.eventType === 'copy' || entry.eventType === 'paste' || entry.eventType === 'cut'
+                                    ? 'warning.main'
+                                    : entry.banApplication
+                                      ? 'error.main'
+                                      : 'text.primary'
                             }
                             sx={{ lineHeight: 1.6 }}
                           >
@@ -606,6 +668,18 @@ export default function TeacherExamRoomTrackingPage() {
                               <>
                                 <strong>{entry.studentName}</strong> đã ngắt kết nối
                               </>
+                            ) : entry.eventType === 'copy' ? (
+                              <>
+                                Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã SAO CHÉP nội dung từ {entry.applicationName}
+                              </>
+                            ) : entry.eventType === 'paste' ? (
+                              <>
+                                Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã DÁN nội dung từ {entry.applicationName}
+                              </>
+                            ) : entry.eventType === 'cut' ? (
+                              <>
+                                Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã CẮT nội dung từ {entry.applicationName}
+                              </>
                             ) : (
                               <>
                                 <strong>{entry.studentName}</strong> mở {entry.applicationName}
@@ -613,6 +687,7 @@ export default function TeacherExamRoomTrackingPage() {
                               </>
                             )}
                           </Typography>
+                          </Tooltip>
                         </Stack>
                       ))}
                     </Stack>

@@ -45,6 +45,7 @@ public class ExamRoomService {
     StudentRepository studentRepository;
     TeacherRepository teacherRepository;
     ConnectedExamStudentRegistry connectedExamStudentRegistry;
+    ClipboardTextCryptoService clipboardTextCryptoService;
     Util util;
 
     public Page<ExamRoomResponse> getList(Pageable pageable, String keyword, Integer semesterId, Integer status) {
@@ -262,6 +263,8 @@ public class ExamRoomService {
                         Collectors.mapping(
                                 r -> AppUsageItem.builder()
                                         .applicationName(r.getApplicationName())
+                                        .action(r.getAction() == null ? 0 : r.getAction().getValue())
+                                        .clipboardText(decryptClipboardText(r))
                                         .createdAt(r.getCreatedAt())
                                         .isBanApplication(r.isBanApplication())
                                         .connectionType(r.getConnectionType())
@@ -272,6 +275,17 @@ public class ExamRoomService {
 
         students.forEach(s -> s.setApplicationsToday(usageByStudent.getOrDefault(s.getStudentId(), List.of())));
         return students;
+    }
+
+    private String decryptClipboardText(StudentAppUsageRaw raw) {
+        if (raw.getAction() == null || raw.getAction().getValue() == 0) {
+            return null;
+        }
+        return clipboardTextCryptoService.decrypt(
+                raw.getClipboardTextEncrypted(),
+                raw.getClipboardKeyEncrypted(),
+                raw.getClipboardIv()
+        );
     }
 
     @Transactional

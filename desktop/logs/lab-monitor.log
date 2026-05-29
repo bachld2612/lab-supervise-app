@@ -1,319 +1,261 @@
-2026-05-28 00:07:58.458 [SwingWorker-pool-1-thread-7] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://chi-nonloyal-undetectably.ngrok-free.dev/api/auth/v1/wifi-ssid?email=2251172244@e.tlu.edu.vn
-2026-05-28 00:07:58.699 [SwingWorker-pool-1-thread-7] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-28 00:07:58.700 [SwingWorker-pool-1-thread-7] ERROR com.bachld.client.WifiAuthApiClient - ------------------------------------------------------------
-2026-05-28 00:07:58.700 [SwingWorker-pool-1-thread-7] INFO  com.bachld.client.WifiAuthApiClient - []
-2026-05-28 00:07:58.712 [SwingWorker-pool-1-thread-7] ERROR com.bachld.client.WifiAuthApiClient - ------------------------------------------------------------
-2026-05-28 00:07:58.754 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172244@e.tlu.edu.vn
-2026-05-28 00:07:58.754 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: https://chi-nonloyal-undetectably.ngrok-free.dev/api/auth/v1/login
-2026-05-28 00:07:58.756 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST https://chi-nonloyal-undetectably.ngrok-free.dev/api/auth/v1/login
-2026-05-28 00:07:58.961 [SwingWorker-pool-1-thread-5] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 422
-2026-05-28 00:07:58.961 [SwingWorker-pool-1-thread-5] ERROR c.bachld.config.CustomErrorHandler - HTTP error response - Status: 422 UNPROCESSABLE_ENTITY
-2026-05-28 00:07:58.971 [SwingWorker-pool-1-thread-5] ERROR c.bachld.config.CustomErrorHandler - API error - Status: 422, Message: Tài khoản hoặc mật khẩu không chính xác
-2026-05-28 00:07:58.977 [SwingWorker-pool-1-thread-5] ERROR com.bachld.client.AuthApiClient - API request failed: 422 Tài khoản hoặc mật khẩu không chính xác
-org.springframework.web.client.HttpClientErrorException$UnprocessableEntity: 422 Tài khoản hoặc mật khẩu không chính xác
-	at org.springframework.web.client.HttpClientErrorException.create(HttpClientErrorException.java:134)
-	at org.springframework.web.client.HttpClientErrorException.create(HttpClientErrorException.java:89)
-	at com.bachld.config.CustomErrorHandler.handleError(CustomErrorHandler.java:83)
-	at org.springframework.web.client.ResponseErrorHandler.handleError(ResponseErrorHandler.java:63)
-	at org.springframework.web.client.RestTemplate.handleResponse(RestTemplate.java:942)
-	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:891)
-	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
-	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:538)
-	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:68)
-	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:106)
-	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:84)
-	at java.desktop/javax.swing.SwingWorker$1.call(SwingWorker.java:305)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
-	at java.desktop/javax.swing.SwingWorker.run(SwingWorker.java:342)
-	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
-	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
-	at java.base/java.lang.Thread.run(Thread.java:1583)
-2026-05-28 00:07:59.020 [AWT-EventQueue-0] ERROR com.bachld.service.AuthService - Authentication error for email: 2251172244@e.tlu.edu.vn
-com.bachld.exception.RestClientException: Failed to authenticate: 422 Tài khoản hoặc mật khẩu không chính xác
-	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:84)
-	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:106)
-	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:84)
-	at java.desktop/javax.swing.SwingWorker$1.call(SwingWorker.java:305)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
-	at java.desktop/javax.swing.SwingWorker.run(SwingWorker.java:342)
-	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
-	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
-	at java.base/java.lang.Thread.run(Thread.java:1583)
-Caused by: org.springframework.web.client.HttpClientErrorException$UnprocessableEntity: 422 Tài khoản hoặc mật khẩu không chính xác
-	at org.springframework.web.client.HttpClientErrorException.create(HttpClientErrorException.java:134)
-	at org.springframework.web.client.HttpClientErrorException.create(HttpClientErrorException.java:89)
-	at com.bachld.config.CustomErrorHandler.handleError(CustomErrorHandler.java:83)
-	at org.springframework.web.client.ResponseErrorHandler.handleError(ResponseErrorHandler.java:63)
-	at org.springframework.web.client.RestTemplate.handleResponse(RestTemplate.java:942)
-	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:891)
-	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
-	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:538)
-	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:68)
-	... 8 common frames omitted
-2026-05-28 00:08:07.663 [SwingWorker-pool-1-thread-8] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://chi-nonloyal-undetectably.ngrok-free.dev/api/auth/v1/wifi-ssid?email=2251172244@e.tlu.edu.vn
-2026-05-28 00:08:07.860 [SwingWorker-pool-1-thread-8] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-28 00:08:07.861 [SwingWorker-pool-1-thread-8] ERROR com.bachld.client.WifiAuthApiClient - ------------------------------------------------------------
-2026-05-28 00:08:07.861 [SwingWorker-pool-1-thread-8] INFO  com.bachld.client.WifiAuthApiClient - []
-2026-05-28 00:08:07.861 [SwingWorker-pool-1-thread-8] ERROR com.bachld.client.WifiAuthApiClient - ------------------------------------------------------------
-2026-05-28 00:08:07.902 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172244@e.tlu.edu.vn
-2026-05-28 00:08:07.902 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: https://chi-nonloyal-undetectably.ngrok-free.dev/api/auth/v1/login
-2026-05-28 00:08:07.904 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST https://chi-nonloyal-undetectably.ngrok-free.dev/api/auth/v1/login
-2026-05-28 00:08:08.094 [SwingWorker-pool-1-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 422
-2026-05-28 00:08:08.094 [SwingWorker-pool-1-thread-1] ERROR c.bachld.config.CustomErrorHandler - HTTP error response - Status: 422 UNPROCESSABLE_ENTITY
-2026-05-28 00:08:08.095 [SwingWorker-pool-1-thread-1] ERROR c.bachld.config.CustomErrorHandler - API error - Status: 422, Message: Xác minh vị trí không thành công. Vui lòng đảm bảo bạn đang trong khu vực lớp học.
-2026-05-28 00:08:08.096 [SwingWorker-pool-1-thread-1] ERROR com.bachld.client.AuthApiClient - API request failed: 422 Xác minh vị trí không thành công. Vui lòng đảm bảo bạn đang trong khu vực lớp học.
-org.springframework.web.client.HttpClientErrorException$UnprocessableEntity: 422 Xác minh vị trí không thành công. Vui lòng đảm bảo bạn đang trong khu vực lớp học.
-	at org.springframework.web.client.HttpClientErrorException.create(HttpClientErrorException.java:134)
-	at org.springframework.web.client.HttpClientErrorException.create(HttpClientErrorException.java:89)
-	at com.bachld.config.CustomErrorHandler.handleError(CustomErrorHandler.java:83)
-	at org.springframework.web.client.ResponseErrorHandler.handleError(ResponseErrorHandler.java:63)
-	at org.springframework.web.client.RestTemplate.handleResponse(RestTemplate.java:942)
-	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:891)
-	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
-	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:538)
-	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:68)
-	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:106)
-	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:84)
-	at java.desktop/javax.swing.SwingWorker$1.call(SwingWorker.java:305)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
-	at java.desktop/javax.swing.SwingWorker.run(SwingWorker.java:342)
-	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
-	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
-	at java.base/java.lang.Thread.run(Thread.java:1583)
-2026-05-28 00:08:08.138 [AWT-EventQueue-0] ERROR com.bachld.service.AuthService - Authentication error for email: 2251172244@e.tlu.edu.vn
-com.bachld.exception.RestClientException: Failed to authenticate: 422 Xác minh vị trí không thành công. Vui lòng đảm bảo bạn đang trong khu vực lớp học.
-	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:84)
-	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:106)
-	at com.bachld.service.AuthService$LoginWorker.doInBackground(AuthService.java:84)
-	at java.desktop/javax.swing.SwingWorker$1.call(SwingWorker.java:305)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
-	at java.desktop/javax.swing.SwingWorker.run(SwingWorker.java:342)
-	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
-	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
-	at java.base/java.lang.Thread.run(Thread.java:1583)
-Caused by: org.springframework.web.client.HttpClientErrorException$UnprocessableEntity: 422 Xác minh vị trí không thành công. Vui lòng đảm bảo bạn đang trong khu vực lớp học.
-	at org.springframework.web.client.HttpClientErrorException.create(HttpClientErrorException.java:134)
-	at org.springframework.web.client.HttpClientErrorException.create(HttpClientErrorException.java:89)
-	at com.bachld.config.CustomErrorHandler.handleError(CustomErrorHandler.java:83)
-	at org.springframework.web.client.ResponseErrorHandler.handleError(ResponseErrorHandler.java:63)
-	at org.springframework.web.client.RestTemplate.handleResponse(RestTemplate.java:942)
-	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:891)
-	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
-	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:538)
-	at com.bachld.client.AuthApiClient.login(AuthApiClient.java:68)
-	... 8 common frames omitted
-2026-05-28 00:08:22.128 [SwingWorker-pool-1-thread-10] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://chi-nonloyal-undetectably.ngrok-free.dev/api/auth/v1/wifi-ssid?email=2251172244@e.tlu.edu.vn
-2026-05-28 00:08:22.330 [SwingWorker-pool-1-thread-10] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-28 00:08:22.331 [SwingWorker-pool-1-thread-10] ERROR com.bachld.client.WifiAuthApiClient - ------------------------------------------------------------
-2026-05-28 00:08:22.332 [SwingWorker-pool-1-thread-10] INFO  com.bachld.client.WifiAuthApiClient - [AABD_5G]
-2026-05-28 00:08:22.332 [SwingWorker-pool-1-thread-10] ERROR com.bachld.client.WifiAuthApiClient - ------------------------------------------------------------
-2026-05-28 00:08:22.363 [SwingWorker-pool-1-thread-10] INFO  c.bachld.service.WifiScannerService - WiFi networks visible (2):
-  1. 'AABD_5G' <-- MATCH
-  2. 'AABD_5G' <-- MATCH
-2026-05-28 00:08:22.363 [SwingWorker-pool-1-thread-10] INFO  c.bachld.service.WifiScannerService - Target SSIDs: [AABD_5G]
-2026-05-28 00:08:22.363 [SwingWorker-pool-1-thread-10] INFO  c.bachld.service.WifiScannerService - WiFi match found in cache: AABD_5G
-2026-05-28 00:08:22.412 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172244@e.tlu.edu.vn
-2026-05-28 00:08:22.413 [SwingWorker-pool-1-thread-9] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: https://chi-nonloyal-undetectably.ngrok-free.dev/api/auth/v1/login
-2026-05-28 00:08:22.414 [SwingWorker-pool-1-thread-9] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST https://chi-nonloyal-undetectably.ngrok-free.dev/api/auth/v1/login
-2026-05-28 00:08:22.606 [SwingWorker-pool-1-thread-9] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-28 00:08:22.607 [SwingWorker-pool-1-thread-9] INFO  com.bachld.client.AuthApiClient - API response status: 200
-2026-05-28 00:08:22.646 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172244@e.tlu.edu.vn
-2026-05-28 00:08:23.263 [WebSocketClient-SecureIO-2] INFO  com.bachld.service.WebSocketService - STOMP connection successful. SessionID: bc1cd518-065f-cc22-ee04-cbc8bbcd5069
-2026-05-28 00:08:23.264 [WebSocketClient-SecureIO-2] INFO  com.bachld.service.WebSocketService - Subscribed to /topic/user/10/file
-2026-05-28 00:08:23.264 [AWT-EventQueue-0] INFO  com.bachld.service.VncWatchdog - VNC watchdog started (interval=60s)
-2026-05-28 00:08:23.264 [WebSocketClient-SecureIO-2] INFO  com.bachld.service.WebSocketService - Subscribed to /topic/user/10/command
-2026-05-28 00:08:23.315 [AWT-EventQueue-0] INFO  com.bachld.service.SemesterService - Fetching semesters...
-2026-05-28 00:08:23.315 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
-2026-05-28 00:08:23.316 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.client.SemesterApiClient - Fetching semesters from: https://chi-nonloyal-undetectably.ngrok-free.dev/api/semester/v1?size=1000&sort=startDate,desc
-2026-05-28 00:08:23.317 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Fetching student exam rooms...
-2026-05-28 00:08:23.317 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: https://chi-nonloyal-undetectably.ngrok-free.dev/api/class/v1/student
-2026-05-28 00:08:23.320 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://chi-nonloyal-undetectably.ngrok-free.dev/api/semester/v1?size=1000&sort=startDate,desc
-2026-05-28 00:08:23.320 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://chi-nonloyal-undetectably.ngrok-free.dev/api/exam-room/v1/student
-2026-05-28 00:08:23.320 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://chi-nonloyal-undetectably.ngrok-free.dev/api/class/v1/student
-2026-05-28 00:08:23.320 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-28 00:08:23.321 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-28 00:08:23.321 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-28 00:08:23.351 [AWT-EventQueue-0] INFO  com.bachld.util.VpnUtil - WireGuard VPN detected (IP range 10.0.0.0/16): iftype53_32770 -> 10.0.1.1
-2026-05-28 00:08:23.351 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Updating personal computer IP to: 10.0.1.1
-2026-05-28 00:08:23.352 [SwingWorker-pool-1-thread-6] DEBUG c.b.client.PersonalComputerApiClient - Sending POST request to: https://chi-nonloyal-undetectably.ngrok-free.dev/api/personal-computer/v1/update
-2026-05-28 00:08:23.353 [SwingWorker-pool-1-thread-6] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST https://chi-nonloyal-undetectably.ngrok-free.dev/api/personal-computer/v1/update
-2026-05-28 00:08:23.354 [SwingWorker-pool-1-thread-6] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-28 00:08:23.425 [SwingWorker-pool-1-thread-3] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-28 00:08:23.548 [SwingWorker-pool-1-thread-2] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-28 00:08:23.548 [SwingWorker-pool-1-thread-4] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-28 00:08:23.550 [SwingWorker-pool-1-thread-4] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
-2026-05-28 00:08:23.551 [SwingWorker-pool-1-thread-2] INFO  com.bachld.client.ExamRoomApiClient - GET /exam-room/v1/student response status: 200
-2026-05-28 00:08:23.579 [SwingWorker-pool-1-thread-6] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-28 00:08:23.581 [SwingWorker-pool-1-thread-6] INFO  c.b.client.PersonalComputerApiClient - POST /update response status: 200
-2026-05-28 00:08:23.590 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
-2026-05-28 00:08:23.591 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Successfully fetched student exam rooms
-2026-05-28 00:08:23.646 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully updated personal computer IP
-2026-05-28 00:08:23.646 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
-2026-05-28 00:08:23.646 [SwingWorker-pool-1-thread-7] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: https://chi-nonloyal-undetectably.ngrok-free.dev/api/personal-computer/v1/me
-2026-05-28 00:08:23.647 [SwingWorker-pool-1-thread-7] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://chi-nonloyal-undetectably.ngrok-free.dev/api/personal-computer/v1/me
-2026-05-28 00:08:23.647 [SwingWorker-pool-1-thread-7] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-28 00:08:23.755 [SwingWorker-pool-1-thread-7] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-28 00:08:23.756 [SwingWorker-pool-1-thread-7] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
-2026-05-28 00:08:23.792 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
-2026-05-28 00:08:37.887 [remote-command-2fb85d86-7ae5-4161-b87b-c1b294588b62] DEBUG c.b.service.RemoteCommandExecutor - Captured screenshot: 56708 bytes
-2026-05-28 00:08:37.890 [remote-command-2fb85d86-7ae5-4161-b87b-c1b294588b62] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST https://chi-nonloyal-undetectably.ngrok-free.dev/api/screenshots/v1/19/image
-2026-05-28 00:08:37.890 [remote-command-2fb85d86-7ae5-4161-b87b-c1b294588b62] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-28 00:08:38.485 [remote-command-2fb85d86-7ae5-4161-b87b-c1b294588b62] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-28 00:08:38.486 [remote-command-2fb85d86-7ae5-4161-b87b-c1b294588b62] WARN  com.bachld.service.WebSocketService - Screenshot command failed. screenshotId=19: Error while extracting response for type [class java.lang.String] and content type [application/json]
-org.springframework.web.client.RestClientException: Error while extracting response for type [class java.lang.String] and content type [application/json]
-	at org.springframework.web.client.HttpMessageConverterExtractor.extractData(HttpMessageConverterExtractor.java:119)
-	at org.springframework.web.client.RestTemplate$ResponseEntityResponseExtractor.extractData(RestTemplate.java:1159)
-	at org.springframework.web.client.RestTemplate$ResponseEntityResponseExtractor.extractData(RestTemplate.java:1142)
-	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:892)
-	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
-	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:538)
-	at com.bachld.client.ScreenshotApiClient.uploadScreenshot(ScreenshotApiClient.java:35)
-	at com.bachld.service.WebSocketService.lambda$handleRemoteCommand$1(WebSocketService.java:238)
-	at java.base/java.lang.Thread.run(Thread.java:1583)
-Caused by: org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Cannot deserialize value of type `java.lang.String` from Object value (token `JsonToken.START_OBJECT`)
-	at org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.readJavaType(AbstractJackson2HttpMessageConverter.java:406)
-	at org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.read(AbstractJackson2HttpMessageConverter.java:354)
-	at org.springframework.web.client.HttpMessageConverterExtractor.extractData(HttpMessageConverterExtractor.java:104)
-	... 8 common frames omitted
-Caused by: com.fasterxml.jackson.databind.exc.MismatchedInputException: Cannot deserialize value of type `java.lang.String` from Object value (token `JsonToken.START_OBJECT`)
- at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 1]
-	at com.fasterxml.jackson.databind.exc.MismatchedInputException.from(MismatchedInputException.java:59)
-	at com.fasterxml.jackson.databind.DeserializationContext.reportInputMismatch(DeserializationContext.java:1767)
-	at com.fasterxml.jackson.databind.DeserializationContext.handleUnexpectedToken(DeserializationContext.java:1541)
-	at com.fasterxml.jackson.databind.DeserializationContext.handleUnexpectedToken(DeserializationContext.java:1446)
-	at com.fasterxml.jackson.databind.DeserializationContext.extractScalarFromObject(DeserializationContext.java:958)
-	at com.fasterxml.jackson.databind.deser.std.StdDeserializer._parseString(StdDeserializer.java:1441)
-	at com.fasterxml.jackson.databind.deser.std.StringDeserializer.deserialize(StringDeserializer.java:48)
-	at com.fasterxml.jackson.databind.deser.std.StringDeserializer.deserialize(StringDeserializer.java:11)
-	at com.fasterxml.jackson.databind.deser.DefaultDeserializationContext.readRootValue(DefaultDeserializationContext.java:342)
-	at com.fasterxml.jackson.databind.ObjectReader._bindAndClose(ObjectReader.java:2125)
-	at com.fasterxml.jackson.databind.ObjectReader.readValue(ObjectReader.java:1501)
-	at org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.readJavaType(AbstractJackson2HttpMessageConverter.java:395)
-	... 10 common frames omitted
-2026-05-28 00:09:45.563 [remote-command-827c163c-c5fe-4f5f-8910-513faf507619] DEBUG c.b.service.RemoteCommandExecutor - Captured screenshot: 63360 bytes
-2026-05-28 00:09:45.565 [remote-command-827c163c-c5fe-4f5f-8910-513faf507619] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST https://chi-nonloyal-undetectably.ngrok-free.dev/api/screenshots/v1/20/image
-2026-05-28 00:09:45.566 [remote-command-827c163c-c5fe-4f5f-8910-513faf507619] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-28 00:09:46.080 [remote-command-827c163c-c5fe-4f5f-8910-513faf507619] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-28 00:09:46.081 [remote-command-827c163c-c5fe-4f5f-8910-513faf507619] WARN  com.bachld.service.WebSocketService - Screenshot command failed. screenshotId=20: Error while extracting response for type [class java.lang.String] and content type [application/json]
-org.springframework.web.client.RestClientException: Error while extracting response for type [class java.lang.String] and content type [application/json]
-	at org.springframework.web.client.HttpMessageConverterExtractor.extractData(HttpMessageConverterExtractor.java:119)
-	at org.springframework.web.client.RestTemplate$ResponseEntityResponseExtractor.extractData(RestTemplate.java:1159)
-	at org.springframework.web.client.RestTemplate$ResponseEntityResponseExtractor.extractData(RestTemplate.java:1142)
-	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:892)
-	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
-	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:538)
-	at com.bachld.client.ScreenshotApiClient.uploadScreenshot(ScreenshotApiClient.java:35)
-	at com.bachld.service.WebSocketService.lambda$handleRemoteCommand$1(WebSocketService.java:238)
-	at java.base/java.lang.Thread.run(Thread.java:1583)
-Caused by: org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Cannot deserialize value of type `java.lang.String` from Object value (token `JsonToken.START_OBJECT`)
-	at org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.readJavaType(AbstractJackson2HttpMessageConverter.java:406)
-	at org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.read(AbstractJackson2HttpMessageConverter.java:354)
-	at org.springframework.web.client.HttpMessageConverterExtractor.extractData(HttpMessageConverterExtractor.java:104)
-	... 8 common frames omitted
-Caused by: com.fasterxml.jackson.databind.exc.MismatchedInputException: Cannot deserialize value of type `java.lang.String` from Object value (token `JsonToken.START_OBJECT`)
- at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 1]
-	at com.fasterxml.jackson.databind.exc.MismatchedInputException.from(MismatchedInputException.java:59)
-	at com.fasterxml.jackson.databind.DeserializationContext.reportInputMismatch(DeserializationContext.java:1767)
-	at com.fasterxml.jackson.databind.DeserializationContext.handleUnexpectedToken(DeserializationContext.java:1541)
-	at com.fasterxml.jackson.databind.DeserializationContext.handleUnexpectedToken(DeserializationContext.java:1446)
-	at com.fasterxml.jackson.databind.DeserializationContext.extractScalarFromObject(DeserializationContext.java:958)
-	at com.fasterxml.jackson.databind.deser.std.StdDeserializer._parseString(StdDeserializer.java:1441)
-	at com.fasterxml.jackson.databind.deser.std.StringDeserializer.deserialize(StringDeserializer.java:48)
-	at com.fasterxml.jackson.databind.deser.std.StringDeserializer.deserialize(StringDeserializer.java:11)
-	at com.fasterxml.jackson.databind.deser.DefaultDeserializationContext.readRootValue(DefaultDeserializationContext.java:342)
-	at com.fasterxml.jackson.databind.ObjectReader._bindAndClose(ObjectReader.java:2125)
-	at com.fasterxml.jackson.databind.ObjectReader.readValue(ObjectReader.java:1501)
-	at org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.readJavaType(AbstractJackson2HttpMessageConverter.java:395)
-	... 10 common frames omitted
-2026-05-28 00:09:46.824 [remote-command-1ee86cf6-3a0e-48c3-a78e-97b80ed4f0d5] DEBUG c.b.service.RemoteCommandExecutor - Captured screenshot: 74476 bytes
-2026-05-28 00:09:46.827 [remote-command-1ee86cf6-3a0e-48c3-a78e-97b80ed4f0d5] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST https://chi-nonloyal-undetectably.ngrok-free.dev/api/screenshots/v1/21/image
-2026-05-28 00:09:46.829 [remote-command-1ee86cf6-3a0e-48c3-a78e-97b80ed4f0d5] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-28 00:09:47.225 [remote-command-1ee86cf6-3a0e-48c3-a78e-97b80ed4f0d5] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-28 00:09:47.226 [remote-command-1ee86cf6-3a0e-48c3-a78e-97b80ed4f0d5] WARN  com.bachld.service.WebSocketService - Screenshot command failed. screenshotId=21: Error while extracting response for type [class java.lang.String] and content type [application/json]
-org.springframework.web.client.RestClientException: Error while extracting response for type [class java.lang.String] and content type [application/json]
-	at org.springframework.web.client.HttpMessageConverterExtractor.extractData(HttpMessageConverterExtractor.java:119)
-	at org.springframework.web.client.RestTemplate$ResponseEntityResponseExtractor.extractData(RestTemplate.java:1159)
-	at org.springframework.web.client.RestTemplate$ResponseEntityResponseExtractor.extractData(RestTemplate.java:1142)
-	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:892)
-	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:790)
-	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:538)
-	at com.bachld.client.ScreenshotApiClient.uploadScreenshot(ScreenshotApiClient.java:35)
-	at com.bachld.service.WebSocketService.lambda$handleRemoteCommand$1(WebSocketService.java:238)
-	at java.base/java.lang.Thread.run(Thread.java:1583)
-Caused by: org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Cannot deserialize value of type `java.lang.String` from Object value (token `JsonToken.START_OBJECT`)
-	at org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.readJavaType(AbstractJackson2HttpMessageConverter.java:406)
-	at org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.read(AbstractJackson2HttpMessageConverter.java:354)
-	at org.springframework.web.client.HttpMessageConverterExtractor.extractData(HttpMessageConverterExtractor.java:104)
-	... 8 common frames omitted
-Caused by: com.fasterxml.jackson.databind.exc.MismatchedInputException: Cannot deserialize value of type `java.lang.String` from Object value (token `JsonToken.START_OBJECT`)
- at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 1]
-	at com.fasterxml.jackson.databind.exc.MismatchedInputException.from(MismatchedInputException.java:59)
-	at com.fasterxml.jackson.databind.DeserializationContext.reportInputMismatch(DeserializationContext.java:1767)
-	at com.fasterxml.jackson.databind.DeserializationContext.handleUnexpectedToken(DeserializationContext.java:1541)
-	at com.fasterxml.jackson.databind.DeserializationContext.handleUnexpectedToken(DeserializationContext.java:1446)
-	at com.fasterxml.jackson.databind.DeserializationContext.extractScalarFromObject(DeserializationContext.java:958)
-	at com.fasterxml.jackson.databind.deser.std.StdDeserializer._parseString(StdDeserializer.java:1441)
-	at com.fasterxml.jackson.databind.deser.std.StringDeserializer.deserialize(StringDeserializer.java:48)
-	at com.fasterxml.jackson.databind.deser.std.StringDeserializer.deserialize(StringDeserializer.java:11)
-	at com.fasterxml.jackson.databind.deser.DefaultDeserializationContext.readRootValue(DefaultDeserializationContext.java:342)
-	at com.fasterxml.jackson.databind.ObjectReader._bindAndClose(ObjectReader.java:2125)
-	at com.fasterxml.jackson.databind.ObjectReader.readValue(ObjectReader.java:1501)
-	at org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.readJavaType(AbstractJackson2HttpMessageConverter.java:395)
-	... 10 common frames omitted
-2026-05-28 00:10:06.624 [AWT-EventQueue-0] INFO  com.bachld.service.VncService - VncService.stop - UltraVNC stays running
-2026-05-28 00:10:06.724 [pool-7-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v2.0.0
-2026-05-28 00:14:27.511 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://chi-nonloyal-undetectably.ngrok-free.dev/api/auth/v1/wifi-ssid?email=2251172244@e.tlu.edu.vn
-2026-05-28 00:14:27.712 [SwingWorker-pool-1-thread-5] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-28 00:14:27.713 [SwingWorker-pool-1-thread-5] ERROR com.bachld.client.WifiAuthApiClient - ------------------------------------------------------------
-2026-05-28 00:14:27.715 [SwingWorker-pool-1-thread-5] INFO  com.bachld.client.WifiAuthApiClient - [AABD_5G]
-2026-05-28 00:14:27.715 [SwingWorker-pool-1-thread-5] ERROR com.bachld.client.WifiAuthApiClient - ------------------------------------------------------------
-2026-05-28 00:14:27.746 [SwingWorker-pool-1-thread-5] INFO  c.bachld.service.WifiScannerService - WiFi networks visible (2):
-  1. 'AABD_5G' <-- MATCH
-  2. 'AABD_5G' <-- MATCH
-2026-05-28 00:14:27.746 [SwingWorker-pool-1-thread-5] INFO  c.bachld.service.WifiScannerService - Target SSIDs: [AABD_5G]
-2026-05-28 00:14:27.747 [SwingWorker-pool-1-thread-5] INFO  c.bachld.service.WifiScannerService - WiFi match found in cache: AABD_5G
-2026-05-28 00:14:27.789 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172244@e.tlu.edu.vn
-2026-05-28 00:14:27.790 [SwingWorker-pool-1-thread-8] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: https://chi-nonloyal-undetectably.ngrok-free.dev/api/auth/v1/login
-2026-05-28 00:14:27.791 [SwingWorker-pool-1-thread-8] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST https://chi-nonloyal-undetectably.ngrok-free.dev/api/auth/v1/login
-2026-05-28 00:14:27.986 [SwingWorker-pool-1-thread-8] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-28 00:14:27.987 [SwingWorker-pool-1-thread-8] INFO  com.bachld.client.AuthApiClient - API response status: 200
-2026-05-28 00:14:28.038 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172244@e.tlu.edu.vn
-2026-05-28 00:14:28.575 [WebSocketClient-SecureIO-2] INFO  com.bachld.service.WebSocketService - STOMP connection successful. SessionID: c0b76ca0-13ba-423b-afbc-4dc7c1b42bba
-2026-05-28 00:14:28.577 [WebSocketClient-SecureIO-2] INFO  com.bachld.service.WebSocketService - Subscribed to /topic/user/10/file
-2026-05-28 00:14:28.577 [AWT-EventQueue-0] INFO  com.bachld.service.VncWatchdog - VNC watchdog started (interval=60s)
-2026-05-28 00:14:28.577 [WebSocketClient-SecureIO-2] INFO  com.bachld.service.WebSocketService - Subscribed to /topic/user/10/command
-2026-05-28 00:14:28.630 [AWT-EventQueue-0] INFO  com.bachld.service.SemesterService - Fetching semesters...
-2026-05-28 00:14:28.630 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
-2026-05-28 00:14:28.630 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.client.SemesterApiClient - Fetching semesters from: https://chi-nonloyal-undetectably.ngrok-free.dev/api/semester/v1?size=1000&sort=startDate,desc
-2026-05-28 00:14:28.631 [SwingWorker-pool-1-thread-10] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: https://chi-nonloyal-undetectably.ngrok-free.dev/api/class/v1/student
-2026-05-28 00:14:28.631 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Fetching student exam rooms...
-2026-05-28 00:14:28.631 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://chi-nonloyal-undetectably.ngrok-free.dev/api/semester/v1?size=1000&sort=startDate,desc
-2026-05-28 00:14:28.631 [SwingWorker-pool-1-thread-10] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://chi-nonloyal-undetectably.ngrok-free.dev/api/class/v1/student
-2026-05-28 00:14:28.631 [SwingWorker-pool-1-thread-9] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://chi-nonloyal-undetectably.ngrok-free.dev/api/exam-room/v1/student
-2026-05-28 00:14:28.631 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-28 00:14:28.631 [SwingWorker-pool-1-thread-10] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-28 00:14:28.633 [SwingWorker-pool-1-thread-9] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-28 00:14:28.661 [AWT-EventQueue-0] INFO  com.bachld.util.VpnUtil - WireGuard VPN detected (IP range 10.0.0.0/16): iftype53_32770 -> 10.0.1.1
-2026-05-28 00:14:28.662 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Updating personal computer IP to: 10.0.1.1
-2026-05-28 00:14:28.663 [SwingWorker-pool-1-thread-3] DEBUG c.b.client.PersonalComputerApiClient - Sending POST request to: https://chi-nonloyal-undetectably.ngrok-free.dev/api/personal-computer/v1/update
-2026-05-28 00:14:28.664 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST https://chi-nonloyal-undetectably.ngrok-free.dev/api/personal-computer/v1/update
-2026-05-28 00:14:28.664 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-28 00:14:28.737 [SwingWorker-pool-1-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-28 00:14:28.832 [SwingWorker-pool-1-thread-9] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-28 00:14:28.835 [SwingWorker-pool-1-thread-9] INFO  com.bachld.client.ExamRoomApiClient - GET /exam-room/v1/student response status: 200
-2026-05-28 00:14:28.847 [SwingWorker-pool-1-thread-10] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-28 00:14:28.847 [SwingWorker-pool-1-thread-10] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
-2026-05-28 00:14:28.874 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Successfully fetched student exam rooms
-2026-05-28 00:14:28.874 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
-2026-05-28 00:14:28.889 [SwingWorker-pool-1-thread-3] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-28 00:14:28.891 [SwingWorker-pool-1-thread-3] INFO  c.b.client.PersonalComputerApiClient - POST /update response status: 200
-2026-05-28 00:14:28.945 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully updated personal computer IP
-2026-05-28 00:14:28.945 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
-2026-05-28 00:14:28.945 [SwingWorker-pool-1-thread-4] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: https://chi-nonloyal-undetectably.ngrok-free.dev/api/personal-computer/v1/me
-2026-05-28 00:14:28.947 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET https://chi-nonloyal-undetectably.ngrok-free.dev/api/personal-computer/v1/me
-2026-05-28 00:14:28.947 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
-2026-05-28 00:14:29.052 [SwingWorker-pool-1-thread-4] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
-2026-05-28 00:14:29.054 [SwingWorker-pool-1-thread-4] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
-2026-05-28 00:14:29.093 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
-2026-05-28 00:15:05.917 [AWT-EventQueue-0] INFO  com.bachld.service.VncService - VncService.stop - UltraVNC stays running
-2026-05-28 00:15:06.018 [pool-8-thread-1] WARN  com.bachld.service.WebSocketService - WebSocket disconnected. PC info update lost: TLU Lab Monitor v2.0.0
+2026-05-29 08:30:17.042 [main] INFO  c.b.s.vnc.AdminPrivilegeService - Checking administrator permission...
+2026-05-29 08:30:17.104 [main] WARN  c.b.s.vnc.AdminPrivilegeService - Application is NOT running as Administrator
+2026-05-29 08:30:17.104 [main] INFO  c.b.s.vnc.AdminPrivilegeService - Relaunching application with Administrator privileges via UAC...
+2026-05-29 08:30:17.107 [main] DEBUG c.bachld.service.vnc.CommandRunner - CMD: powershell.exe -Command Start-Process -FilePath 'D:\Code\Java\bin\java.exe' -ArgumentList '-jar "E:\\lab_supervise\\desktop\\target\\lab-supervise-desktop-2.0.0.jar"' -Verb RunAs
+2026-05-29 08:30:23.484 [main] INFO  c.b.s.vnc.AdminPrivilegeService - Checking administrator permission...
+2026-05-29 08:30:23.528 [main] INFO  c.b.s.vnc.AdminPrivilegeService - Application is running as Administrator
+2026-05-29 08:30:23.531 [main] INFO  com.bachld.config.AppConfig - Loaded .env file
+2026-05-29 08:30:23.533 [vnc-bootstrap] INFO  c.bachld.service.vnc.VncProperties - VNC properties loaded - port=5900 vpnSubnet=10.0.1.0/16
+2026-05-29 08:30:23.538 [vnc-bootstrap] INFO  c.b.service.vnc.VncBootstrapService - VNC bootstrap started (UltraVNC 1.8.x no-auth mode)
+2026-05-29 08:30:23.674 [vnc-bootstrap] INFO  c.b.service.vnc.UltraVncDetector - UltraVNC service found: uvnc_service
+2026-05-29 08:30:23.675 [vnc-bootstrap] DEBUG c.bachld.service.vnc.CommandRunner - CMD: sc failure uvnc_service reset= 0 actions= 
+2026-05-29 08:30:23.711 [vnc-bootstrap] INFO  c.b.service.vnc.VncBootstrapService - Stopping UltraVNC service 'uvnc_service'...
+2026-05-29 08:30:23.712 [vnc-bootstrap] DEBUG c.bachld.service.vnc.CommandRunner - CMD: sc stop uvnc_service
+2026-05-29 08:30:23.745 [vnc-bootstrap] WARN  c.bachld.service.vnc.CommandRunner - CMD exit=1062: sc stop uvnc_service — [SC] ControlService FAILED 1062:
+
+The service has not been started.
+2026-05-29 08:30:23.745 [vnc-bootstrap] DEBUG c.bachld.service.vnc.CommandRunner - CMD: sc query uvnc_service
+2026-05-29 08:30:23.779 [vnc-bootstrap] INFO  c.b.service.vnc.VncBootstrapService - Service 'uvnc_service' stopped cleanly
+2026-05-29 08:30:23.780 [vnc-bootstrap] DEBUG c.bachld.service.vnc.CommandRunner - CMD: taskkill /F /T /IM winvnc.exe
+2026-05-29 08:30:24.050 [vnc-bootstrap] WARN  c.bachld.service.vnc.CommandRunner - CMD exit=128: taskkill /F /T /IM winvnc.exe — ERROR: The process "winvnc.exe" not found.
+2026-05-29 08:30:24.072 [vnc-bootstrap] INFO  c.b.service.vnc.UltraVncInstaller - UltraVNC already installed at: C:\Program Files\TLU Lab System\uvnc\winvnc.exe
+2026-05-29 08:30:24.103 [vnc-bootstrap] INFO  c.b.s.vnc.UltraVncConfigService - Overwrote UltraVNC configuration at C:\ProgramData\UltraVNC\ultravnc.ini (the path winvnc 1.8.x actually reads)
+2026-05-29 08:30:24.107 [vnc-bootstrap] INFO  c.b.service.vnc.VncBootstrapService - Ensuring firewall rule for VPN subnet...
+2026-05-29 08:30:24.107 [vnc-bootstrap] INFO  c.b.s.vnc.WindowsFirewallService - Ensuring firewall rule for VNC port 5900 restricted to VPN subnet 10.0.1.0/16
+2026-05-29 08:30:24.112 [vnc-bootstrap] DEBUG c.bachld.service.vnc.CommandRunner - CMD: powershell.exe -Command Remove-NetFirewallRule -DisplayName 'TLU Lab UltraVNC Inbound' -ErrorAction SilentlyContinue
+2026-05-29 08:30:28.784 [vnc-bootstrap] DEBUG c.bachld.service.vnc.CommandRunner - CMD: powershell.exe -Command New-NetFirewallRule -DisplayName 'TLU Lab UltraVNC Inbound' -Direction Inbound -Action Allow -Protocol TCP -LocalPort 5900 -RemoteAddress 10.0.1.0/16 -Profile Any
+2026-05-29 08:30:30.396 [vnc-bootstrap] INFO  c.b.s.vnc.WindowsFirewallService - Firewall rule 'TLU Lab UltraVNC Inbound' created — port=5900 remoteAddress=10.0.1.0/16
+2026-05-29 08:30:30.396 [vnc-bootstrap] INFO  c.b.s.vnc.WireGuardNetworkService - Checking WireGuard VPN route for subnet 10.0.1.0/16
+2026-05-29 08:30:30.398 [vnc-bootstrap] DEBUG c.bachld.service.vnc.CommandRunner - CMD: powershell.exe -Command Get-NetRoute | Where-Object { $_.DestinationPrefix -eq '10.0.1.0/16' -or $_.DestinationPrefix -eq '10.0.0.0/16' } | Select-Object -First 1
+2026-05-29 08:30:32.208 [vnc-bootstrap] INFO  c.b.s.vnc.WireGuardNetworkService - VPN route for 10.0.0.0/16 already present
+2026-05-29 08:30:32.279 [vnc-bootstrap] INFO  c.b.service.vnc.VncBootstrapService - winvnc.exe -run launched
+2026-05-29 08:30:32.790 [vnc-bootstrap] INFO  c.b.service.vnc.VncBootstrapService - UltraVNC ready - port 5900 listening (AuthRequired=0)
+2026-05-29 08:32:48.212 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/auth/v1/wifi-ssid?email=2251172245@e.tlu.edu.vn
+2026-05-29 08:32:48.257 [SwingWorker-pool-1-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-29 08:32:48.293 [SwingWorker-pool-1-thread-1] ERROR com.bachld.client.WifiAuthApiClient - ------------------------------------------------------------
+2026-05-29 08:32:48.293 [SwingWorker-pool-1-thread-1] INFO  com.bachld.client.WifiAuthApiClient - [12-208 9656, CodLUCK-MTG]
+2026-05-29 08:32:48.294 [SwingWorker-pool-1-thread-1] ERROR com.bachld.client.WifiAuthApiClient - ------------------------------------------------------------
+2026-05-29 08:32:48.489 [SwingWorker-pool-1-thread-1] INFO  c.bachld.service.WifiScannerService - WiFi networks visible (90):
+  1. 'CodLUCK-MTG' <-- MATCH
+  2. 'F16-CL-Common'
+  3. 'CodLUCK-Common-5G'
+  4. 'CodLUCK-MTG_Wi-Fi5'
+  5. 'CodLUCK-MTG' <-- MATCH
+  6. 'HITC'
+  7. 'DTS Group2_2.4G'
+  8. 'CodLUCK-Common'
+  9. 'F16-CL-Common'
+  10. 'AnPhat_2.4G'
+  11. 'P510 -2.4G'
+  12. 'TP-Link_2.4GHz_C8A082'
+  13. 'CodLUCK-Laptop'
+  14. 'Nhật Quang'
+  15. 'DTS Dev2'
+  16. 'CodLUCK-MTG_Wi-Fi5'
+  17. 'ACE5G'
+  18. 'PHONG_5G'
+  19. 'META - SP'
+  20. 'Nguyet NTA_5G'
+  21. 'Phoenix Unity_5G'
+  22. 'P810_5G'
+  23. 'GCVvietnam_5G'
+  24. 'META'
+  25. 'Nhuly_5G'
+  26. 'FPT TELECOM'
+  28. 'MIZHAI VIETNAM 5G'
+  29. 'MIZHAI VIETNAM 2.4Ghz'
+  30. 'Gia Han_5G'
+  31. 'Van Minh Office'
+  32. 'S56DB'
+  33. 'AnPhat_5G'
+  34. 'META.VN'
+  35. '701D11_5g'
+  36. 'TUNGLT_5G'
+  37. 'Nha Soc Tho_5G'
+  38. 'PID'
+  39. 'Hoai Linh'
+  40. 'SSID8'
+  41. 'Dung'
+  42. 'SSID2'
+  43. 'Linh'
+  44. 'Tri Dung'
+  46. 'TM House'
+  47. 'khanhngoc2007'
+  48. 'Kem Com-5G'
+  49. 'Duychou606'
+  50. '405 PK'
+  51. 'DuyChou5G'
+  52. 'FPT Telecom-7015-IOT'
+  53. 'JOYHUB Phong Sep'
+  54. 'ASUS_IT'
+  55. 'FPT Telecom-77AF-IOT'
+  56. 'JOYHUB Phong Lon'
+  57. 'SAMURAI2_5G'
+  58. 'P910_5G'
+  59. 'FPT Telecom-95B1-IOT'
+  60. 'Su Tit'
+  61. 'FPT Telecom-A859-IOT'
+  62. 'P506'
+  63. 'FPT Telecom-A529-IOT'
+  64. 'ETC'
+  65. 'FPT Telecom-6DD5-IOT'
+  66. 'TrungHai288_2.4G'
+  67. 'TrungHai288 FPT'
+  68. 'DTS MEDIA'
+  69. 'Kim ngan'
+  70. 'TaNa-5G'
+  71. 'TRIENVIET_5G'
+  72. 'Hopluc2025'
+  73. 'Hop Luc MEP 2'
+  74. 'DTLN_5G'
+  75. 'SESAME'
+  76. 'Công Ty Hợp  Lực  2'
+  77. 'P Ke Hoach MEP_5G'
+  78. 'HOPLUC'
+  79. 'P Ke Hoach MEP'
+  80. 'HLMEP_PTK'
+  81. 'Hopper'
+  82. 'Wifi Home 2'
+  83. 'CMAT Building Tầng 1'
+  84. 'Comartek Rooftop'
+  85. 'CodLUCK-Common-5G'
+  86. 'JM5G'
+  87. 'ComartekDev'
+  88. 'ComartekGuest'
+  89. 'Comartek Tang 2'
+  90. 'DTS Group2_5G'
+2026-05-29 08:32:48.493 [SwingWorker-pool-1-thread-1] INFO  c.bachld.service.WifiScannerService - Target SSIDs: [12-208 9656, CodLUCK-MTG]
+2026-05-29 08:32:48.510 [SwingWorker-pool-1-thread-1] INFO  c.bachld.service.WifiScannerService - WiFi match found in cache: CodLUCK-MTG
+2026-05-29 08:32:48.559 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172245@e.tlu.edu.vn
+2026-05-29 08:32:48.561 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: http://localhost:8080/api/auth/v1/login
+2026-05-29 08:32:48.616 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/auth/v1/login
+2026-05-29 08:32:48.870 [SwingWorker-pool-1-thread-2] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-29 08:32:48.874 [SwingWorker-pool-1-thread-2] INFO  com.bachld.client.AuthApiClient - API response status: 200
+2026-05-29 08:32:48.915 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172245@e.tlu.edu.vn
+2026-05-29 08:32:49.228 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - STOMP connection successful. SessionID: 13e43ea5-c0a6-b74b-341e-9f1ad10519a6
+2026-05-29 08:32:49.230 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - Subscribed to /topic/user/3/file
+2026-05-29 08:32:49.231 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - Subscribed to /topic/user/3/command
+2026-05-29 08:32:49.240 [AWT-EventQueue-0] INFO  com.bachld.service.VncWatchdog - VNC watchdog started (interval=60s)
+2026-05-29 08:32:49.635 [pool-7-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/security/v1/public-key
+2026-05-29 08:32:49.635 [pool-7-thread-1] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-29 08:32:49.643 [pool-7-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-29 08:32:49.686 [AWT-EventQueue-0] INFO  com.bachld.service.SemesterService - Fetching semesters...
+2026-05-29 08:32:49.689 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
+2026-05-29 08:32:49.690 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.client.SemesterApiClient - Fetching semesters from: http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
+2026-05-29 08:32:49.691 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Fetching student exam rooms...
+2026-05-29 08:32:49.691 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: http://localhost:8080/api/class/v1/student
+2026-05-29 08:32:49.699 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
+2026-05-29 08:32:49.700 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-29 08:32:49.704 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/class/v1/student
+2026-05-29 08:32:49.704 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-29 08:32:49.709 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/exam-room/v1/student
+2026-05-29 08:32:49.713 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-29 08:32:49.726 [SwingWorker-pool-1-thread-3] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-29 08:32:49.734 [AWT-EventQueue-0] INFO  com.bachld.util.VpnUtil - WireGuard VPN detected (IP range 10.0.0.0/16): iftype53_32770 -> 10.0.1.1
+2026-05-29 08:32:49.736 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Updating personal computer IP to: 10.0.1.1
+2026-05-29 08:32:49.749 [SwingWorker-pool-1-thread-6] DEBUG c.b.client.PersonalComputerApiClient - Sending POST request to: http://localhost:8080/api/personal-computer/v1/update
+2026-05-29 08:32:49.756 [SwingWorker-pool-1-thread-6] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/personal-computer/v1/update
+2026-05-29 08:32:49.757 [SwingWorker-pool-1-thread-6] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-29 08:32:49.774 [SwingWorker-pool-1-thread-4] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-29 08:32:49.780 [SwingWorker-pool-1-thread-4] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
+2026-05-29 08:32:49.787 [SwingWorker-pool-1-thread-5] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-29 08:32:49.790 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
+2026-05-29 08:32:49.794 [SwingWorker-pool-1-thread-5] INFO  com.bachld.client.ExamRoomApiClient - GET /exam-room/v1/student response status: 200
+2026-05-29 08:32:49.823 [SwingWorker-pool-1-thread-6] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-29 08:32:49.826 [SwingWorker-pool-1-thread-6] INFO  c.b.client.PersonalComputerApiClient - POST /update response status: 200
+2026-05-29 08:32:49.832 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Successfully fetched student exam rooms
+2026-05-29 08:32:50.033 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully updated personal computer IP
+2026-05-29 08:32:50.034 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
+2026-05-29 08:32:50.037 [SwingWorker-pool-1-thread-7] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: http://localhost:8080/api/personal-computer/v1/me
+2026-05-29 08:32:50.038 [SwingWorker-pool-1-thread-7] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/personal-computer/v1/me
+2026-05-29 08:32:50.038 [SwingWorker-pool-1-thread-7] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-29 08:32:50.058 [SwingWorker-pool-1-thread-7] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-29 08:32:50.060 [SwingWorker-pool-1-thread-7] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
+2026-05-29 08:32:50.141 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info
+2026-05-29 08:38:12.469 [main] INFO  c.b.s.vnc.AdminPrivilegeService - Checking administrator permission...
+2026-05-29 08:38:12.513 [main] WARN  c.b.s.vnc.AdminPrivilegeService - Application is NOT running as Administrator
+2026-05-29 08:38:12.515 [main] INFO  c.b.s.vnc.AdminPrivilegeService - Relaunching application with Administrator privileges via UAC...
+2026-05-29 08:38:12.517 [main] DEBUG c.bachld.service.vnc.CommandRunner - CMD: powershell.exe -Command Start-Process -FilePath 'D:\Code\Java\bin\java.exe' -ArgumentList '-jar "E:\\lab_supervise\\desktop\\target\\lab-supervise-desktop-2.0.0.jar"' -Verb RunAs
+2026-05-29 08:38:14.793 [main] INFO  c.b.s.vnc.AdminPrivilegeService - Checking administrator permission...
+2026-05-29 08:38:14.833 [main] INFO  c.b.s.vnc.AdminPrivilegeService - Application is running as Administrator
+2026-05-29 08:38:14.837 [main] INFO  com.bachld.config.AppConfig - Loaded .env file
+2026-05-29 08:38:14.837 [vnc-bootstrap] INFO  c.bachld.service.vnc.VncProperties - VNC properties loaded - port=5900 vpnSubnet=10.0.1.0/16
+2026-05-29 08:38:14.840 [vnc-bootstrap] INFO  c.b.service.vnc.VncBootstrapService - VNC bootstrap started (UltraVNC 1.8.x no-auth mode)
+2026-05-29 08:38:14.967 [vnc-bootstrap] INFO  c.b.service.vnc.UltraVncDetector - UltraVNC service found: uvnc_service
+2026-05-29 08:38:14.968 [vnc-bootstrap] DEBUG c.bachld.service.vnc.CommandRunner - CMD: sc failure uvnc_service reset= 0 actions= 
+2026-05-29 08:38:14.998 [vnc-bootstrap] INFO  c.b.service.vnc.VncBootstrapService - Stopping UltraVNC service 'uvnc_service'...
+2026-05-29 08:38:14.998 [vnc-bootstrap] DEBUG c.bachld.service.vnc.CommandRunner - CMD: sc stop uvnc_service
+2026-05-29 08:38:15.031 [vnc-bootstrap] WARN  c.bachld.service.vnc.CommandRunner - CMD exit=1062: sc stop uvnc_service — [SC] ControlService FAILED 1062:
+
+The service has not been started.
+2026-05-29 08:38:15.032 [vnc-bootstrap] DEBUG c.bachld.service.vnc.CommandRunner - CMD: sc query uvnc_service
+2026-05-29 08:38:15.063 [vnc-bootstrap] INFO  c.b.service.vnc.VncBootstrapService - Service 'uvnc_service' stopped cleanly
+2026-05-29 08:38:15.065 [vnc-bootstrap] DEBUG c.bachld.service.vnc.CommandRunner - CMD: taskkill /F /T /IM winvnc.exe
+2026-05-29 08:38:15.320 [vnc-bootstrap] INFO  c.b.service.vnc.UltraVncInstaller - UltraVNC already installed at: C:\Program Files\TLU Lab System\uvnc\winvnc.exe
+2026-05-29 08:38:15.328 [vnc-bootstrap] INFO  c.b.s.vnc.UltraVncConfigService - Overwrote UltraVNC configuration at C:\ProgramData\UltraVNC\ultravnc.ini (the path winvnc 1.8.x actually reads)
+2026-05-29 08:38:15.329 [vnc-bootstrap] INFO  c.b.service.vnc.VncBootstrapService - Ensuring firewall rule for VPN subnet...
+2026-05-29 08:38:15.329 [vnc-bootstrap] INFO  c.b.s.vnc.WindowsFirewallService - Ensuring firewall rule for VNC port 5900 restricted to VPN subnet 10.0.1.0/16
+2026-05-29 08:38:15.331 [vnc-bootstrap] DEBUG c.bachld.service.vnc.CommandRunner - CMD: powershell.exe -Command Remove-NetFirewallRule -DisplayName 'TLU Lab UltraVNC Inbound' -ErrorAction SilentlyContinue
+2026-05-29 08:38:17.568 [vnc-bootstrap] DEBUG c.bachld.service.vnc.CommandRunner - CMD: powershell.exe -Command New-NetFirewallRule -DisplayName 'TLU Lab UltraVNC Inbound' -Direction Inbound -Action Allow -Protocol TCP -LocalPort 5900 -RemoteAddress 10.0.1.0/16 -Profile Any
+2026-05-29 08:38:18.958 [vnc-bootstrap] INFO  c.b.s.vnc.WindowsFirewallService - Firewall rule 'TLU Lab UltraVNC Inbound' created — port=5900 remoteAddress=10.0.1.0/16
+2026-05-29 08:38:18.958 [vnc-bootstrap] INFO  c.b.s.vnc.WireGuardNetworkService - Checking WireGuard VPN route for subnet 10.0.1.0/16
+2026-05-29 08:38:18.959 [vnc-bootstrap] DEBUG c.bachld.service.vnc.CommandRunner - CMD: powershell.exe -Command Get-NetRoute | Where-Object { $_.DestinationPrefix -eq '10.0.1.0/16' -or $_.DestinationPrefix -eq '10.0.0.0/16' } | Select-Object -First 1
+2026-05-29 08:38:20.189 [vnc-bootstrap] INFO  c.b.s.vnc.WireGuardNetworkService - VPN route for 10.0.0.0/16 already present
+2026-05-29 08:38:20.194 [vnc-bootstrap] INFO  c.b.service.vnc.VncBootstrapService - winvnc.exe -run launched
+2026-05-29 08:38:20.704 [vnc-bootstrap] INFO  c.b.service.vnc.VncBootstrapService - UltraVNC ready - port 5900 listening (AuthRequired=0)
+2026-05-29 08:38:30.152 [SwingWorker-pool-1-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/auth/v1/wifi-ssid?email=2251172245@e.tlu.edu.vn
+2026-05-29 08:38:30.173 [SwingWorker-pool-1-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-29 08:38:30.196 [SwingWorker-pool-1-thread-1] ERROR com.bachld.client.WifiAuthApiClient - ------------------------------------------------------------
+2026-05-29 08:38:30.197 [SwingWorker-pool-1-thread-1] INFO  com.bachld.client.WifiAuthApiClient - [12-208 9656, CodLUCK-MTG]
+2026-05-29 08:38:30.197 [SwingWorker-pool-1-thread-1] ERROR com.bachld.client.WifiAuthApiClient - ------------------------------------------------------------
+2026-05-29 08:38:30.361 [SwingWorker-pool-1-thread-1] INFO  c.bachld.service.WifiScannerService - WiFi networks visible (2):
+  1. 'CodLUCK-MTG' <-- MATCH
+  2. 'CodLUCK-MTG' <-- MATCH
+2026-05-29 08:38:30.362 [SwingWorker-pool-1-thread-1] INFO  c.bachld.service.WifiScannerService - Target SSIDs: [12-208 9656, CodLUCK-MTG]
+2026-05-29 08:38:30.363 [SwingWorker-pool-1-thread-1] INFO  c.bachld.service.WifiScannerService - WiFi match found in cache: CodLUCK-MTG
+2026-05-29 08:38:30.404 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication attempt for email: 2251172245@e.tlu.edu.vn
+2026-05-29 08:38:30.406 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.client.AuthApiClient - Sending POST request to: http://localhost:8080/api/auth/v1/login
+2026-05-29 08:38:30.451 [SwingWorker-pool-1-thread-2] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/auth/v1/login
+2026-05-29 08:38:30.543 [SwingWorker-pool-1-thread-2] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-29 08:38:30.546 [SwingWorker-pool-1-thread-2] INFO  com.bachld.client.AuthApiClient - API response status: 200
+2026-05-29 08:38:30.589 [AWT-EventQueue-0] INFO  com.bachld.service.AuthService - Authentication successful for email: 2251172245@e.tlu.edu.vn
+2026-05-29 08:38:30.723 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - STOMP connection successful. SessionID: d9be0b70-3278-2c5c-c4e1-3f60952df3d6
+2026-05-29 08:38:30.725 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - Subscribed to /topic/user/3/file
+2026-05-29 08:38:30.727 [WebSocketClient-AsyncIO-12] INFO  com.bachld.service.WebSocketService - Subscribed to /topic/user/3/command
+2026-05-29 08:38:30.733 [AWT-EventQueue-0] INFO  com.bachld.service.VncWatchdog - VNC watchdog started (interval=60s)
+2026-05-29 08:38:31.053 [AWT-EventQueue-0] INFO  com.bachld.service.SemesterService - Fetching semesters...
+2026-05-29 08:38:31.054 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Fetching student classes...
+2026-05-29 08:38:31.056 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.client.SemesterApiClient - Fetching semesters from: http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
+2026-05-29 08:38:31.056 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.client.ClassApiClient - Sending GET request to: http://localhost:8080/api/class/v1/student
+2026-05-29 08:38:31.056 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Fetching student exam rooms...
+2026-05-29 08:38:31.065 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/semester/v1?size=1000&sort=startDate,desc
+2026-05-29 08:38:31.066 [SwingWorker-pool-1-thread-3] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-29 08:38:31.068 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/class/v1/student
+2026-05-29 08:38:31.069 [SwingWorker-pool-1-thread-4] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-29 08:38:31.071 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/exam-room/v1/student
+2026-05-29 08:38:31.071 [SwingWorker-pool-1-thread-5] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-29 08:38:31.082 [SwingWorker-pool-1-thread-3] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-29 08:38:31.084 [AWT-EventQueue-0] INFO  com.bachld.util.VpnUtil - WireGuard VPN detected (IP range 10.0.0.0/16): iftype53_32770 -> 10.0.1.1
+2026-05-29 08:38:31.085 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Updating personal computer IP to: 10.0.1.1
+2026-05-29 08:38:31.086 [SwingWorker-pool-1-thread-6] DEBUG c.b.client.PersonalComputerApiClient - Sending POST request to: http://localhost:8080/api/personal-computer/v1/update
+2026-05-29 08:38:31.088 [SwingWorker-pool-1-thread-4] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-29 08:38:31.088 [SwingWorker-pool-1-thread-5] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-29 08:38:31.089 [SwingWorker-pool-1-thread-5] INFO  com.bachld.client.ExamRoomApiClient - GET /exam-room/v1/student response status: 200
+2026-05-29 08:38:31.090 [SwingWorker-pool-1-thread-4] INFO  com.bachld.client.ClassApiClient - GET /student response status: 200
+2026-05-29 08:38:31.094 [SwingWorker-pool-1-thread-6] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: POST http://localhost:8080/api/personal-computer/v1/update
+2026-05-29 08:38:31.094 [SwingWorker-pool-1-thread-6] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-29 08:38:31.116 [SwingWorker-pool-1-thread-6] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-29 08:38:31.117 [SwingWorker-pool-1-thread-6] INFO  c.b.client.PersonalComputerApiClient - POST /update response status: 200
+2026-05-29 08:38:31.134 [pool-7-thread-1] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/security/v1/public-key
+2026-05-29 08:38:31.134 [pool-7-thread-1] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-29 08:38:31.142 [pool-7-thread-1] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-29 08:38:31.156 [AWT-EventQueue-0] INFO  com.bachld.service.ExamRoomService - Successfully fetched student exam rooms
+2026-05-29 08:38:31.159 [AWT-EventQueue-0] INFO  com.bachld.service.ClassService - Successfully fetched student classes
+2026-05-29 08:38:31.326 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully updated personal computer IP
+2026-05-29 08:38:31.327 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Fetching personal computer info...
+2026-05-29 08:38:31.329 [SwingWorker-pool-1-thread-7] DEBUG c.b.client.PersonalComputerApiClient - Sending GET request to: http://localhost:8080/api/personal-computer/v1/me
+2026-05-29 08:38:31.331 [SwingWorker-pool-1-thread-7] DEBUG com.bachld.config.JwtInterceptor - Intercepting request: GET http://localhost:8080/api/personal-computer/v1/me
+2026-05-29 08:38:31.331 [SwingWorker-pool-1-thread-7] DEBUG com.bachld.config.JwtInterceptor - Added Authorization header to request
+2026-05-29 08:38:31.342 [SwingWorker-pool-1-thread-7] INFO  com.bachld.config.JwtInterceptor - Request completed - Status: 200
+2026-05-29 08:38:31.344 [SwingWorker-pool-1-thread-7] INFO  c.b.client.PersonalComputerApiClient - GET /me response status: 200
+2026-05-29 08:38:31.428 [AWT-EventQueue-0] INFO  c.b.service.PersonalComputerService - Successfully fetched personal computer info

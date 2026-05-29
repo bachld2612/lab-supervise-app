@@ -7,6 +7,7 @@ import com.bachld.backend.util.auth.AuthFilter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,5 +37,11 @@ public class FileShareController {
                                                @RequestParam("file") MultipartFile file) {
         fileShareService.sendFileToStudent(id, file);
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+    }
+
+    @GetMapping("/api/file-share/v1/{token}/download")
+    @AuthFilter(role = "STUDENT")
+    public ResponseEntity<Resource> downloadSharedFile(@PathVariable String token) {
+        return fileShareService.downloadSharedFile(token);
     }
 }

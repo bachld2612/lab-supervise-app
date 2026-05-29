@@ -57,6 +57,7 @@ public class SecurityConfig {
                                 "/assets/**",
                                 "/error",
                                 "/api/zoom/**",
+                                "/api/security/v1/public-key",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",

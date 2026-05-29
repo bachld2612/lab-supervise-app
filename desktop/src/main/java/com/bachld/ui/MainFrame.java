@@ -13,6 +13,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainFrame extends JFrame {
     private final AuthService authService;
@@ -24,6 +28,7 @@ public class MainFrame extends JFrame {
     private final com.bachld.service.SemesterService semesterService;
     private final UserService userService;
     private com.bachld.service.TrackingService trackingService;
+    private com.bachld.service.TrackingService clipboardMonitorService;
     private final com.bachld.service.VncService vncService = com.bachld.service.VncService.getInstance();
     private com.bachld.service.VncWatchdog vncWatchdog;
     private JPanel contentArea;
@@ -31,6 +36,7 @@ public class MainFrame extends JFrame {
     private SidebarPanel sidebarPanel;
     private TrayIcon trayIcon;
     private PersonalComputerPanel pcPanel;
+    private final ExecutorService lifecycleExecutor = Executors.newSingleThreadExecutor(daemonThreadFactory("main-frame-lifecycle"));
 
     public MainFrame(AuthService authService, PersonalComputerService pcService,
                      com.bachld.service.ClassService classService,
@@ -51,11 +57,15 @@ public class MainFrame extends JFrame {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("win")) {
             this.trackingService = new com.bachld.service.WindowsTrackingService(webSocketService);
+            this.clipboardMonitorService = new com.bachld.service.ClipboardMonitorService(webSocketService);
         } else if (os.contains("linux")) {
             this.trackingService = new com.bachld.service.LinuxX11TrackingService(webSocketService);
         }
         if (this.trackingService != null) {
             this.trackingService.start();
+        }
+        if (this.clipboardMonitorService != null) {
+            this.clipboardMonitorService.start();
         }
 
         if (os.contains("win")) {
@@ -161,8 +171,19 @@ public class MainFrame extends JFrame {
     }
 
     private void exitApplication() {
+        setEnabled(false);
+        lifecycleExecutor.submit(() -> {
+            cleanupSession();
+            System.exit(0);
+        });
+    }
+
+    private void cleanupSession() {
         if (trackingService != null) {
             trackingService.stop();
+        }
+        if (clipboardMonitorService != null) {
+            clipboardMonitorService.stop();
         }
         if (webSocketService != null) {
             webSocketService.disconnect();
@@ -170,8 +191,7 @@ public class MainFrame extends JFrame {
         vncService.stop();
         if (vncWatchdog != null) vncWatchdog.stop();
         com.bachld.service.TokenManager.getInstance().clearToken();
-        removeTrayIcon();
-        System.exit(0);
+        SwingUtilities.invokeLater(this::removeTrayIcon);
     }
 
     private void removeTrayIcon() {
@@ -258,18 +278,15 @@ public class MainFrame extends JFrame {
         );
 
         if (confirm == JOptionPane.YES_OPTION) {
-            if (trackingService != null) {
-                trackingService.stop();
-            }
-            if (webSocketService != null) {
-                webSocketService.disconnect();
-            }
-            if (vncWatchdog != null) vncWatchdog.stop();
-            vncService.stop();
-            com.bachld.service.TokenManager.getInstance().clearToken();
-            removeTrayIcon();
-            this.dispose();
-            new LoginFrame(authService).setVisible(true);
+            setEnabled(false);
+            lifecycleExecutor.submit(() -> {
+                cleanupSession();
+                SwingUtilities.invokeLater(() -> {
+                    dispose();
+                    lifecycleExecutor.shutdownNow();
+                    new LoginFrame(authService).setVisible(true);
+                });
+            });
         }
     }
 
@@ -350,5 +367,17 @@ public class MainFrame extends JFrame {
     public void showPage(String pageId) {
         cardLayout.show(contentArea, pageId);
         sidebarPanel.setActiveItem(pageId);
+    }
+
+    private static ThreadFactory daemonThreadFactory(String threadNamePrefix) {
+        ThreadFactory defaultFactory = Executors.defaultThreadFactory();
+        AtomicInteger counter = new AtomicInteger(1);
+
+        return runnable -> {
+            Thread thread = defaultFactory.newThread(runnable);
+            thread.setName(threadNamePrefix + "-" + counter.getAndIncrement());
+            thread.setDaemon(true);
+            return thread;
+        };
     }
 }

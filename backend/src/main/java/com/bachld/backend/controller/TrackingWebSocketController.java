@@ -1,5 +1,6 @@
 package com.bachld.backend.controller;
 
+import com.bachld.backend.dto.request.ClipboardEventRequest;
 import com.bachld.backend.dto.request.StudentClassInfoCreateRequest;
 import com.bachld.backend.dto.response.StudentClassInfoResponse;
 import com.bachld.backend.service.ScreenshotCaptureService;
@@ -54,6 +55,28 @@ public class TrackingWebSocketController {
             }
         } catch (Exception e) {
             log.error("!!! [WS-TEST] LỖI XỬ LÝ MESSAGE: {}", e.getMessage(), e);
+        }
+    }
+
+    @MessageMapping("/clipboard-event")
+    public void handleClipboardEvent(ClipboardEventRequest request, Principal principal) {
+        if (principal == null) {
+            return;
+        }
+
+        try {
+            String username = principal.getName();
+            StudentClassInfoResponse response = trackingService.processClipboardEvent(Integer.valueOf(username), request);
+
+            if (response != null && response.getClassId() != null) {
+                if ("EXAM".equals(response.getType())) {
+                    messagingTemplate.convertAndSend("/topic/exam/" + response.getClassId(), response);
+                } else {
+                    messagingTemplate.convertAndSend("/topic/class/" + response.getClassId(), response);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Cannot process clipboard event: {}", e.getMessage(), e);
         }
     }
 

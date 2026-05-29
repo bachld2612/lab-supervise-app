@@ -287,6 +287,7 @@ public class ScreenshotCaptureService {
                            FROM student_class_info sci
                            WHERE sci.student_class_id = sc.id
                              AND sci.created_at <= scp.created_at
+                             AND COALESCE(sci.action, 0) = 0
                              AND (sci.connection_type IS NULL OR sci.connection_type NOT IN ('CONNECT', 'DISCONNECT'))
                            ORDER BY sci.created_at DESC, sci.id DESC
                            LIMIT 1
@@ -347,6 +348,7 @@ public class ScreenshotCaptureService {
                            FROM student_exam_room_info seri
                            WHERE seri.student_exam_room_id = ser.id
                              AND seri.created_at <= scp.created_at
+                             AND COALESCE(seri.action, 0) = 0
                              AND (seri.connection_type IS NULL OR seri.connection_type NOT IN ('CONNECT', 'DISCONNECT'))
                            ORDER BY seri.created_at DESC, seri.id DESC
                            LIMIT 1

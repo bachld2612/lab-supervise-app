@@ -7,14 +7,20 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import java.awt.Desktop;
 import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.RenderingHints;
 import java.awt.Rectangle;
 import java.awt.Robot;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.net.URI;
 import java.util.Iterator;
 
 public class RemoteCommandExecutor {
@@ -22,6 +28,7 @@ public class RemoteCommandExecutor {
     private static final Logger log = LoggerFactory.getLogger(RemoteCommandExecutor.class);
     private static final int MAX_WIDTH = 1280;
     private static final float JPEG_QUALITY = 0.65f;
+    private final ScreenLockService screenLockService = ScreenLockService.getInstance();
 
     public byte[] captureScreenshotJpeg() throws Exception {
         if (GraphicsEnvironment.isHeadless()) {
@@ -36,6 +43,56 @@ public class RemoteCommandExecutor {
         writeJpeg(rgbImage, output);
         log.debug("Captured screenshot: {} bytes", output.size());
         return output.toByteArray();
+    }
+
+    public void openWebsite(String websiteUrl) throws Exception {
+        URI uri = normalizeHttpUri(websiteUrl);
+        if (!Desktop.isDesktopSupported() || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            throw new IllegalStateException("Desktop browse action is not supported");
+        }
+        Desktop.getDesktop().browse(uri);
+        log.info("Opened website from remote command: {}", uri);
+    }
+
+    public void showMessage(String text) {
+        String message = text == null ? "" : text.trim();
+        if (message.isEmpty()) {
+            log.warn("Ignored empty remote message");
+            return;
+        }
+
+        SwingUtilities.invokeLater(() -> {
+            if (SystemTray.isSupported()) {
+                TrayIcon[] icons = SystemTray.getSystemTray().getTrayIcons();
+                if (icons.length > 0) {
+                    icons[0].displayMessage("Thông báo từ giảng viên", message, TrayIcon.MessageType.INFO);
+                    return;
+                }
+            }
+
+            JOptionPane.showMessageDialog(null, message, "Thông báo từ giảng viên", JOptionPane.INFORMATION_MESSAGE);
+        });
+    }
+
+    public void setScreenLocked(boolean active) {
+        screenLockService.setLocked(active);
+    }
+
+    private URI normalizeHttpUri(String websiteUrl) throws Exception {
+        String value = websiteUrl == null ? "" : websiteUrl.trim();
+        if (value.isEmpty()) {
+            throw new IllegalArgumentException("Website URL is empty");
+        }
+        if (!value.matches("^[a-zA-Z][a-zA-Z0-9+.-]*://.*")) {
+            value = "https://" + value;
+        }
+
+        URI uri = new URI(value);
+        String scheme = uri.getScheme();
+        if (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)) {
+            throw new IllegalArgumentException("Only HTTP/HTTPS URLs are allowed");
+        }
+        return uri;
     }
 
     private BufferedImage resizeIfNeeded(BufferedImage image) {

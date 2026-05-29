@@ -56,6 +56,8 @@ public class ClassService {
 
     StudentClassRepository studentClassRepository;
 
+    ClipboardTextCryptoService clipboardTextCryptoService;
+
     Util util;
 
     public Page<ClassResponse> getList(Pageable pageable, String keyword, Integer status) {
@@ -289,6 +291,8 @@ public class ClassService {
                         Collectors.mapping(
                                 r -> AppUsageItem.builder()
                                         .applicationName(r.getApplicationName())
+                                        .action(r.getAction() == null ? 0 : r.getAction().getValue())
+                                        .clipboardText(decryptClipboardText(r))
                                         .createdAt(r.getCreatedAt())
                                         .isBanApplication(r.isBanApplication())
                                         .connectionType(r.getConnectionType())
@@ -300,6 +304,17 @@ public class ClassService {
         students.forEach(s -> s.setApplicationsToday(usageByStudent.getOrDefault(s.getStudentId(), List.of())));
 
         return students;
+    }
+
+    private String decryptClipboardText(StudentAppUsageRaw raw) {
+        if (raw.getAction() == null || raw.getAction().getValue() == 0) {
+            return null;
+        }
+        return clipboardTextCryptoService.decrypt(
+                raw.getClipboardTextEncrypted(),
+                raw.getClipboardKeyEncrypted(),
+                raw.getClipboardIv()
+        );
     }
 
     public int getStudyStatus(Integer classId) {

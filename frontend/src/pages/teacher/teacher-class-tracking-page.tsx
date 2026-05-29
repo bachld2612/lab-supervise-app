@@ -35,6 +35,7 @@ import {
   MessageText,
   Refresh,
   Timer1,
+  VideoTick,
   Wifi
 } from 'iconsax-reactjs';
 import { useNavigate, useParams } from 'react-router';
@@ -72,6 +73,7 @@ export default function TeacherClassTrackingPage() {
   const [alert, setAlert] = useState({ open: false, message: '', severity: 'error' as 'success' | 'error' | 'info' | 'warning' });
   const [selectedStudent, setSelectedStudent] = useState<StudentTrackingState | null>(null);
   const [lockedStudents, setLockedStudents] = useState<Set<number>>(new Set());
+  const [pinnedStudentIds, setPinnedStudentIds] = useState<Set<number>>(new Set());
   const [readyScreenshot, setReadyScreenshot] = useState<ScreenshotReadyMessage | null>(null);
   const [autoScreenshots, setAutoScreenshots] = useState<Array<{ screenshotId: number; imageUrl: string; fullName: string; code: string }>>([]);
   const pendingManualScreenshotIdsRef = useRef<Set<number>>(new Set());
@@ -94,6 +96,21 @@ export default function TeacherClassTrackingPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const sendFileInputRef = useRef<HTMLInputElement>(null);
   const { logout } = useAuth();
+
+  useEffect(() => {
+    if (!classId) {
+      setPinnedStudentIds(new Set());
+      return;
+    }
+
+    try {
+      const raw = sessionStorage.getItem(`class-tracking-pinned:${classId}`);
+      const ids = raw ? (JSON.parse(raw) as number[]) : [];
+      setPinnedStudentIds(new Set(ids));
+    } catch {
+      setPinnedStudentIds(new Set());
+    }
+  }, [classId]);
 
   useEffect(() => {
     if (!classId) return;
@@ -122,7 +139,8 @@ export default function TeacherClassTrackingPage() {
         message: `Sinh viên ${studentName} có mã sinh viên ${studentCode} đã mất kết nối với server`,
         severity: 'warning'
       }),
-    (message) => setReadyScreenshot(message)
+    (message) => setReadyScreenshot(message),
+    (message) => setAlert({ open: true, message, severity: 'warning' })
   );
 
   useEffect(() => {
@@ -158,10 +176,12 @@ export default function TeacherClassTrackingPage() {
 
   const activityFeed = useMemo(() => {
     type FeedEntry = {
-      eventType: 'app' | 'connect' | 'disconnect';
+      eventType: 'app' | 'connect' | 'disconnect' | 'copy' | 'paste' | 'cut';
       studentName: string;
+      studentCode: string;
       applicationName?: string;
       banApplication?: boolean;
+      clipboardText?: string;
       createdAt: string;
     };
     const entries: FeedEntry[] = [];
@@ -171,12 +191,23 @@ export default function TeacherClassTrackingPage() {
           entries.push({
             eventType: e.connectionType === 'CONNECT' ? 'connect' : 'disconnect',
             studentName: s.fullName,
+            studentCode: s.code,
+            createdAt: e.createdAt
+          });
+        } else if ((e.action ?? 0) !== 0) {
+          entries.push({
+            eventType: e.action === 1 ? 'copy' : e.action === 3 ? 'cut' : 'paste',
+            studentName: s.fullName,
+            studentCode: s.code,
+            applicationName: e.applicationName,
+            clipboardText: e.clipboardText,
             createdAt: e.createdAt
           });
         } else {
           entries.push({
             eventType: 'app',
             studentName: s.fullName,
+            studentCode: s.code,
             applicationName: e.applicationName,
             banApplication: e.banApplication,
             createdAt: e.createdAt
@@ -189,6 +220,17 @@ export default function TeacherClassTrackingPage() {
 
   const handleCardClick = (student: StudentTrackingState) => {
     setSelectedStudent(student);
+  };
+
+  const handleTogglePin = (studentId: number) => {
+    if (!classId) return;
+    setPinnedStudentIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(studentId)) next.delete(studentId);
+      else next.add(studentId);
+      sessionStorage.setItem(`class-tracking-pinned:${classId}`, JSON.stringify(Array.from(next)));
+      return next;
+    });
   };
 
   const handleDialogClose = () => {
@@ -206,6 +248,10 @@ export default function TeacherClassTrackingPage() {
 
   // Keep selectedStudent in sync with live WS data
   const liveSelectedStudent = selectedStudent ? (students.find((s) => s.studentId === selectedStudent.studentId) ?? selectedStudent) : null;
+  const orderedStudents = useMemo(
+    () => [...students].sort((a, b) => Number(pinnedStudentIds.has(b.studentId)) - Number(pinnedStudentIds.has(a.studentId))),
+    [students, pinnedStudentIds]
+  );
 
   const handleFileImportChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
@@ -517,22 +563,24 @@ export default function TeacherClassTrackingPage() {
                 </Box>
               ) : (
                 <Grid container spacing={1.5}>
-                  {students.map((student) => {
+                  {orderedStudents.map((student) => {
                     const isLocked = lockedStudents.has(student.userId);
+                    const isPinned = pinnedStudentIds.has(student.studentId);
                     const isOnline = connectedStudentIds.has(student.studentId);
-                    const latestEntry = student.appHistory.find((e) => !e.connectionType) ?? null;
+                    const latestEntry = student.appHistory.find((e) => !e.connectionType && (e.action ?? 0) === 0) ?? null;
                     const isBanned = isOnline && latestEntry?.banApplication === true;
                     const borderColor = isBanned ? 'error.main' : isOnline ? 'success.main' : 'divider';
                     const dotColor = isBanned ? 'error.main' : isOnline ? 'success.main' : 'text.disabled';
                     return (
-                      <Grid key={student.studentId} size={{ xs: 12, sm: 6 }}>
+                      <Grid key={student.studentId} size={{ xs: 12, sm: isPinned ? 12 : 6 }}>
                         <Card
                           sx={{
                             border: '2px solid',
                             borderColor,
                             borderRadius: 2,
                             bgcolor: isBanned ? 'rgba(255,86,48,0.04)' : 'background.paper',
-                            overflow: 'hidden'
+                            overflow: 'hidden',
+                            boxShadow: isPinned ? 3 : 0
                           }}
                         >
                           {/* Header */}
@@ -562,6 +610,16 @@ export default function TeacherClassTrackingPage() {
                                 {student.code}
                               </Typography>
                             </Stack>
+                            <Tooltip title={isPinned ? 'Bỏ ghim màn hình' : 'Ghim màn hình'} arrow>
+                              <IconButton
+                                size="small"
+                                color={isPinned ? 'primary' : 'default'}
+                                onClick={() => handleTogglePin(student.studentId)}
+                                sx={{ ml: 0.75, flexShrink: 0, p: 0.5 }}
+                              >
+                                <VideoTick size={17} variant={isPinned ? 'Bold' : 'Outline'} />
+                              </IconButton>
+                            </Tooltip>
                             <Button
                               size="small"
                               variant="outlined"
@@ -633,13 +691,16 @@ export default function TeacherClassTrackingPage() {
                                 ? 'success.main'
                                 : entry.eventType === 'disconnect'
                                   ? 'warning.main'
-                                  : entry.banApplication
-                                    ? 'error.main'
-                                    : 'primary.main',
+                                  : entry.eventType === 'copy' || entry.eventType === 'paste' || entry.eventType === 'cut'
+                                    ? 'warning.main'
+                                    : entry.banApplication
+                                      ? 'error.main'
+                                      : 'primary.main',
                             flexShrink: 0,
                             mt: '5px'
                           }}
                         />
+                        <Tooltip title={entry.clipboardText ?? ''} arrow placement="left">
                         <Typography
                           variant="caption"
                           color={
@@ -647,9 +708,11 @@ export default function TeacherClassTrackingPage() {
                               ? 'success.main'
                               : entry.eventType === 'disconnect'
                                 ? 'warning.main'
-                                : entry.banApplication
-                                  ? 'error.main'
-                                  : 'text.primary'
+                                : entry.eventType === 'copy' || entry.eventType === 'paste' || entry.eventType === 'cut'
+                                  ? 'warning.main'
+                                  : entry.banApplication
+                                    ? 'error.main'
+                                    : 'text.primary'
                           }
                           sx={{ lineHeight: 1.6 }}
                         >
@@ -661,12 +724,25 @@ export default function TeacherClassTrackingPage() {
                             <>
                               <strong>{entry.studentName}</strong> đã ngắt kết nối
                             </>
+                          ) : entry.eventType === 'copy' ? (
+                            <>
+                              Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã SAO CHÉP nội dung từ {entry.applicationName}
+                            </>
+                          ) : entry.eventType === 'paste' ? (
+                            <>
+                              Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã DÁN nội dung từ {entry.applicationName}
+                            </>
+                          ) : entry.eventType === 'cut' ? (
+                            <>
+                              Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã CẮT nội dung từ {entry.applicationName}
+                            </>
                           ) : (
                             <>
                               <strong>{entry.studentName}</strong> đổi ứng dụng sang {entry.applicationName}
                             </>
                           )}
                         </Typography>
+                        </Tooltip>
                       </Stack>
                     ))}
                   </Stack>
