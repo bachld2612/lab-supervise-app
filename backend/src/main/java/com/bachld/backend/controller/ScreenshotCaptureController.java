@@ -1,6 +1,8 @@
 package com.bachld.backend.controller;
 
 import com.bachld.backend.dto.response.BaseResponse;
+import com.bachld.backend.service.ClassService;
+import com.bachld.backend.service.ExamRoomService;
 import com.bachld.backend.service.ScreenshotCaptureService;
 import com.bachld.backend.util.auth.AuthFilter;
 import lombok.AccessLevel;
@@ -29,7 +31,36 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ScreenshotCaptureController {
 
+    static final String CLASS_NOT_ACTIVE = "Lop hoc hien khong hoat dong";
+    static final String EXAM_NOT_ACTIVE = "Phong thi hien khong hoat dong";
+
     ScreenshotCaptureService screenshotCaptureService;
+    ClassService classService;
+    ExamRoomService examRoomService;
+
+    @PostMapping("/v1/class/{classId}/students/{studentUserId}/request")
+    @AuthFilter(role = "TEACHER")
+    public ResponseEntity<?> requestClassScreenshot(@PathVariable Integer classId, @PathVariable Integer studentUserId) {
+        if (classService.getStudyStatus(classId) != 1) {
+            return ResponseEntity.unprocessableEntity().body(new BaseResponse<>(HttpStatus.UNPROCESSABLE_ENTITY.value(), CLASS_NOT_ACTIVE));
+        }
+        return ResponseEntity.ok(new BaseResponse<>(
+                HttpStatus.OK.value(),
+                screenshotCaptureService.requestClassScreenshot(classId, studentUserId)
+        ));
+    }
+
+    @PostMapping("/v1/exam-room/{examRoomId}/students/{studentUserId}/request")
+    @AuthFilter(role = "TEACHER")
+    public ResponseEntity<?> requestExamRoomScreenshot(@PathVariable Integer examRoomId, @PathVariable Integer studentUserId) {
+        if (examRoomService.getStudyStatus(examRoomId) != 1) {
+            return ResponseEntity.unprocessableEntity().body(new BaseResponse<>(HttpStatus.UNPROCESSABLE_ENTITY.value(), EXAM_NOT_ACTIVE));
+        }
+        return ResponseEntity.ok(new BaseResponse<>(
+                HttpStatus.OK.value(),
+                screenshotCaptureService.requestExamRoomScreenshot(examRoomId, studentUserId)
+        ));
+    }
 
     @PostMapping("/v1/{id}/image")
     @AuthFilter(role = "STUDENT")

@@ -34,6 +34,27 @@ export interface ScreenshotHistoryPage {
   size: number;
 }
 
+export interface ScreenshotCaptureResponse {
+  id: number;
+  imageUrl: string | null;
+}
+
+export const requestClassScreenshot = async (
+  classId: number,
+  studentUserId: number
+): Promise<{ statusCode: number; data: ScreenshotCaptureResponse }> => {
+  const response = await axiosServices.post(`/api/screenshots/v1/class/${classId}/students/${studentUserId}/request`);
+  return response.data;
+};
+
+export const requestExamRoomScreenshot = async (
+  examRoomId: number,
+  studentUserId: number
+): Promise<{ statusCode: number; data: ScreenshotCaptureResponse }> => {
+  const response = await axiosServices.post(`/api/screenshots/v1/exam-room/${examRoomId}/students/${studentUserId}/request`);
+  return response.data;
+};
+
 export const getScreenshotContexts = async (
   contextType: ScreenshotContextType
 ): Promise<{ statusCode: number; data: ScreenshotContextOption[] }> => {

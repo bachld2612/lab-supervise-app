@@ -20,15 +20,14 @@ import { Camera, CloseCircle, DocumentUpload, Global, Lock1, MessageText, Monito
 import { useEffect, useRef, useState } from 'react';
 import { AppUsageEntry, StudentTrackingState } from 'hooks/useClassTracking';
 import {
-  getScreenshot,
   lockScreen,
   openWebsiteForStudent,
   sendMessageToStudent,
   lockScreenForExamRoom,
-  getScreenshotForExamRoom,
   openWebsiteForExamRoomStudent,
   sendMessageToExamRoomStudent
-} from 'api/veyon';
+} from 'api/remote-control';
+import { requestClassScreenshot, requestExamRoomScreenshot } from 'api/screenshot';
 import { sendFileToStudent } from 'api/class';
 import { ChangeEvent } from 'react';
 import { HttpStatusCode } from 'axios';
@@ -254,9 +253,9 @@ export default function StudentActionDialog({
     try {
       let res: { statusCode: number; data: { id: number; imageUrl: string | null } };
       if (isExamRoom && examRoomId) {
-        res = await getScreenshotForExamRoom(examRoomId, student.userId);
+        res = await requestExamRoomScreenshot(examRoomId, student.userId);
       } else {
-        res = await getScreenshot(classId, student.userId);
+        res = await requestClassScreenshot(classId, student.userId);
       }
       if (res.statusCode === HttpStatusCode.Ok && res.data?.id) {
         onScreenshotRequested?.(res.data.id);

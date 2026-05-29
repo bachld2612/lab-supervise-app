@@ -27,8 +27,7 @@ Requires MySQL at `localhost:3306`, database `datn`, user `root`/`root`.
 Required environment variables (see `.env.example`):
 - `JWT` — JWT signing secret
 - `VNC_PASSWORD` — VNC password for remote desktop relay
-- `VEYON_RSA_PRIVATE_KEY` — RSA private key for Veyon integration
-- `VEYON_SECRET` — Veyon API secret
+- `APP_RSA_PRIVATE_KEY` — RSA private key for clipboard encryption
 
 ### Frontend (`/frontend`)
 ```bash
@@ -63,7 +62,7 @@ Three-tier distributed system for real-time lab monitoring:
 
 ### Backend Package Structure (`com.bachld.backend`)
 
-- `controller/` — REST controllers per domain (Auth, User, Teacher, Student, Class, PersonalComputer, Schedule, ManageClass, Semester, Subject, Department, Section, Major, Veyon) plus `TrackingWebSocketController` for STOMP and `VncController` for VNC sessions.
+- `controller/` — REST controllers per domain (Auth, User, Teacher, Student, Class, PersonalComputer, Schedule, ManageClass, Semester, Subject, Department, Section, Major, RemoteControl) plus `TrackingWebSocketController` for STOMP and `VncController` for VNC sessions.
 - `service/` — Business logic; mirrors controller domains. `VncSessionService` manages one-time session tokens (30 s expiry).
 - `repository/` — Spring Data JPA repositories.
 - `model/entity/` — JPA entities.

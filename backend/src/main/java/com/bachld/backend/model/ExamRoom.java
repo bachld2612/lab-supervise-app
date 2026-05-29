@@ -48,12 +48,6 @@ public class ExamRoom extends BaseEntity {
     @Column(name = "end_time")
     LocalTime endTime;
 
-    @Column(name = "veyon_key", columnDefinition = "TEXT")
-    String veyonKey;
-
-    @Column(name = "veyon_key_name", columnDefinition = "TEXT")
-    String veyonKeyName;
-
     @Column(name = "tracking_enabled")
     Boolean trackingEnabled = false;
 

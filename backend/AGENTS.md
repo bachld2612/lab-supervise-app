@@ -5,7 +5,7 @@
 This repository is the Spring Boot backend for Lab Supervise. Main code lives under `src/main/java/com/bachld/backend`.
 
 - `controller/`: REST endpoints and WebSocket controllers.
-- `service/`: business logic and integration code, including Veyon and VNC session handling.
+- `service/`: business logic and integration code, including remote command and VNC session handling.
 - `repository/`: Spring Data JPA repositories.
 - `model/`: JPA entities.
 - `dto/request` and `dto/response`: API payload types.
@@ -21,7 +21,7 @@ Runtime configuration and seed data are in `src/main/resources`. Download templa
 - `docker compose up mysql`: start local MySQL 8.0 using `docker-compose.yml`.
 - `docker compose up --build`: run MySQL plus the backend container when validating Docker setup.
 
-The app expects MySQL database `datn` and environment variables from `.env.example`, especially `JWT`, `VNC_ENCRYPTION_KEY`, and Veyon secrets.
+The app expects MySQL database `datn` and environment variables from `.env.example`, especially `JWT`, `APP_RSA_PRIVATE_KEY`, and `VNC_ENCRYPTION_KEY`.
 
 ## Coding Style & Naming Conventions
 

@@ -29,12 +29,12 @@ import MainCard from 'components/MainCard';
 import VncViewer from 'components/VncViewer';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useExamRoomTracking, StudentTrackingState, ScreenshotReadyMessage } from 'hooks/useExamRoomTracking';
-import { Add, ArrowLeft, CloseCircle, Copy, Global, Key, Lock1, MessageText, Refresh, Timer1, Trash, VideoTick, Wifi } from 'iconsax-reactjs';
+import { Add, ArrowLeft, CloseCircle, Copy, Global, Lock1, MessageText, Refresh, Timer1, Trash, VideoTick, Wifi } from 'iconsax-reactjs';
 import { useNavigate, useParams } from 'react-router';
 import { HttpStatusCode } from 'axios';
 import { AllowedApplication } from 'types/allowed-application';
 import * as allowedApplicationApi from 'api/allowed-application';
-import { openWebsiteForExamRoom, sendMessageToExamRoom } from 'api/veyon';
+import { openWebsiteForExamRoom, sendMessageToExamRoom } from 'api/remote-control';
 import {
   getById as getExamRoomById,
   getStudyStatus as getExamStudyStatus,
@@ -42,7 +42,6 @@ import {
   updateWifiSsid,
   generateWifiSsid
 } from 'api/exam-room';
-import ImportVeyonKeyDialog from 'sections/extra-pages/class/import-veyon-key-dialog';
 import StudentActionDialog from 'sections/extra-pages/class/student-action-dialog';
 import { StudentTrackingState as ClassStudentTrackingState } from 'hooks/useClassTracking';
 
@@ -70,7 +69,6 @@ export default function TeacherExamRoomTrackingPage() {
   const [autoScreenshots, setAutoScreenshots] = useState<Array<{ screenshotId: number; imageUrl: string; fullName: string; code: string }>>([]);
   const pendingManualScreenshotIdsRef = useRef<Set<number>>(new Set());
   const handledScreenshotIdsRef = useRef<Set<number>>(new Set());
-  const [importKeyOpen, setImportKeyOpen] = useState(false);
   const [openWebDialogOpen, setOpenWebDialogOpen] = useState(false);
   const [webUrlInput, setWebUrlInput] = useState('');
   const [webUrlLoading, setWebUrlLoading] = useState(false);
@@ -405,17 +403,6 @@ export default function TeacherExamRoomTrackingPage() {
             <Button
               variant="outlined"
               size="small"
-              startIcon={<Key size={15} />}
-              onClick={() => setImportKeyOpen(true)}
-              sx={{ whiteSpace: 'nowrap' }}
-            >
-              Import khóa Veyon
-            </Button>
-          )}
-          {examRoomId && (
-            <Button
-              variant="outlined"
-              size="small"
               startIcon={<Wifi size={15} />}
               onClick={() => setAccessCodeDialogOpen(true)}
               sx={{ whiteSpace: 'nowrap' }}
@@ -736,9 +723,6 @@ export default function TeacherExamRoomTrackingPage() {
           </MainCard>
         </Box>
       </Stack>
-
-      {/* Veyon key import dialog (reuse existing) */}
-      {examRoomId && <ImportVeyonKeyDialog open={importKeyOpen} onClose={() => setImportKeyOpen(false)} classId={examRoomId} isExamRoom />}
 
       {/* Add allowed app dialog */}
       <Dialog

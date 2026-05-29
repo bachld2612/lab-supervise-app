@@ -30,7 +30,6 @@ import {
   ExportCurve,
   Global,
   ImportCurve,
-  Key,
   Lock1,
   MessageText,
   Refresh,
@@ -40,7 +39,6 @@ import {
 } from 'iconsax-reactjs';
 import { useNavigate, useParams } from 'react-router';
 import StudentActionDialog from 'sections/extra-pages/class/student-action-dialog';
-import ImportVeyonKeyDialog from 'sections/extra-pages/class/import-veyon-key-dialog';
 import {
   importStudentIntoClass,
   downloadClassStudentImportTemplate,
@@ -50,7 +48,7 @@ import {
   updateWifiSsid,
   generateWifiSsid
 } from 'api/class';
-import { openWebsiteForClass, sendMessageToClass } from 'api/veyon';
+import { openWebsiteForClass, sendMessageToClass } from 'api/remote-control';
 import { HttpStatusCode } from 'axios';
 import useAuth from 'hooks/useAuth';
 
@@ -78,7 +76,6 @@ export default function TeacherClassTrackingPage() {
   const [autoScreenshots, setAutoScreenshots] = useState<Array<{ screenshotId: number; imageUrl: string; fullName: string; code: string }>>([]);
   const pendingManualScreenshotIdsRef = useRef<Set<number>>(new Set());
   const handledScreenshotIdsRef = useRef<Set<number>>(new Set());
-  const [importKeyOpen, setImportKeyOpen] = useState(false);
   const [openWebDialogOpen, setOpenWebDialogOpen] = useState(false);
   const [webUrlInput, setWebUrlInput] = useState('');
   const [webUrlLoading, setWebUrlLoading] = useState(false);
@@ -453,17 +450,6 @@ export default function TeacherClassTrackingPage() {
             <Button
               variant="outlined"
               size="small"
-              startIcon={<Key size={15} />}
-              onClick={() => setImportKeyOpen(true)}
-              sx={{ whiteSpace: 'nowrap' }}
-            >
-              Import khóa Veyon
-            </Button>
-          )}
-          {classId && (
-            <Button
-              variant="outlined"
-              size="small"
               startIcon={<Wifi size={15} />}
               onClick={() => setAccessCodeDialogOpen(true)}
               sx={{ whiteSpace: 'nowrap' }}
@@ -800,8 +786,6 @@ export default function TeacherClassTrackingPage() {
           </DialogContent>
         </Dialog>
       ))}
-
-      {classId && <ImportVeyonKeyDialog open={importKeyOpen} onClose={() => setImportKeyOpen(false)} classId={classId} />}
 
       <Dialog
         open={accessCodeDialogOpen}

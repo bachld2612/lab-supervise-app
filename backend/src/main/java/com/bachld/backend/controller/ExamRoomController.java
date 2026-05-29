@@ -3,10 +3,8 @@ package com.bachld.backend.controller;
 import com.bachld.backend.dto.request.ClassWifiSsidRequest;
 import com.bachld.backend.dto.request.ExamRoomCreateRequest;
 import com.bachld.backend.dto.request.ExamRoomUpdateRequest;
-import com.bachld.backend.dto.request.ImportVeyonKeyForExamRoomRequest;
 import com.bachld.backend.dto.response.BaseResponse;
 import com.bachld.backend.service.ExamRoomService;
-import com.bachld.backend.service.VeyonService;
 import com.bachld.backend.util.auth.AuthFilter;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -29,7 +27,6 @@ import java.time.LocalDate;
 public class ExamRoomController {
 
     ExamRoomService examRoomService;
-    VeyonService veyonService;
 
     @GetMapping("/v1")
     @AuthFilter(role = "ADMIN,TEACHER,IT_CENTER")
@@ -136,13 +133,4 @@ public class ExamRoomController {
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), examRoomService.generateWifiSsid(id)));
     }
 
-    @PostMapping("/v1/{examRoomId}/veyon/import-key")
-    @AuthFilter(role = "TEACHER")
-    public ResponseEntity<?> importVeyonKey(
-            @PathVariable int examRoomId,
-            @RequestBody @Valid ImportVeyonKeyForExamRoomRequest request
-    ) {
-        veyonService.importKeyForExamRoom(examRoomId, request.getKeyName(), request.getEncryptedKeyData());
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
 }

@@ -314,14 +314,6 @@ public class ExamRoomService {
         return ssid;
     }
 
-    public void importVeyonKey(Integer examRoomId, String keyName, String encryptedKeyData) {
-        ExamRoom examRoom = examRoomRepository.findById(examRoomId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy phòng thi có id: " + examRoomId));
-        examRoom.setVeyonKeyName(keyName);
-        examRoom.setVeyonKey(encryptedKeyData);
-        examRoomRepository.save(examRoom);
-    }
-
     private void validateRoomConflict(Integer roomId, LocalDate examDate, LocalTime startTime, LocalTime endTime, Integer excludeId) {
         List<ExamRoom> sameRoom = examRoomRepository.findByRoomIdAndExamDate(roomId, examDate);
         for (ExamRoom er : sameRoom) {
