@@ -3,11 +3,11 @@ export interface Student {
   fullName: string;
   code: string;
   email: string;
-  phone: string;
-  hometown: string;
+  phone?: string;
+  hometown?: string;
   status: number;
   manageClassId: number;
   manageClassName: string;
-  birthday: string;
+  birthday?: string;
   rawPassword?: string;
 }

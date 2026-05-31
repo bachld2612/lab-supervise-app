@@ -1,6 +1,7 @@
 package com.bachld.backend.service;
 
 import com.bachld.backend.dto.request.StudentCreateRequest;
+import com.bachld.backend.dto.request.StudentImportRequest;
 import com.bachld.backend.dto.request.StudentUpdateRequest;
 import com.bachld.backend.dto.response.StudentResponse;
 import com.bachld.backend.model.ManageClass;
@@ -51,8 +52,7 @@ public class StudentService {
     public Page<StudentResponse> getList(Pageable pageable, String keyword, Integer status, Integer manageClassId) {
         if (keyword != null) {
             keyword = "%" + keyword.trim().toLowerCase() + "%";
-        }
-        else {
+        } else {
             keyword = "%%";
         }
 
@@ -65,7 +65,9 @@ public class StudentService {
 
     @Transactional
     public void create(StudentCreateRequest request) {
-        util.validatePhone(request.getPhone(), null);
+        if (hasText(request.getPhone())) {
+            util.validatePhone(request.getPhone(), null);
+        }
         util.validateEmail(request.getEmail(), null);
         util.validateStudentCode(request.getCode(), null);
         manageClassRepository.findClassByIdAndStatus(request.getManageClassId(), Status.ACTIVE.getValue())
@@ -73,12 +75,14 @@ public class StudentService {
 
         User user = new User();
         user.setEmail(request.getEmail());
-        String rawPassword = "tlu" + request.getPhone().substring(request.getPhone().length() - 3);
+        String rawPassword = buildDefaultPassword(request.getCode());
         user.setPassword(passwordEncoder.encode(rawPassword));
         user.setRawPassword(rawPassword);
         user.setFullName(request.getFullName());
         user.setHometown(request.getHometown());
-        user.setBirthday(LocalDate.parse(request.getBirthday()));
+        if (hasText(request.getBirthday())) {
+            user.setBirthday(LocalDate.parse(request.getBirthday()));
+        }
         user.setPhone(request.getPhone());
         user.setRoleId(Role.STUDENT.getValue());
         user.setStatus(Status.ACTIVE.getValue());
@@ -101,15 +105,21 @@ public class StudentService {
         User user = userRepository.findByIdAndStatus(student.getUserId(), Status.ACTIVE.getValue())
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng có id: " + student.getUserId()));
 
-        util.validatePhone(request.getPhone(), user.getId());
-        util.validateEmail(request.getEmail(), user.getId());
-        util.validateStudentCode(request.getCode(), student.getId());
+        if (hasText(request.getPhone())) {
+            util.validatePhone(request.getPhone(), user.getId());
+        }
+        if (hasText(request.getEmail())) {
+            util.validateEmail(request.getEmail(), user.getId());
+        }
+        if (hasText(request.getCode())) {
+            util.validateStudentCode(request.getCode(), student.getId());
+        }
 
-        if (request.getEmail() != null && !request.getEmail().isEmpty()) {
+        if (hasText(request.getEmail())) {
             user.setEmail(request.getEmail());
         }
 
-        if (request.getCode() != null && !request.getCode().isEmpty()) {
+        if (hasText(request.getCode())) {
             student.setCode(request.getCode());
         }
 
@@ -119,19 +129,19 @@ public class StudentService {
             student.setManageClassId(request.getManageClassId());
         }
 
-        if (request.getFullName() != null && !request.getFullName().isEmpty()) {
+        if (hasText(request.getFullName())) {
             user.setFullName(request.getFullName());
         }
 
-        if (request.getHometown() != null && !request.getHometown().isEmpty()) {
+        if (request.getHometown() != null) {
             user.setHometown(request.getHometown());
         }
 
-        if (request.getBirthday() != null && !request.getBirthday().isEmpty()) {
-            user.setBirthday(LocalDate.parse(request.getBirthday()));
+        if (request.getBirthday() != null) {
+            user.setBirthday(hasText(request.getBirthday()) ? LocalDate.parse(request.getBirthday()) : null);
         }
 
-        if (request.getPhone() != null && !request.getPhone().isEmpty()) {
+        if (request.getPhone() != null) {
             user.setPhone(request.getPhone());
         }
 
@@ -167,36 +177,34 @@ public class StudentService {
 
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
-            String[] headers = new String[]{"STT", "Mã Sinh Viên", "Họ Tên", "Lớp quản lý", "Email", "Số điện thoại", "Ngày sinh", "Quê quán"};
+            String[] headers = new String[]{"STT", "Mã Sinh Viên", "Họ Tên", "Lớp quản lý"};
             util.validateImportTemplate(sheet, headers);
 
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
-                if (row == null || util.isRowEmpty(row)) {
+                if (row == null || isStudentImportRowEmpty(row)) {
                     continue;
                 }
 
                 int rowNum = i + 1;
                 try {
-                    String manageClassName = util.getCellStringValue(row.getCell(3));
-                    if (manageClassName == null || manageClassName.isEmpty()) {
-                        throw new IllegalArgumentException("Tên lớp quản lý không được để trống");
-                    }
+                    StudentImportRequest importRequest = new StudentImportRequest();
+                    importRequest.setOrdinal(util.getCellStringValue(row.getCell(0)));
+                    importRequest.setCode(util.getCellStringValue(row.getCell(1)));
+                    importRequest.setFullName(util.getCellStringValue(row.getCell(2)));
+                    importRequest.setManageClassName(util.getCellStringValue(row.getCell(3)));
+                    util.validateBean(importRequest);
 
                     ManageClass manageClass = manageClassRepository
-                            .findClassByNameAndStatus(manageClassName, Status.ACTIVE.getValue())
+                            .findClassByNameAndStatus(importRequest.getManageClassName(), Status.ACTIVE.getValue())
                             .orElseThrow(() -> new IllegalArgumentException(
-                                    "Không tìm thấy lớp quản lý: " + manageClassName));
+                                    "Không tìm thấy lớp quản lý: " + importRequest.getManageClassName()));
 
                     StudentCreateRequest request = new StudentCreateRequest();
-                    request.setCode(util.getCellStringValue(row.getCell(1)));
-                    request.setFullName(util.getCellStringValue(row.getCell(2)));
+                    request.setCode(importRequest.getCode());
+                    request.setFullName(importRequest.getFullName());
                     request.setManageClassId(manageClass.getId());
-                    request.setEmail(util.getCellStringValue(row.getCell(4)));
-                    request.setPhone(util.getCellStringValue(row.getCell(5)));
-                    String birthDay = util.getCellStringValue(row.getCell(6));
-                    request.setBirthday(util.getStringDate(birthDay));
-                    request.setHometown(util.getCellStringValue(row.getCell(7)));
+                    request.setEmail(buildStudentEmail(importRequest.getCode()));
 
                     util.validateBean(request);
                     create(request);
@@ -207,4 +215,28 @@ public class StudentService {
         }
     }
 
+    private String buildStudentEmail(String studentCode) {
+        return studentCode.trim() + "@e.tlu.edu.vn";
+    }
+
+    private String buildDefaultPassword(String studentCode) {
+        String normalizedCode = studentCode.trim();
+        if (normalizedCode.length() < 3) {
+            throw new IllegalArgumentException("Mã sinh viên phải có ít nhất 3 ký tự để tạo mật khẩu mặc định");
+        }
+        return "tlu" + normalizedCode.substring(normalizedCode.length() - 3);
+    }
+
+    private boolean isStudentImportRowEmpty(Row row) {
+        for (int c = 0; c <= 3; c++) {
+            if (util.getCellStringValue(row.getCell(c)) != null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isBlank();
+    }
 }

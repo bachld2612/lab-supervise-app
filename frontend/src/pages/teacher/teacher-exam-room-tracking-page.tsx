@@ -9,7 +9,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Divider,
   FormControlLabel,
   Grid,
   IconButton,
@@ -66,7 +65,9 @@ export default function TeacherExamRoomTrackingPage() {
   const [lockedStudents, setLockedStudents] = useState<Set<number>>(new Set());
   const [pinnedStudentIds, setPinnedStudentIds] = useState<Set<number>>(new Set());
   const [readyScreenshot, setReadyScreenshot] = useState<ScreenshotReadyMessage | null>(null);
-  const [autoScreenshots, setAutoScreenshots] = useState<Array<{ screenshotId: number; imageUrl: string; fullName: string; code: string }>>([]);
+  const [autoScreenshots, setAutoScreenshots] = useState<Array<{ screenshotId: number; imageUrl: string; fullName: string; code: string }>>(
+    []
+  );
   const pendingManualScreenshotIdsRef = useRef<Set<number>>(new Set());
   const handledScreenshotIdsRef = useRef<Set<number>>(new Set());
   const [openWebDialogOpen, setOpenWebDialogOpen] = useState(false);
@@ -215,7 +216,9 @@ export default function TeacherExamRoomTrackingPage() {
     ]);
   }, [readyScreenshot, students]);
 
-  const liveSelectedStudent = selectedStudent ? (students.find((student) => student.studentId === selectedStudent.studentId) ?? selectedStudent) : null;
+  const liveSelectedStudent = selectedStudent
+    ? (students.find((student) => student.studentId === selectedStudent.studentId) ?? selectedStudent)
+    : null;
   const orderedStudents = useMemo(
     () => [...students].sort((a, b) => Number(pinnedStudentIds.has(b.studentId)) - Number(pinnedStudentIds.has(a.studentId))),
     [students, pinnedStudentIds]
@@ -561,7 +564,9 @@ export default function TeacherExamRoomTrackingPage() {
                             </Button>
                           </Box>
 
-                          {examRoomId && <VncViewer classId={examRoomId} studentUserId={student.userId} isOnline={isOnline} mode="exam-room" />}
+                          {examRoomId && (
+                            <VncViewer classId={examRoomId} studentUserId={student.userId} isOnline={isOnline} mode="exam-room" />
+                          )}
                         </Card>
                       </Grid>
                     );
@@ -632,48 +637,51 @@ export default function TeacherExamRoomTrackingPage() {
                             }}
                           />
                           <Tooltip title={entry.clipboardText ?? ''} arrow placement="left">
-                          <Typography
-                            variant="caption"
-                            color={
-                              entry.eventType === 'connect'
-                                ? 'success.main'
-                                : entry.eventType === 'disconnect'
-                                  ? 'warning.main'
-                                  : entry.eventType === 'copy' || entry.eventType === 'paste' || entry.eventType === 'cut'
+                            <Typography
+                              variant="caption"
+                              color={
+                                entry.eventType === 'connect'
+                                  ? 'success.main'
+                                  : entry.eventType === 'disconnect'
                                     ? 'warning.main'
-                                    : entry.banApplication
-                                      ? 'error.main'
-                                      : 'text.primary'
-                            }
-                            sx={{ lineHeight: 1.6 }}
-                          >
-                            {entry.eventType === 'connect' ? (
-                              <>
-                                <strong>{entry.studentName}</strong> đã kết nối
-                              </>
-                            ) : entry.eventType === 'disconnect' ? (
-                              <>
-                                <strong>{entry.studentName}</strong> đã ngắt kết nối
-                              </>
-                            ) : entry.eventType === 'copy' ? (
-                              <>
-                                Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã SAO CHÉP nội dung từ {entry.applicationName}
-                              </>
-                            ) : entry.eventType === 'paste' ? (
-                              <>
-                                Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã DÁN nội dung từ {entry.applicationName}
-                              </>
-                            ) : entry.eventType === 'cut' ? (
-                              <>
-                                Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã CẮT nội dung từ {entry.applicationName}
-                              </>
-                            ) : (
-                              <>
-                                <strong>{entry.studentName}</strong> mở {entry.applicationName}
-                                {entry.banApplication ? ' ⚠️ vi phạm' : ''}
-                              </>
-                            )}
-                          </Typography>
+                                    : entry.eventType === 'copy' || entry.eventType === 'paste' || entry.eventType === 'cut'
+                                      ? 'warning.main'
+                                      : entry.banApplication
+                                        ? 'error.main'
+                                        : 'text.primary'
+                              }
+                              sx={{ lineHeight: 1.6 }}
+                            >
+                              {entry.eventType === 'connect' ? (
+                                <>
+                                  <strong>{entry.studentName}</strong> đã kết nối
+                                </>
+                              ) : entry.eventType === 'disconnect' ? (
+                                <>
+                                  <strong>{entry.studentName}</strong> đã ngắt kết nối
+                                </>
+                              ) : entry.eventType === 'copy' ? (
+                                <>
+                                  Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã SAO CHÉP nội dung từ{' '}
+                                  {entry.applicationName}
+                                </>
+                              ) : entry.eventType === 'paste' ? (
+                                <>
+                                  Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã DÁN nội dung từ{' '}
+                                  {entry.applicationName}
+                                </>
+                              ) : entry.eventType === 'cut' ? (
+                                <>
+                                  Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã CẮT nội dung từ{' '}
+                                  {entry.applicationName}
+                                </>
+                              ) : (
+                                <>
+                                  <strong>{entry.studentName}</strong> mở {entry.applicationName}
+                                  {entry.banApplication ? ' ⚠️ vi phạm' : ''}
+                                </>
+                              )}
+                            </Typography>
                           </Tooltip>
                         </Stack>
                       ))}

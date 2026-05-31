@@ -76,7 +76,9 @@ export default function TeacherClassTrackingPage() {
   const [lockedStudents, setLockedStudents] = useState<Set<number>>(new Set());
   const [pinnedStudentIds, setPinnedStudentIds] = useState<Set<number>>(new Set());
   const [readyScreenshot, setReadyScreenshot] = useState<ScreenshotReadyMessage | null>(null);
-  const [autoScreenshots, setAutoScreenshots] = useState<Array<{ screenshotId: number; imageUrl: string; fullName: string; code: string }>>([]);
+  const [autoScreenshots, setAutoScreenshots] = useState<Array<{ screenshotId: number; imageUrl: string; fullName: string; code: string }>>(
+    []
+  );
   const pendingManualScreenshotIdsRef = useRef<Set<number>>(new Set());
   const handledScreenshotIdsRef = useRef<Set<number>>(new Set());
   const [openWebDialogOpen, setOpenWebDialogOpen] = useState(false);
@@ -234,7 +236,9 @@ export default function TeacherClassTrackingPage() {
         setTrackingEnabled(enabled);
         setAlert({
           open: true,
-          message: enabled ? 'Đã bật giám sát - ứng dụng cấm sẽ bị đánh dấu đỏ' : 'Đã tắt giám sát - ứng dụng cấm vẫn được lưu nhưng không cảnh báo',
+          message: enabled
+            ? 'Đã bật giám sát - ứng dụng cấm sẽ bị đánh dấu đỏ'
+            : 'Đã tắt giám sát - ứng dụng cấm vẫn được lưu nhưng không cảnh báo',
           severity: enabled ? 'warning' : 'info'
         });
       } else {
@@ -737,47 +741,50 @@ export default function TeacherClassTrackingPage() {
                           }}
                         />
                         <Tooltip title={entry.clipboardText ?? ''} arrow placement="left">
-                        <Typography
-                          variant="caption"
-                          color={
-                            entry.eventType === 'connect'
-                              ? 'success.main'
-                              : entry.eventType === 'disconnect'
-                                ? 'warning.main'
-                                : entry.eventType === 'copy' || entry.eventType === 'paste' || entry.eventType === 'cut'
+                          <Typography
+                            variant="caption"
+                            color={
+                              entry.eventType === 'connect'
+                                ? 'success.main'
+                                : entry.eventType === 'disconnect'
                                   ? 'warning.main'
-                                  : entry.banApplication
-                                    ? 'error.main'
-                                    : 'text.primary'
-                          }
-                          sx={{ lineHeight: 1.6 }}
-                        >
-                          {entry.eventType === 'connect' ? (
-                            <>
-                              <strong>{entry.studentName}</strong> đã kết nối vào hệ thống
-                            </>
-                          ) : entry.eventType === 'disconnect' ? (
-                            <>
-                              <strong>{entry.studentName}</strong> đã ngắt kết nối
-                            </>
-                          ) : entry.eventType === 'copy' ? (
-                            <>
-                              Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã SAO CHÉP nội dung từ {entry.applicationName}
-                            </>
-                          ) : entry.eventType === 'paste' ? (
-                            <>
-                              Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã DÁN nội dung từ {entry.applicationName}
-                            </>
-                          ) : entry.eventType === 'cut' ? (
-                            <>
-                              Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã CẮT nội dung từ {entry.applicationName}
-                            </>
-                          ) : (
-                            <>
-                              <strong>{entry.studentName}</strong> đổi ứng dụng sang {entry.applicationName}
-                            </>
-                          )}
-                        </Typography>
+                                  : entry.eventType === 'copy' || entry.eventType === 'paste' || entry.eventType === 'cut'
+                                    ? 'warning.main'
+                                    : entry.banApplication
+                                      ? 'error.main'
+                                      : 'text.primary'
+                            }
+                            sx={{ lineHeight: 1.6 }}
+                          >
+                            {entry.eventType === 'connect' ? (
+                              <>
+                                <strong>{entry.studentName}</strong> đã kết nối vào hệ thống
+                              </>
+                            ) : entry.eventType === 'disconnect' ? (
+                              <>
+                                <strong>{entry.studentName}</strong> đã ngắt kết nối
+                              </>
+                            ) : entry.eventType === 'copy' ? (
+                              <>
+                                Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã SAO CHÉP nội dung từ{' '}
+                                {entry.applicationName}
+                              </>
+                            ) : entry.eventType === 'paste' ? (
+                              <>
+                                Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã DÁN nội dung từ{' '}
+                                {entry.applicationName}
+                              </>
+                            ) : entry.eventType === 'cut' ? (
+                              <>
+                                Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã CẮT nội dung từ{' '}
+                                {entry.applicationName}
+                              </>
+                            ) : (
+                              <>
+                                <strong>{entry.studentName}</strong> đổi ứng dụng sang {entry.applicationName}
+                              </>
+                            )}
+                          </Typography>
                         </Tooltip>
                       </Stack>
                     ))}
