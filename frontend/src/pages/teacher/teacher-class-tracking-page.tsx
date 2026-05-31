@@ -10,10 +10,12 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  FormControlLabel,
   Grid,
   IconButton,
   Snackbar,
   Stack,
+  Switch,
   TextField,
   Tooltip,
   Typography
@@ -45,6 +47,7 @@ import {
   sendFileToClass,
   getClassStudyStatus,
   getById,
+  setTrackingEnabled as setTrackingEnabledApi,
   updateWifiSsid,
   generateWifiSsid
 } from 'api/class';
@@ -87,6 +90,8 @@ export default function TeacherClassTrackingPage() {
   const [sendFileLoading, setSendFileLoading] = useState(false);
   const [reload, setReload] = useState(false);
   const [studyStatus, setStudyStatus] = useState<number | undefined>(undefined);
+  const [trackingEnabled, setTrackingEnabled] = useState(true);
+  const [trackingToggleLoading, setTrackingToggleLoading] = useState(false);
   const [accessCodeDialogOpen, setAccessCodeDialogOpen] = useState(false);
   const [accessCodeInput, setAccessCodeInput] = useState('');
   const [accessCodeLoading, setAccessCodeLoading] = useState(false);
@@ -113,6 +118,11 @@ export default function TeacherClassTrackingPage() {
     if (!classId) return;
     getClassStudyStatus(classId).then((res) => {
       if (res?.statusCode === HttpStatusCode.Ok) setStudyStatus(res.data as number);
+    });
+    getById(classId).then((res) => {
+      if (res?.statusCode === HttpStatusCode.Ok) {
+        setTrackingEnabled(res.data?.trackingEnabled ?? true);
+      }
     });
   }, [classId]);
 
@@ -215,6 +225,27 @@ export default function TeacherClassTrackingPage() {
     return entries.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 100);
   }, [students]);
 
+  const handleTrackingToggle = async (enabled: boolean) => {
+    if (!classId || trackingToggleLoading) return;
+    setTrackingToggleLoading(true);
+    try {
+      const res = await setTrackingEnabledApi(classId, enabled);
+      if (res?.statusCode === HttpStatusCode.Ok) {
+        setTrackingEnabled(enabled);
+        setAlert({
+          open: true,
+          message: enabled ? 'Đã bật giám sát - ứng dụng cấm sẽ bị đánh dấu đỏ' : 'Đã tắt giám sát - ứng dụng cấm vẫn được lưu nhưng không cảnh báo',
+          severity: enabled ? 'warning' : 'info'
+        });
+      } else {
+        setAlert({ open: true, message: 'Không thể thay đổi trạng thái giám sát', severity: 'error' });
+      }
+    } catch {
+      setAlert({ open: true, message: 'Lỗi hệ thống, vui lòng thử lại', severity: 'error' });
+    } finally {
+      setTrackingToggleLoading(false);
+    }
+  };
   const handleCardClick = (student: StudentTrackingState) => {
     setSelectedStudent(student);
   };
@@ -457,6 +488,25 @@ export default function TeacherClassTrackingPage() {
               Mã truy cập
             </Button>
           )}
+          <Tooltip title={trackingEnabled ? 'Đang giám sát - click để tắt' : 'Chưa giám sát - click để bật'} arrow>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={trackingEnabled}
+                  onChange={(e) => handleTrackingToggle(e.target.checked)}
+                  disabled={trackingToggleLoading}
+                  color="error"
+                  size="small"
+                />
+              }
+              label={
+                <Typography variant="body2" fontWeight="bold" color={trackingEnabled ? 'error.main' : 'text.secondary'}>
+                  {trackingEnabled ? 'Đang giám sát' : 'Chưa giám sát'}
+                </Typography>
+              }
+              sx={{ m: 0 }}
+            />
+          </Tooltip>
           <Chip icon={chip.icon} label={chip.label} color={chip.color} size="small" variant="outlined" />
         </Stack>
       </Stack>

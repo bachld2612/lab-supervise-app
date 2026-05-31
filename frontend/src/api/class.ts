@@ -158,6 +158,16 @@ const generateWifiSsid = async (classId: number) => {
   }
 };
 
+const setTrackingEnabled = async (classId: number, enabled: boolean) => {
+  try {
+    const response = await axiosServices.put(`/api/class/v1/${classId}/tracking-enabled`, null, {
+      params: { enabled }
+    });
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
 export {
   getList,
   getById,
@@ -174,5 +184,6 @@ export {
   sendFileToClass,
   sendFileToStudent,
   updateWifiSsid,
-  generateWifiSsid
+  generateWifiSsid,
+  setTrackingEnabled
 };

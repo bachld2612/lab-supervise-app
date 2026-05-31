@@ -19,4 +19,5 @@ export interface Classes {
   roomId?: number;
   roomName?: string;
   wifiSsid?: string;
+  trackingEnabled?: boolean;
 }

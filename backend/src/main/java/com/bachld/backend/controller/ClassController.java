@@ -101,6 +101,16 @@ public class ClassController {
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), classService.getTrackingByClassId(classId, targetDate)));
     }
 
+    @PutMapping("/v1/{classId}/tracking-enabled")
+    @AuthFilter(role = "TEACHER")
+    public ResponseEntity<?> setTrackingEnabled(
+            @PathVariable int classId,
+            @RequestParam boolean enabled
+    ) {
+        classService.setTrackingEnabled(classId, enabled);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+    }
+
     @GetMapping("/v1/{classId}/student")
     @AuthFilter(role = "TEACHER,ADMIN")
     public ResponseEntity<?> getStudentsByClassId(

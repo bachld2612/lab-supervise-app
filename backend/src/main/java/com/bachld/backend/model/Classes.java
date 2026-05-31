@@ -48,4 +48,7 @@ public class Classes extends BaseEntity {
 
     @Column(name = "wifi_ssid")
     String wifiSsid;
+
+    @Column(name = "tracking_enabled", columnDefinition = "BOOLEAN DEFAULT TRUE")
+    Boolean trackingEnabled = true;
 }

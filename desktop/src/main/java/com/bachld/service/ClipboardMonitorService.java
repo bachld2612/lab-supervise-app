@@ -67,6 +67,7 @@ public class ClipboardMonitorService implements TrackingService {
 
     @Override
     public void start() {
+        lastClipboardText = readClipboardText();
         running = true;
         startClipboardWatcher();
         startKeyboardHook();

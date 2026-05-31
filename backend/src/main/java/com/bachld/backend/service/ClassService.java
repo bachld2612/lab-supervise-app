@@ -356,6 +356,14 @@ public class ClassService {
     }
 
     @Transactional
+    public void setTrackingEnabled(Integer classId, boolean enabled) {
+        Classes classes = classRepository.findById(classId)
+                .orElseThrow(() -> new IllegalArgumentException("KhÃ´ng tÃ¬m tháº¥y lá»›p há»c cÃ³ id: " + classId));
+        classes.setTrackingEnabled(enabled);
+        classRepository.save(classes);
+    }
+
+    @Transactional
     public String generateWifiSsid(int id) {
         Classes classes = classRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp học có id: " + id));

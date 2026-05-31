@@ -18,7 +18,7 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
             c.id, c.name,
             (SELECT CAST(COUNT(stc.studentId) AS integer) FROM StudentClass stc WHERE stc.classId = c.id),
             c.maxStudent, c.sessionNumber, c.status, s.id, s.name, t.id, u.fullName, sc.id, sc.name, c.startDate, c.endDate,
-            sm.id, sm.name, r.id, r.name, c.wifiSsid
+            sm.id, sm.name, r.id, r.name, c.wifiSsid, c.trackingEnabled
         )
         FROM Classes c
             JOIN Semester sm ON sm.id = c.semesterId
@@ -37,7 +37,7 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
             c.id, c.name,
             (SELECT CAST(COUNT(stc.studentId) AS integer) FROM StudentClass stc WHERE stc.classId = c.id),
             c.maxStudent, c.sessionNumber, c.status, s.id, s.name, t.id, u.fullName, sc.id, sc.name, c.startDate, c.endDate,
-            sm.id, sm.name, r.id, r.name, c.wifiSsid
+            sm.id, sm.name, r.id, r.name, c.wifiSsid, c.trackingEnabled
         )
         FROM Classes c
             JOIN Semester sm ON sm.id = c.semesterId
@@ -56,7 +56,7 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
             c.id, c.name,
             (SELECT CAST(COUNT(stc.studentId) AS integer) FROM StudentClass stc WHERE stc.classId = c.id),
             c.maxStudent, c.sessionNumber, c.status, s.id, s.name, t.id, u.fullName, sc.id, sc.name, c.startDate, c.endDate,
-            sm.id, sm.name, r.id, r.name, c.wifiSsid
+            sm.id, sm.name, r.id, r.name, c.wifiSsid, c.trackingEnabled
         )
         FROM Classes c
             JOIN Semester sm ON sm.id = c.semesterId
@@ -77,7 +77,7 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
             c.id, c.name,
             (SELECT CAST(COUNT(stc.studentId) AS integer) FROM StudentClass stc WHERE stc.classId = c.id),
             c.maxStudent, c.sessionNumber, c.status, s.id, s.name, t.id, u.fullName, sc.id, sc.name, c.startDate, c.endDate,
-            sm.id, sm.name, r.id, r.name, c.wifiSsid
+            sm.id, sm.name, r.id, r.name, c.wifiSsid, c.trackingEnabled
         )
         FROM Classes c
             JOIN Semester sm ON sm.id = c.semesterId
@@ -96,7 +96,7 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
             c.id, c.name,
             (SELECT CAST(COUNT(stc.studentId) AS integer) FROM StudentClass stc WHERE stc.classId = c.id),
             c.maxStudent, c.sessionNumber, c.status, s.id, s.name, t.id, u.fullName, sc.id, sc.name, c.startDate, c.endDate,
-            sm.id, sm.name, r.id, r.name, c.wifiSsid
+            sm.id, sm.name, r.id, r.name, c.wifiSsid, c.trackingEnabled
         )
         FROM Classes c
             JOIN Semester sm ON sm.id = c.semesterId
