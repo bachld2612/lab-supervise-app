@@ -53,6 +53,7 @@ import { Teacher } from 'types/teacher';
 import { Subject } from 'types/subject';
 import { Semester } from 'types/semester';
 import { Room } from 'types/room';
+import { ALL_PERIODS } from 'utils/schedule';
 
 interface ExamRoomFormValues {
   code: string;
@@ -63,8 +64,7 @@ interface ExamRoomFormValues {
   semesterId: number;
   maxStudent: number | '';
   examDate: string;
-  startTime: string;
-  endTime: string;
+  periods: string;
 }
 
 const validationSchema = Yup.object({
@@ -76,8 +76,9 @@ const validationSchema = Yup.object({
   semesterId: Yup.number().min(1, 'Vui lòng chọn học kỳ').required('Vui lòng chọn học kỳ'),
   maxStudent: Yup.number().min(1, 'Sĩ số phải lớn hơn 0').required('Vui lòng nhập sĩ số tối đa'),
   examDate: Yup.string().required('Vui lòng chọn ngày thi'),
-  startTime: Yup.string().required('Vui lòng nhập giờ bắt đầu'),
-  endTime: Yup.string().required('Vui lòng nhập giờ kết thúc')
+  periods: Yup.string()
+    .required('Vui lòng chọn tiết thi')
+    .test('continuous-periods', 'Các tiết thi phải liên tục', (value) => isContinuousPeriods(value ?? ''))
 });
 
 const emptyValues: ExamRoomFormValues = {
@@ -89,15 +90,47 @@ const emptyValues: ExamRoomFormValues = {
   semesterId: 0,
   maxStudent: '',
   examDate: '',
-  startTime: '',
-  endTime: ''
+  periods: ''
 };
 
 const normalizeTimeForInput = (time?: string) => (time ? time.slice(0, 5) : '');
 
-const normalizeTimeForSubmit = (time: string) => {
-  if (/^\d{2}:\d{2}$/.test(time)) return `${time}:00`;
-  return time;
+const parsePeriodValues = (periods?: string) =>
+  (periods ?? '')
+    .split(',')
+    .map((value) => Number(value.trim()))
+    .filter((value) => Number.isInteger(value) && value >= 1 && value <= 12)
+    .sort((a, b) => a - b);
+
+const normalizePeriods = (periods: string) => [...new Set(parsePeriodValues(periods))].join(',');
+
+const isContinuousPeriods = (periods: string) => {
+  const values = parsePeriodValues(periods);
+  if (values.length === 0) return false;
+  return values.every((value, index) => index === 0 || value === values[index - 1] + 1);
+};
+
+const derivePeriodsFromTime = (startTime?: string, endTime?: string) => {
+  const start = normalizeTimeForInput(startTime);
+  const end = normalizeTimeForInput(endTime);
+  const startIndex = ALL_PERIODS.findIndex((period) => period.label.includes(start));
+  const endIndex = ALL_PERIODS.findIndex((period) => period.label.includes(end));
+
+  if (startIndex < 0 || endIndex < startIndex) return '';
+
+  return ALL_PERIODS.slice(startIndex, endIndex + 1)
+    .map((period) => period.value)
+    .join(',');
+};
+
+const formatPeriodRange = (periods?: string, startTime?: string, endTime?: string) => {
+  const values = parsePeriodValues(periods);
+  const timeRange = `${formatTimeWithoutSecond(startTime ?? '')} - ${formatTimeWithoutSecond(endTime ?? '')}`;
+
+  if (values.length === 0) return timeRange;
+  if (values.length === 1) return `Tiết ${values[0]} (${timeRange})`;
+
+  return `Tiết ${values[0]} - Tiết ${values[values.length - 1]} (${timeRange})`;
 };
 
 interface DropdownData {
@@ -136,16 +169,14 @@ function ExamRoomFormDialog({
           semesterId: editItem.semesterId,
           maxStudent: editItem.maxStudent,
           examDate: editItem.examDate,
-          startTime: normalizeTimeForInput(editItem.startTime),
-          endTime: normalizeTimeForInput(editItem.endTime)
+          periods: editItem.periods || derivePeriodsFromTime(editItem.startTime, editItem.endTime)
         }
       : emptyValues,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       const payload = {
         ...values,
         maxStudent: Number(values.maxStudent),
-        startTime: normalizeTimeForSubmit(values.startTime),
-        endTime: normalizeTimeForSubmit(values.endTime)
+        periods: normalizePeriods(values.periods)
       };
       const response = editItem ? await update(payload as Partial<ExamRoom>, editItem.id) : await create(payload as Partial<ExamRoom>);
 
@@ -325,7 +356,7 @@ function ExamRoomFormDialog({
                 />
               </Grid>
 
-              <Grid size={{ xs: 12, sm: 4 }}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <InputLabel required sx={{ mb: 0.5 }}>
                   Ngày thi
                 </InputLabel>
@@ -343,39 +374,31 @@ function ExamRoomFormDialog({
                 />
               </Grid>
 
-              <Grid size={{ xs: 12, sm: 4 }}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <InputLabel required sx={{ mb: 0.5 }}>
-                  Giờ bắt đầu
+                  Tiết thi
                 </InputLabel>
-                <TextField
-                  name="startTime"
-                  type="time"
-                  fullWidth
-                  size="small"
-                  value={formik.values.startTime}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.startTime && Boolean(formik.errors.startTime)}
-                  helperText={formik.touched.startTime && formik.errors.startTime}
-                  slotProps={{ inputLabel: { shrink: true } }}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, sm: 4 }}>
-                <InputLabel required sx={{ mb: 0.5 }}>
-                  Giờ kết thúc
-                </InputLabel>
-                <TextField
-                  name="endTime"
-                  type="time"
-                  fullWidth
-                  size="small"
-                  value={formik.values.endTime}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.endTime && Boolean(formik.errors.endTime)}
-                  helperText={formik.touched.endTime && formik.errors.endTime}
-                  slotProps={{ inputLabel: { shrink: true } }}
+                <Autocomplete
+                  multiple
+                  options={ALL_PERIODS}
+                  getOptionLabel={(option) => option.label}
+                  value={ALL_PERIODS.filter((period) => parsePeriodValues(formik.values.periods).includes(Number(period.value)))}
+                  onChange={(_, newValue) => {
+                    const values = newValue
+                      .map((item) => Number(item.value))
+                      .sort((a, b) => a - b)
+                      .join(',');
+                    formik.setFieldValue('periods', values);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      size="small"
+                      placeholder="Chọn tiết thi"
+                      error={formik.touched.periods && Boolean(formik.errors.periods)}
+                      helperText={formik.touched.periods && formik.errors.periods}
+                    />
+                  )}
                 />
               </Grid>
             </Grid>
@@ -632,7 +655,7 @@ export default function ExamRoomPage() {
                     <TableCell>{row.teacher2Name}</TableCell>
                     <TableCell>{formatDate(row.examDate)}</TableCell>
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                      {formatTimeWithoutSecond(row.startTime)} – {formatTimeWithoutSecond(row.endTime)}
+                      {formatPeriodRange(row.periods, row.startTime, row.endTime)}
                     </TableCell>
                     <TableCell>{row.semesterName}</TableCell>
                     <TableCell align="center">

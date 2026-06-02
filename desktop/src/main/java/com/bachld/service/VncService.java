@@ -32,7 +32,16 @@ public class VncService {
     }
 
     public synchronized void stop() {
-        log.info("VncService.stop - UltraVNC stays running");
+        if (!System.getProperty("os.name").toLowerCase().contains("win")) {
+            return;
+        }
+
+        log.info("VncService.stop - stopping UltraVNC");
+        try {
+            new VncBootstrapService().stop();
+        } catch (Exception e) {
+            log.warn("Failed to stop UltraVNC cleanly: {}", e.getMessage(), e);
+        }
     }
 
     private boolean isPortListening() {

@@ -13,6 +13,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -36,6 +39,8 @@ public class MainFrame extends JFrame {
     private SidebarPanel sidebarPanel;
     private TrayIcon trayIcon;
     private PersonalComputerPanel pcPanel;
+    private DashboardPanel dashboardPanel;
+    private javax.swing.Timer scheduleRefreshTimer;
     private final ExecutorService lifecycleExecutor = Executors.newSingleThreadExecutor(daemonThreadFactory("main-frame-lifecycle"));
 
     public MainFrame(AuthService authService, PersonalComputerService pcService,
@@ -76,6 +81,7 @@ public class MainFrame extends JFrame {
         }
 
         initFrame();
+        scheduleNextPeriodRefresh();
         setupSystemTray();
     }
 
@@ -104,7 +110,8 @@ public class MainFrame extends JFrame {
         contentArea.setOpaque(false);
         contentArea.setBorder(new EmptyBorder(0, 30, 30, 30));
 
-        contentArea.add(wrapInPageWrapper(new DashboardPanel(classService, examRoomService, semesterService), "Trang chủ"), "HOME");
+        dashboardPanel = new DashboardPanel(classService, examRoomService, semesterService);
+        contentArea.add(wrapInPageWrapper(dashboardPanel, "Trang chủ"), "HOME");
         pcPanel = new PersonalComputerPanel(pcService);
         contentArea.add(pcPanel, "PC_MGMT");
         contentArea.add(wrapInPageWrapper(new IncidentReportPanel(incidentReportService), "Báo cáo sự cố"), "INCIDENT_REPORT");
@@ -179,6 +186,7 @@ public class MainFrame extends JFrame {
     }
 
     private void cleanupSession() {
+        stopScheduleRefreshTimer();
         if (trackingService != null) {
             trackingService.stop();
         }
@@ -188,8 +196,8 @@ public class MainFrame extends JFrame {
         if (webSocketService != null) {
             webSocketService.disconnect();
         }
-        vncService.stop();
         if (vncWatchdog != null) vncWatchdog.stop();
+        vncService.stop();
         com.bachld.service.TokenManager.getInstance().clearToken();
         SwingUtilities.invokeLater(this::removeTrayIcon);
     }
@@ -367,6 +375,56 @@ public class MainFrame extends JFrame {
     public void showPage(String pageId) {
         cardLayout.show(contentArea, pageId);
         sidebarPanel.setActiveItem(pageId);
+    }
+
+    private void scheduleNextPeriodRefresh() {
+        stopScheduleRefreshTimer();
+
+        long delayMillis = nextPeriodBoundaryDelayMillis();
+        scheduleRefreshTimer = new javax.swing.Timer((int) Math.min(delayMillis, Integer.MAX_VALUE), e -> {
+            if (dashboardPanel != null) {
+                dashboardPanel.refreshScheduleDataSilently();
+            }
+            scheduleNextPeriodRefresh();
+        });
+        scheduleRefreshTimer.setRepeats(false);
+        scheduleRefreshTimer.start();
+    }
+
+    private void stopScheduleRefreshTimer() {
+        if (scheduleRefreshTimer != null) {
+            scheduleRefreshTimer.stop();
+            scheduleRefreshTimer = null;
+        }
+    }
+
+    private long nextPeriodBoundaryDelayMillis() {
+        List<LocalTime> boundaries = List.of(
+                LocalTime.of(7, 0), LocalTime.of(7, 50),
+                LocalTime.of(7, 55), LocalTime.of(8, 45),
+                LocalTime.of(8, 50), LocalTime.of(9, 40),
+                LocalTime.of(9, 45), LocalTime.of(10, 35),
+                LocalTime.of(10, 40), LocalTime.of(11, 30),
+                LocalTime.of(11, 35), LocalTime.of(12, 25),
+                LocalTime.of(12, 55), LocalTime.of(13, 45),
+                LocalTime.of(13, 50), LocalTime.of(14, 40),
+                LocalTime.of(14, 45), LocalTime.of(15, 35),
+                LocalTime.of(15, 40), LocalTime.of(16, 30),
+                LocalTime.of(16, 35), LocalTime.of(17, 25),
+                LocalTime.of(17, 30), LocalTime.of(18, 20)
+        );
+
+        LocalTime now = LocalTime.now();
+        LocalTime next = boundaries.stream()
+                .filter(boundary -> boundary.isAfter(now))
+                .findFirst()
+                .orElse(boundaries.get(0));
+
+        Duration delay = next.isAfter(now)
+                ? Duration.between(now, next)
+                : Duration.between(now, LocalTime.MAX).plusNanos(1).plus(Duration.between(LocalTime.MIN, next));
+
+        return Math.max(1_000L, delay.toMillis() + 3_000L);
     }
 
     private static ThreadFactory daemonThreadFactory(String threadNamePrefix) {

@@ -54,6 +54,7 @@ import {
 import { openWebsiteForClass, sendMessageToClass } from 'api/remote-control';
 import { HttpStatusCode } from 'axios';
 import useAuth from 'hooks/useAuth';
+import { getNextPeriodRefreshDelay } from 'utils/periodRefresh';
 
 function formatTime(isoString: string): string {
   try {
@@ -126,6 +127,46 @@ export default function TeacherClassTrackingPage() {
         setTrackingEnabled(res.data?.trackingEnabled ?? true);
       }
     });
+  }, [classId]);
+
+  useEffect(() => {
+    if (!classId) return;
+
+    let timerId: ReturnType<typeof setTimeout> | undefined;
+
+    const refreshStatus = async () => {
+      const res = await getClassStudyStatus(classId);
+      if (res?.statusCode === HttpStatusCode.Ok) {
+        const nextStatus = res.data as number;
+        setStudyStatus((previousStatus) => {
+          if (previousStatus !== undefined && previousStatus !== nextStatus) {
+            setReload((value) => !value);
+          }
+          return nextStatus;
+        });
+      }
+    };
+
+    const schedule = () => {
+      timerId = setTimeout(async () => {
+        await refreshStatus();
+        schedule();
+      }, getNextPeriodRefreshDelay());
+    };
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        refreshStatus();
+      }
+    };
+
+    schedule();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      if (timerId) clearTimeout(timerId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [classId]);
 
   useEffect(() => {

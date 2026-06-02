@@ -1,6 +1,8 @@
 package com.bachld.backend.controller;
 
 import com.bachld.backend.dto.response.BaseResponse;
+import com.bachld.backend.config.ConnectedExamStudentRegistry;
+import com.bachld.backend.config.ConnectedStudentRegistry;
 import com.bachld.backend.model.Classes;
 import com.bachld.backend.model.ExamRoom;
 import com.bachld.backend.model.PersonalComputer;
@@ -41,6 +43,8 @@ public class VncController {
     StudentClassRepository studentClassRepository;
     StudentExamRoomRepository studentExamRoomRepository;
     TeacherRepository teacherRepository;
+    ConnectedStudentRegistry connectedStudentRegistry;
+    ConnectedExamStudentRegistry connectedExamStudentRegistry;
     Util util;
 
     @PostMapping("/v1/session/{classId}/{studentUserId}")
@@ -49,7 +53,8 @@ public class VncController {
             @PathVariable int classId,
             @PathVariable int studentUserId) {
 
-        validateClassAccess(classId, studentUserId);
+        Student student = validateClassAccess(classId, studentUserId);
+        requireStudentOnline(connectedStudentRegistry.getConnectedStudents(classId).contains(student.getId()));
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), Map.of(
                 "token", createRelayToken(studentUserId)
         )));
@@ -61,7 +66,8 @@ public class VncController {
             @PathVariable int examRoomId,
             @PathVariable int studentUserId) {
 
-        validateExamRoomAccess(examRoomId, studentUserId);
+        Student student = validateExamRoomAccess(examRoomId, studentUserId);
+        requireStudentOnline(connectedExamStudentRegistry.getConnectedStudents(examRoomId).contains(student.getId()));
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), Map.of(
                 "token", createRelayToken(studentUserId)
         )));
@@ -78,7 +84,13 @@ public class VncController {
         return vncSessionService.createSession(pc.getIpAddress());
     }
 
-    private void validateClassAccess(Integer classId, Integer studentUserId) {
+    private void requireStudentOnline(boolean online) {
+        if (!online) {
+            throw new IllegalStateException("Student desktop app is not connected");
+        }
+    }
+
+    private Student validateClassAccess(Integer classId, Integer studentUserId) {
         Teacher teacher = getCurrentTeacher();
         Classes classes = classRepository.findById(classId)
                 .orElseThrow(() -> new IllegalArgumentException("Class not found"));
@@ -89,9 +101,10 @@ public class VncController {
         Student student = getStudentByUserId(studentUserId);
         studentClassRepository.findByStudentIdAndClassId(student.getId(), classId)
                 .orElseThrow(() -> new IllegalArgumentException("Student is not in this class"));
+        return student;
     }
 
-    private void validateExamRoomAccess(Integer examRoomId, Integer studentUserId) {
+    private Student validateExamRoomAccess(Integer examRoomId, Integer studentUserId) {
         Teacher teacher = getCurrentTeacher();
         ExamRoom examRoom = examRoomRepository.findById(examRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("Exam room not found"));
@@ -103,6 +116,7 @@ public class VncController {
         Student student = getStudentByUserId(studentUserId);
         studentExamRoomRepository.findByStudentIdAndExamRoomId(student.getId(), examRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("Student is not in this exam room"));
+        return student;
     }
 
     private Teacher getCurrentTeacher() {

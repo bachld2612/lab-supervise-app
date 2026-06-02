@@ -43,6 +43,7 @@ import {
 } from 'api/exam-room';
 import StudentActionDialog from 'sections/extra-pages/class/student-action-dialog';
 import { StudentTrackingState as ClassStudentTrackingState } from 'hooks/useClassTracking';
+import { getNextPeriodRefreshDelay } from 'utils/periodRefresh';
 
 function formatTime(isoString: string): string {
   try {
@@ -84,6 +85,7 @@ export default function TeacherExamRoomTrackingPage() {
   const [addAppLoading, setAddAppLoading] = useState(false);
   const [examRoomName, setExamRoomName] = useState('');
   const [examStatus, setExamStatus] = useState<number | undefined>(undefined);
+  const [reload, setReload] = useState(false);
   const [trackingEnabled, setTrackingEnabled] = useState(false);
   const [trackingToggleLoading, setTrackingToggleLoading] = useState(false);
   const [accessCodeDialogOpen, setAccessCodeDialogOpen] = useState(false);
@@ -130,6 +132,46 @@ export default function TeacherExamRoomTrackingPage() {
     getExamStudyStatus(examRoomId).then((res) => {
       if (res?.statusCode === HttpStatusCode.Ok) setExamStatus(res.data as number);
     });
+  }, [examRoomId]);
+
+  useEffect(() => {
+    if (!examRoomId) return;
+
+    let timerId: ReturnType<typeof setTimeout> | undefined;
+
+    const refreshStatus = async () => {
+      const res = await getExamStudyStatus(examRoomId);
+      if (res?.statusCode === HttpStatusCode.Ok) {
+        const nextStatus = res.data as number;
+        setExamStatus((previousStatus) => {
+          if (previousStatus !== undefined && previousStatus !== nextStatus) {
+            setReload((value) => !value);
+          }
+          return nextStatus;
+        });
+      }
+    };
+
+    const schedule = () => {
+      timerId = setTimeout(async () => {
+        await refreshStatus();
+        schedule();
+      }, getNextPeriodRefreshDelay());
+    };
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        refreshStatus();
+      }
+    };
+
+    schedule();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      if (timerId) clearTimeout(timerId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [examRoomId]);
 
   const handleTrackingToggle = async (enabled: boolean) => {
@@ -181,7 +223,7 @@ export default function TeacherExamRoomTrackingPage() {
   const { students, loading, connectedStudentIds } = useExamRoomTracking(
     examRoomId,
     (message) => setAlert({ open: true, message, severity: 'error' }),
-    undefined,
+    reload,
     undefined,
     (studentName, studentCode) =>
       setAlert({

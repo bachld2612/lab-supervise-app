@@ -14,6 +14,7 @@ export interface ExamRoom {
   maxStudent: number;
   currentStudent: number;
   examDate: string;
+  periods: string;
   startTime: string;
   endTime: string;
   status: number;

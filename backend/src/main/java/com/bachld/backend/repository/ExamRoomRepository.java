@@ -56,7 +56,7 @@ public interface ExamRoomRepository extends JpaRepository<ExamRoom, Integer> {
             er.teacher2Id, u2.fullName,
             er.subjectId, sub.name, er.semesterId, sem.name, er.maxStudent,
             (SELECT COUNT(ser2) FROM StudentExamRoom ser2 WHERE ser2.examRoomId = er.id AND ser2.status = 1),
-            er.examDate, er.startTime, er.endTime, er.status, er.trackingEnabled, er.wifiSsid
+            er.examDate, er.periods, er.startTime, er.endTime, er.status, er.trackingEnabled, er.wifiSsid
         )
         FROM ExamRoom er
             JOIN Room r ON r.id = er.roomId
@@ -84,7 +84,7 @@ public interface ExamRoomRepository extends JpaRepository<ExamRoom, Integer> {
             er.teacher2Id, u2.fullName,
             er.subjectId, sub.name, er.semesterId, sem.name, er.maxStudent,
             (SELECT COUNT(ser2) FROM StudentExamRoom ser2 WHERE ser2.examRoomId = er.id AND ser2.status = 1),
-            er.examDate, er.startTime, er.endTime, er.status, er.trackingEnabled, er.wifiSsid
+            er.examDate, er.periods, er.startTime, er.endTime, er.status, er.trackingEnabled, er.wifiSsid
         )
         FROM ExamRoom er
             JOIN Room r ON r.id = er.roomId
@@ -105,7 +105,7 @@ public interface ExamRoomRepository extends JpaRepository<ExamRoom, Integer> {
             er.teacher2Id, u2.fullName,
             er.subjectId, sub.name, er.semesterId, sem.name, er.maxStudent,
             (SELECT COUNT(ser2) FROM StudentExamRoom ser2 WHERE ser2.examRoomId = er.id AND ser2.status = 1),
-            er.examDate, er.startTime, er.endTime, er.status, er.trackingEnabled, er.wifiSsid
+            er.examDate, er.periods, er.startTime, er.endTime, er.status, er.trackingEnabled, er.wifiSsid
         )
         FROM ExamRoom er
             JOIN StudentExamRoom ser ON ser.examRoomId = er.id
@@ -128,7 +128,7 @@ public interface ExamRoomRepository extends JpaRepository<ExamRoom, Integer> {
             er.teacher2Id, u2.fullName,
             er.subjectId, sub.name, er.semesterId, sem.name, er.maxStudent,
             (SELECT COUNT(ser2) FROM StudentExamRoom ser2 WHERE ser2.examRoomId = er.id AND ser2.status = 1),
-            er.examDate, er.startTime, er.endTime, er.status, er.trackingEnabled, er.wifiSsid
+            er.examDate, er.periods, er.startTime, er.endTime, er.status, er.trackingEnabled, er.wifiSsid
         )
         FROM ExamRoom er
             JOIN Room r ON r.id = er.roomId
@@ -151,7 +151,7 @@ public interface ExamRoomRepository extends JpaRepository<ExamRoom, Integer> {
             er.teacher2Id, u2.fullName,
             er.subjectId, sub.name, er.semesterId, sem.name, er.maxStudent,
             (SELECT COUNT(ser2) FROM StudentExamRoom ser2 WHERE ser2.examRoomId = er.id AND ser2.status = 1),
-            er.examDate, er.startTime, er.endTime, er.status, er.trackingEnabled, er.wifiSsid
+            er.examDate, er.periods, er.startTime, er.endTime, er.status, er.trackingEnabled, er.wifiSsid
         )
         FROM ExamRoom er
             JOIN Room r ON r.id = er.roomId

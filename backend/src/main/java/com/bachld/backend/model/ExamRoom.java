@@ -42,6 +42,9 @@ public class ExamRoom extends BaseEntity {
     @Column(name = "exam_date")
     LocalDate examDate;
 
+    @Column(name = "periods")
+    String periods;
+
     @Column(name = "start_time")
     LocalTime startTime;
 

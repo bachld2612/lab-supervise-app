@@ -156,13 +156,7 @@ public class TrackingService {
         }
 
         boolean trackingEnabled = Boolean.TRUE.equals(activeClass.getTrackingEnabled());
-        boolean isBanApplication = false;
-        if (trackingEnabled) {
-            List<String> bannedApps = banApplicationRepository.findActiveAppNamesByClassId(activeClass.getId());
-            String normalizedApp = normalize(appName);
-            isBanApplication = bannedApps.stream()
-                    .anyMatch(banned -> normalizedApp.contains(normalize(banned)));
-        }
+        boolean isBanApplication = trackingEnabled && isBannedApplication(activeClass.getId(), appName);
 
         StudentClassInfo info = new StudentClassInfo();
         info.setStudentClassId(studentClass.getId());
@@ -303,5 +297,12 @@ public class TrackingService {
                 .isBanApplication(false)
                 .type(type)
                 .build();
+    }
+
+    private boolean isBannedApplication(Integer classId, String appName) {
+        List<String> bannedApps = banApplicationRepository.findActiveAppNamesByClassId(classId);
+        String normalizedApp = normalize(appName);
+        return bannedApps.stream()
+                .anyMatch(banned -> normalizedApp.contains(normalize(banned)));
     }
 }

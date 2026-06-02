@@ -64,7 +64,6 @@ const TeacherClassTrackingPage = Loadable(lazy(() => import('pages/teacher/teach
 const TeacherExamRoomTrackingPage = Loadable(lazy(() => import('pages/teacher/teacher-exam-room-tracking-page')));
 const ExamRoomPage = Loadable(lazy(() => import('pages/exam-room/exam-room-page')));
 const BanApplicationPage = Loadable(lazy(() => import('pages/ban-application/ban-application-page')));
-const PersonalComputerPage = Loadable(lazy(() => import('pages/teacher/personal-computer-page')));
 const RoomPage = Loadable(lazy(() => import('pages/room/room-page')));
 const ItCenterIncidentReportPage = Loadable(lazy(() => import('pages/incident-report/it-center-incident-report-page')));
 const TeacherIncidentReportPage = Loadable(lazy(() => import('pages/incident-report/teacher-incident-report-page')));
@@ -247,10 +246,6 @@ const MainRoutes = {
         {
           path: 'ban-application',
           element: <BanApplicationPage />
-        },
-        {
-          path: 'teacher/personal-computer',
-          element: <PersonalComputerPage />
         },
         {
           path: 'room',

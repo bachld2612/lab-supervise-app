@@ -22,6 +22,7 @@ public class ExamRoomData {
     private Long semesterId;
     private String semesterName;
     private String examDate;
+    private String periods;
     private String startTime;
     private String endTime;
 }

@@ -299,6 +299,38 @@ public class DashboardPanel extends JPanel {
         });
     }
 
+    public void refreshScheduleDataSilently() {
+        AtomicInteger pending = new AtomicInteger(2);
+
+        classService.fetchMyClassesAsync(new ClassService.FetchCallback() {
+            @Override public void onSuccess(ClassListResponse r) {
+                allClasses = r.getData() != null ? r.getData() : new ArrayList<>();
+                if (pending.decrementAndGet() == 0) onScheduleRefreshLoaded();
+            }
+            @Override public void onError(String msg) {
+                if (pending.decrementAndGet() == 0) onScheduleRefreshLoaded();
+            }
+        });
+
+        examRoomService.fetchMyExamRoomsAsync(new ExamRoomService.FetchCallback() {
+            @Override public void onSuccess(ExamRoomListResponse r) {
+                allExamRooms = r.getData() != null ? r.getData() : new ArrayList<>();
+                if (pending.decrementAndGet() == 0) onScheduleRefreshLoaded();
+            }
+            @Override public void onError(String msg) {
+                if (pending.decrementAndGet() == 0) onScheduleRefreshLoaded();
+            }
+        });
+    }
+
+    private void onScheduleRefreshLoaded() {
+        if (contentPanel.getParent() == null) {
+            return;
+        }
+        renderExam();
+        renderClass();
+    }
+
     private void onAllLoaded() {
         buildSemesters();
         examKeyword  = "";

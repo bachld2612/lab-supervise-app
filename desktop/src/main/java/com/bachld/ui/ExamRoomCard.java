@@ -10,6 +10,9 @@ import java.awt.geom.RoundRectangle2D;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ExamRoomCard extends JPanel {
     private final ExamRoomData data;
@@ -102,7 +105,7 @@ public class ExamRoomCard extends JPanel {
         center.add(Box.createVerticalStrut(6));
         center.add(infoLabel("<html><b>Ngày thi:</b> " + Util.formatDate(data.getExamDate()) + "</html>", 12, PRIMARY_BLUE));
         center.add(Box.createVerticalStrut(4));
-        center.add(infoLabel("<html><b>Giờ thi:</b> " + (data.getStartTime() != null ? data.getStartTime() : "") + " – " + (data.getEndTime() != null ? data.getEndTime() : "") + "</html>", 12, PRIMARY_BLUE));
+        center.add(infoLabel("<html><b>Giờ thi:</b> " + formatPeriodRange(data) + "</html>", 12, PRIMARY_BLUE));
         center.add(Box.createVerticalStrut(12));
 
         JPanel dates = new JPanel(new GridLayout(1, 2, 10, 0));
@@ -136,6 +139,37 @@ public class ExamRoomCard extends JPanel {
         lbl.setForeground(color);
         lbl.setAlignmentX(LEFT_ALIGNMENT);
         return lbl;
+    }
+
+    private String formatPeriodRange(ExamRoomData data) {
+        List<Integer> periods = parsePeriods(data.getPeriods());
+        String timeRange = (data.getStartTime() != null ? data.getStartTime() : "")
+                + " - "
+                + (data.getEndTime() != null ? data.getEndTime() : "");
+
+        if (periods.isEmpty()) {
+            return timeRange;
+        }
+        if (periods.size() == 1) {
+            return "Tiết " + periods.get(0) + " (" + timeRange + ")";
+        }
+        return "Tiết " + periods.get(0) + " - Tiết " + periods.get(periods.size() - 1) + " (" + timeRange + ")";
+    }
+
+    private List<Integer> parsePeriods(String periods) {
+        if (periods == null || periods.isBlank()) {
+            return List.of();
+        }
+
+        List<Integer> values = new ArrayList<>();
+        for (String part : periods.split(",")) {
+            try {
+                values.add(Integer.parseInt(part.trim()));
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        Collections.sort(values);
+        return values;
     }
 
     private JPanel infoBox(String label, String value) {

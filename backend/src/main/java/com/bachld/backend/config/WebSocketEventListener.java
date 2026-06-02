@@ -66,11 +66,14 @@ public class WebSocketEventListener {
         if (student == null) return;
 
         Classes activeClass = findActiveClass(student.getId());
-        if (activeClass == null) {
-            notifyExamRoomIfActive(student, user, type);
-            return;
+        if (activeClass != null) {
+            notifyClass(student, user, activeClass, type);
         }
 
+        notifyExamRoomIfActive(student, user, type);
+    }
+
+    private void notifyClass(Student student, User user, Classes activeClass, String type) {
         StudentClassInfoResponse response = StudentClassInfoResponse.builder()
                 .classId(activeClass.getId())
                 .studentId(student.getId())

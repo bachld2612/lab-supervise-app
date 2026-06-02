@@ -16,8 +16,6 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.net.URL;
 import java.util.Arrays;
@@ -70,6 +68,15 @@ public class LoginPanel extends JPanel {
         buildForm();
     }
 
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        JRootPane rootPane = SwingUtilities.getRootPane(this);
+        if (rootPane != null) {
+            rootPane.setDefaultButton(btnLogin);
+        }
+    }
+
     // ── Build form ───────────────────────────────────────────────────────────
     private void buildForm() {
         // Logo — centered
@@ -99,10 +106,6 @@ public class LoginPanel extends JPanel {
         add(centeredRow(buildPasswordRow()));
         lblPasswordError = errorLabel();
         add(leftRow(lblPasswordError));
-
-        // Forgot password — right-aligned within FORM_W
-        add(rightRow(buildForgotLink()));
-        add(Box.createVerticalStrut(10));
 
         // Access code checkbox
         chkAccessCode = new JCheckBox("Đăng nhập bằng mã truy cập");
@@ -136,6 +139,12 @@ public class LoginPanel extends JPanel {
         // Login button
         btnLogin = buildLoginButton();
         add(centeredRow(btnLogin));
+        SwingUtilities.invokeLater(() -> {
+            JRootPane rootPane = SwingUtilities.getRootPane(this);
+            if (rootPane != null) {
+                rootPane.setDefaultButton(btnLogin);
+            }
+        });
     }
 
     // ── Row wrappers (keep everything aligned within FORM_W) ─────────────────
@@ -160,16 +169,6 @@ public class LoginPanel extends JPanel {
         row.setOpaque(false);
         row.setAlignmentX(CENTER_ALIGNMENT);
         row.setMaximumSize(new Dimension(FORM_W, child.getPreferredSize().height));
-        row.add(child);
-        return row;
-    }
-
-    /** Right-aligned row within FORM_W */
-    private JPanel rightRow(JComponent child) {
-        JPanel row = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        row.setOpaque(false);
-        row.setAlignmentX(CENTER_ALIGNMENT);
-        row.setMaximumSize(new Dimension(FORM_W, 22));
         row.add(child);
         return row;
     }
@@ -286,27 +285,6 @@ public class LoginPanel extends JPanel {
                         new EmptyBorder(0, 14, 0, 14)));
             }
         });
-    }
-
-    private JLabel buildForgotLink() {
-        JLabel lbl = new JLabel("Quên mật khẩu?");
-        lbl.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        lbl.setForeground(LINK_DARK);
-        lbl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        lbl.addMouseListener(new MouseAdapter() {
-            @Override public void mouseEntered(MouseEvent e) {
-                lbl.setForeground(BORDER_FOCUS);
-            }
-            @Override public void mouseExited(MouseEvent e) {
-                lbl.setForeground(LINK_DARK);
-            }
-            @Override public void mouseClicked(MouseEvent e) {
-                JOptionPane.showMessageDialog(LoginPanel.this,
-                        "Chức năng quên mật khẩu chưa được triển khai.", "Thông báo",
-                        JOptionPane.INFORMATION_MESSAGE);
-            }
-        });
-        return lbl;
     }
 
     private JLabel errorLabel() {

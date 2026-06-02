@@ -60,6 +60,13 @@ public final class VncBootstrapService {
         }
     }
 
+    public void stop() {
+        log.info("Stopping UltraVNC runtime");
+        detector.findUltraVncServiceName().ifPresent(this::stopServiceQuick);
+        killAllWinvnc();
+        waitForPortClosed(props.getPort(), 5);
+    }
+
     private void launchWinvnc(Path winVncExe) {
         try {
             ProcessBuilder pb = new ProcessBuilder(winVncExe.toString(), "-run");
