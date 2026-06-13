@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 export default function Footer() {
   return (
     <Stack direction="row" sx={{ justifyContent: 'center', alignItems: 'center', p: '24px 16px 0px', mt: 'auto' }}>
-      <Typography variant="caption">&copy; Tlu Lab Monitoring</Typography>
+      <Typography variant="caption">&copy; TLU Lab Monitoring</Typography>
     </Stack>
   );
 }
