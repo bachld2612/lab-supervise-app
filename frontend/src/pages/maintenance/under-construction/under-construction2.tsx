@@ -16,7 +16,8 @@ import useAuth from 'hooks/useAuth';
 
 export default function UnderConstruction() {
   const { user } = useAuth();
-  const roleName = user?.roleId === 1 ? 'admin' : user?.roleId == 2 ? 'teacher' : user?.roleId == 4 ? 'it-center' : '';
+  // trang chủ = item đầu sidebar theo role (dashboard chưa xây cho admin/it-center)
+  const homePath = user?.roleId === 1 ? '/user' : user?.roleId == 2 ? '/dashboard/teacher' : user?.roleId == 4 ? '/room' : '/';
   return (
     <Grid container spacing={3} direction="column" sx={{ alignItems: 'center', justifyContent: 'center', minHeight: '100vh', py: 2 }}>
       <Grid size={12}>
@@ -34,7 +35,7 @@ export default function UnderConstruction() {
           <Typography align="center" sx={{ color: 'text.secondary', width: '85%' }}>
             Hey! Please check out this site later. We are doing some maintenance on it right now.
           </Typography>
-          <Button component={Link} to={'/dashboard/' + roleName} variant="contained">
+          <Button component={Link} to={homePath} variant="contained">
             Back To Home
           </Button>
         </Stack>

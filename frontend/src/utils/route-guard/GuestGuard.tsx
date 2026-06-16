@@ -17,10 +17,10 @@ export default function GuestGuard({ children }: GuardProps) {
 
   useEffect(() => {
     const roleId = user?.roleId;
-    const roleName: string = roleId === 1 ? 'admin' : roleId === 2 ? 'teacher' : roleId === 4 ? 'it-center' : '';
+    // landing page = first sidebar item per role (dashboard chưa xây cho admin/it-center)
+    const rolePath: string = roleId === 1 ? '/user' : roleId === 2 ? '/dashboard/teacher' : roleId === 4 ? '/room' : '/';
 
     if (isLoggedIn && user) {
-      const rolePath = `/dashboard/${roleName}`;
       navigate(location?.state?.from ? location?.state?.from : rolePath, {
         state: { from: '' },
         replace: true

@@ -27,7 +27,7 @@ const itCenterMenu: NavItemType = {
     },
     {
       id: 'incident-report',
-      title: 'Báo cáo sự cố',
+      title: 'Quản lý báo cáo sự cố',
       type: 'item',
       url: '/incident-report',
       icon: icons.incident

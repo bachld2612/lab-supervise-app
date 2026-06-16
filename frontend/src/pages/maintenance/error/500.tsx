@@ -18,7 +18,8 @@ import useAuth from 'hooks/useAuth';
 export default function Error500() {
   const downSM = useMediaQuery((theme) => theme.breakpoints.down('sm'));
   const { user } = useAuth();
-  const roleName = user?.roleId === 1 ? 'admin' : user?.roleId == 2 ? 'teacher' : user?.roleId == 4 ? 'it-center' : '';
+  // trang chủ = item đầu sidebar theo role (dashboard chưa xây cho admin/it-center)
+  const homePath = user?.roleId === 1 ? '/user' : user?.roleId == 2 ? '/dashboard/teacher' : user?.roleId == 4 ? '/room' : '/';
   return (
     <Grid container direction="column" spacing={3} sx={{ alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
       <Grid size={12}>
@@ -36,7 +37,7 @@ export default function Error500() {
           <Typography variant="body2" align="center" sx={{ color: 'text.secondary', width: { xs: '73%', sm: '70%' }, mt: 1 }}>
             Server error 500. we fixing the problem. please try again at a later stage.
           </Typography>
-          <Button component={Link} to={'/dashboard/' + roleName} variant="contained" sx={{ textTransform: 'none', mt: 4 }}>
+          <Button component={Link} to={homePath} variant="contained" sx={{ textTransform: 'none', mt: 4 }}>
             Back To Home
           </Button>
         </Stack>
