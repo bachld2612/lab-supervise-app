@@ -13,9 +13,7 @@ type Status = 'idle' | 'connecting' | 'connected' | 'error';
 
 const WS_BASE = (() => {
   const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
-  const host = import.meta.env.VITE_APP_API_URL
-    ? new URL(import.meta.env.VITE_APP_API_URL as string).host
-    : window.location.host;
+  const host = import.meta.env.VITE_APP_API_URL ? new URL(import.meta.env.VITE_APP_API_URL as string).host : window.location.host;
   return `${proto}://${host}`;
 })();
 
@@ -59,9 +57,7 @@ export default function VncViewer({ classId, studentUserId, isOnline, mode = 'cl
 
       try {
         const res =
-          mode === 'exam-room'
-            ? await createExamRoomVncSession(classId, studentUserId)
-            : await createVncSession(classId, studentUserId);
+          mode === 'exam-room' ? await createExamRoomVncSession(classId, studentUserId) : await createVncSession(classId, studentUserId);
         if (cancelled || !containerRef.current) return;
 
         const { default: RFB } = await import('@novnc/novnc/core/rfb');

@@ -33,13 +33,15 @@ export const getNextPeriodRefreshDelay = (now = new Date(), bufferMs = 3000) => 
     return boundary;
   }).find((boundary) => boundary.getTime() > now.getTime());
 
-  const target = nextBoundary ?? (() => {
-    const [hours, minutes] = PERIOD_BOUNDARY_TIMES[0].split(':').map(Number);
-    const boundary = new Date(now);
-    boundary.setDate(boundary.getDate() + 1);
-    boundary.setHours(hours, minutes, 0, 0);
-    return boundary;
-  })();
+  const target =
+    nextBoundary ??
+    (() => {
+      const [hours, minutes] = PERIOD_BOUNDARY_TIMES[0].split(':').map(Number);
+      const boundary = new Date(now);
+      boundary.setDate(boundary.getDate() + 1);
+      boundary.setHours(hours, minutes, 0, 0);
+      return boundary;
+    })();
 
   return Math.max(1000, target.getTime() - now.getTime() + bufferMs);
 };

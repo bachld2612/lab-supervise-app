@@ -10,7 +10,10 @@ declare module '@novnc/novnc/core/rfb' {
     scaleViewport: boolean;
     resizeSession: boolean;
     qualityLevel: number;
-    addEventListener(type: 'connect' | 'disconnect' | 'credentialsrequired' | 'securityfailure' | 'clipboard' | 'bell' | 'desktopname', listener: (e: CustomEvent) => void): void;
+    addEventListener(
+      type: 'connect' | 'disconnect' | 'credentialsrequired' | 'securityfailure' | 'clipboard' | 'bell' | 'desktopname',
+      listener: (e: CustomEvent) => void
+    ): void;
     removeEventListener(type: string, listener: (e: CustomEvent) => void): void;
     disconnect(): void;
     sendCredentials(credentials: { password: string }): void;

@@ -327,156 +327,156 @@ export default function StudentActionDialog({
           <Divider sx={{ mb: 2.5 }} />
 
           {/* Action Buttons — chỉ hiển thị khi lớp/phòng thi đang diễn ra */}
+          {isActive && <input type="file" ref={sendFileInputRef} onChange={handleSendFileSelected} style={{ display: 'none' }} />}
           {isActive && (
-          <input type="file" ref={sendFileInputRef} onChange={handleSendFileSelected} style={{ display: 'none' }} />
+            <Stack direction="row" spacing={3} justifyContent="center" sx={{ mb: 2.5 }}>
+              <Tooltip title={isLocked ? 'Mở khoá màn hình' : 'Khoá màn hình'} arrow>
+                <Stack alignItems="center" spacing={0.75}>
+                  <IconButton
+                    onClick={handleLockToggle}
+                    disabled={lockLoading}
+                    sx={{
+                      width: 60,
+                      height: 60,
+                      border: '1.5px solid',
+                      borderColor: isLocked ? 'error.main' : 'divider',
+                      borderRadius: 2,
+                      color: isLocked ? 'error.main' : 'text.secondary',
+                      transition: 'all 0.2s',
+                      '&:hover': {
+                        bgcolor: isLocked ? 'error.lighter' : 'primary.lighter',
+                        borderColor: isLocked ? 'error.dark' : 'primary.main',
+                        color: isLocked ? 'error.dark' : 'primary.main',
+                        transform: 'scale(1.05)'
+                      },
+                      '&.Mui-disabled': { borderColor: 'divider', opacity: 0.5 }
+                    }}
+                  >
+                    {lockLoading ? <CircularProgress size={22} color="inherit" /> : isLocked ? <Unlock size={26} /> : <Lock1 size={26} />}
+                  </IconButton>
+                  <Typography variant="caption" fontWeight="medium" color={isLocked ? 'error.main' : 'text.secondary'}>
+                    {isLocked ? 'Mở khoá' : 'Khoá máy'}
+                  </Typography>
+                </Stack>
+              </Tooltip>
+
+              <Tooltip title="Chụp màn hình" arrow>
+                <Stack alignItems="center" spacing={0.75}>
+                  <IconButton
+                    onClick={handleScreenshot}
+                    disabled={screenshotLoading}
+                    sx={{
+                      width: 60,
+                      height: 60,
+                      border: '1.5px solid',
+                      borderColor: 'divider',
+                      borderRadius: 2,
+                      color: 'text.secondary',
+                      transition: 'all 0.2s',
+                      '&:hover': {
+                        bgcolor: 'primary.lighter',
+                        borderColor: 'primary.main',
+                        color: 'primary.main',
+                        transform: 'scale(1.05)'
+                      },
+                      '&.Mui-disabled': { borderColor: 'divider', opacity: 0.5 }
+                    }}
+                  >
+                    {screenshotLoading ? <CircularProgress size={22} color="inherit" /> : <Camera size={26} />}
+                  </IconButton>
+                  <Typography variant="caption" fontWeight="medium" color="text.secondary">
+                    Chụp màn hình
+                  </Typography>
+                </Stack>
+              </Tooltip>
+
+              <Tooltip title="Gửi file" arrow>
+                <Stack alignItems="center" spacing={0.75}>
+                  <IconButton
+                    onClick={() => sendFileInputRef.current?.click()}
+                    disabled={sendFileLoading}
+                    sx={{
+                      width: 60,
+                      height: 60,
+                      border: '1.5px solid',
+                      borderColor: 'divider',
+                      borderRadius: 2,
+                      color: 'text.secondary',
+                      transition: 'all 0.2s',
+                      '&:hover': {
+                        bgcolor: 'primary.lighter',
+                        borderColor: 'primary.main',
+                        color: 'primary.main',
+                        transform: 'scale(1.05)'
+                      },
+                      '&.Mui-disabled': { borderColor: 'divider', opacity: 0.5 }
+                    }}
+                  >
+                    <DocumentUpload size={26} />
+                  </IconButton>
+                  <Typography variant="caption" fontWeight="medium" color="text.secondary">
+                    Gửi file
+                  </Typography>
+                </Stack>
+              </Tooltip>
+
+              <Tooltip title="Gửi thông báo" arrow>
+                <Stack alignItems="center" spacing={0.75}>
+                  <IconButton
+                    onClick={() => setMsgDialogOpen(true)}
+                    sx={{
+                      width: 60,
+                      height: 60,
+                      border: '1.5px solid',
+                      borderColor: 'divider',
+                      borderRadius: 2,
+                      color: 'text.secondary',
+                      transition: 'all 0.2s',
+                      '&:hover': {
+                        bgcolor: 'primary.lighter',
+                        borderColor: 'primary.main',
+                        color: 'primary.main',
+                        transform: 'scale(1.05)'
+                      }
+                    }}
+                  >
+                    <MessageText size={26} />
+                  </IconButton>
+                  <Typography variant="caption" fontWeight="medium" color="text.secondary">
+                    Thông báo
+                  </Typography>
+                </Stack>
+              </Tooltip>
+
+              <Tooltip title="Mở trang web" arrow>
+                <Stack alignItems="center" spacing={0.75}>
+                  <IconButton
+                    onClick={() => setOpenWebDialogOpen(true)}
+                    sx={{
+                      width: 60,
+                      height: 60,
+                      border: '1.5px solid',
+                      borderColor: 'divider',
+                      borderRadius: 2,
+                      color: 'text.secondary',
+                      transition: 'all 0.2s',
+                      '&:hover': {
+                        bgcolor: 'primary.lighter',
+                        borderColor: 'primary.main',
+                        color: 'primary.main',
+                        transform: 'scale(1.05)'
+                      }
+                    }}
+                  >
+                    <Global size={26} />
+                  </IconButton>
+                  <Typography variant="caption" fontWeight="medium" color="text.secondary">
+                    Mở web
+                  </Typography>
+                </Stack>
+              </Tooltip>
+            </Stack>
           )}
-          {isActive && <Stack direction="row" spacing={3} justifyContent="center" sx={{ mb: 2.5 }}>
-            <Tooltip title={isLocked ? 'Mở khoá màn hình' : 'Khoá màn hình'} arrow>
-              <Stack alignItems="center" spacing={0.75}>
-                <IconButton
-                  onClick={handleLockToggle}
-                  disabled={lockLoading}
-                  sx={{
-                    width: 60,
-                    height: 60,
-                    border: '1.5px solid',
-                    borderColor: isLocked ? 'error.main' : 'divider',
-                    borderRadius: 2,
-                    color: isLocked ? 'error.main' : 'text.secondary',
-                    transition: 'all 0.2s',
-                    '&:hover': {
-                      bgcolor: isLocked ? 'error.lighter' : 'primary.lighter',
-                      borderColor: isLocked ? 'error.dark' : 'primary.main',
-                      color: isLocked ? 'error.dark' : 'primary.main',
-                      transform: 'scale(1.05)'
-                    },
-                    '&.Mui-disabled': { borderColor: 'divider', opacity: 0.5 }
-                  }}
-                >
-                  {lockLoading ? <CircularProgress size={22} color="inherit" /> : isLocked ? <Unlock size={26} /> : <Lock1 size={26} />}
-                </IconButton>
-                <Typography variant="caption" fontWeight="medium" color={isLocked ? 'error.main' : 'text.secondary'}>
-                  {isLocked ? 'Mở khoá' : 'Khoá máy'}
-                </Typography>
-              </Stack>
-            </Tooltip>
-
-            <Tooltip title="Chụp màn hình" arrow>
-              <Stack alignItems="center" spacing={0.75}>
-                <IconButton
-                  onClick={handleScreenshot}
-                  disabled={screenshotLoading}
-                  sx={{
-                    width: 60,
-                    height: 60,
-                    border: '1.5px solid',
-                    borderColor: 'divider',
-                    borderRadius: 2,
-                    color: 'text.secondary',
-                    transition: 'all 0.2s',
-                    '&:hover': {
-                      bgcolor: 'primary.lighter',
-                      borderColor: 'primary.main',
-                      color: 'primary.main',
-                      transform: 'scale(1.05)'
-                    },
-                    '&.Mui-disabled': { borderColor: 'divider', opacity: 0.5 }
-                  }}
-                >
-                  {screenshotLoading ? <CircularProgress size={22} color="inherit" /> : <Camera size={26} />}
-                </IconButton>
-                <Typography variant="caption" fontWeight="medium" color="text.secondary">
-                  Chụp màn hình
-                </Typography>
-              </Stack>
-            </Tooltip>
-
-            <Tooltip title="Gửi file" arrow>
-              <Stack alignItems="center" spacing={0.75}>
-                <IconButton
-                  onClick={() => sendFileInputRef.current?.click()}
-                  disabled={sendFileLoading}
-                  sx={{
-                    width: 60,
-                    height: 60,
-                    border: '1.5px solid',
-                    borderColor: 'divider',
-                    borderRadius: 2,
-                    color: 'text.secondary',
-                    transition: 'all 0.2s',
-                    '&:hover': {
-                      bgcolor: 'primary.lighter',
-                      borderColor: 'primary.main',
-                      color: 'primary.main',
-                      transform: 'scale(1.05)'
-                    },
-                    '&.Mui-disabled': { borderColor: 'divider', opacity: 0.5 }
-                  }}
-                >
-                  <DocumentUpload size={26} />
-                </IconButton>
-                <Typography variant="caption" fontWeight="medium" color="text.secondary">
-                  Gửi file
-                </Typography>
-              </Stack>
-            </Tooltip>
-
-            <Tooltip title="Gửi thông báo" arrow>
-              <Stack alignItems="center" spacing={0.75}>
-                <IconButton
-                  onClick={() => setMsgDialogOpen(true)}
-                  sx={{
-                    width: 60,
-                    height: 60,
-                    border: '1.5px solid',
-                    borderColor: 'divider',
-                    borderRadius: 2,
-                    color: 'text.secondary',
-                    transition: 'all 0.2s',
-                    '&:hover': {
-                      bgcolor: 'primary.lighter',
-                      borderColor: 'primary.main',
-                      color: 'primary.main',
-                      transform: 'scale(1.05)'
-                    }
-                  }}
-                >
-                  <MessageText size={26} />
-                </IconButton>
-                <Typography variant="caption" fontWeight="medium" color="text.secondary">
-                  Thông báo
-                </Typography>
-              </Stack>
-            </Tooltip>
-
-            <Tooltip title="Mở trang web" arrow>
-              <Stack alignItems="center" spacing={0.75}>
-                <IconButton
-                  onClick={() => setOpenWebDialogOpen(true)}
-                  sx={{
-                    width: 60,
-                    height: 60,
-                    border: '1.5px solid',
-                    borderColor: 'divider',
-                    borderRadius: 2,
-                    color: 'text.secondary',
-                    transition: 'all 0.2s',
-                    '&:hover': {
-                      bgcolor: 'primary.lighter',
-                      borderColor: 'primary.main',
-                      color: 'primary.main',
-                      transform: 'scale(1.05)'
-                    }
-                  }}
-                >
-                  <Global size={26} />
-                </IconButton>
-                <Typography variant="caption" fontWeight="medium" color="text.secondary">
-                  Mở web
-                </Typography>
-              </Stack>
-            </Tooltip>
-          </Stack>}
 
           {isActive && <Divider sx={{ mb: 2 }} />}
 
@@ -733,7 +733,9 @@ export default function StudentActionDialog({
       >
         <DialogTitle sx={{ py: 1.5 }}>
           <Stack direction="row" alignItems="center" justifyContent="space-between">
-            <Typography variant="h6">Màn hình — {student.fullName} — {student.code}</Typography>
+            <Typography variant="h6">
+              Màn hình — {student.fullName} — {student.code}
+            </Typography>
             <IconButton onClick={() => setScreenshotOpen(false)} size="small" sx={{ color: 'text.secondary' }}>
               <CloseCircle size={20} />
             </IconButton>

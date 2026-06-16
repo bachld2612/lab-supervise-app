@@ -654,9 +654,7 @@ export default function ExamRoomPage() {
                     <TableCell>{row.teacher1Name}</TableCell>
                     <TableCell>{row.teacher2Name}</TableCell>
                     <TableCell>{formatDate(row.examDate)}</TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                      {formatPeriodRange(row.periods, row.startTime, row.endTime)}
-                    </TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>{formatPeriodRange(row.periods, row.startTime, row.endTime)}</TableCell>
                     <TableCell>{row.semesterName}</TableCell>
                     <TableCell align="center">
                       <Typography

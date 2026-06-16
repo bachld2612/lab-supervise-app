@@ -159,7 +159,12 @@ export function useClassTracking(
                     ? {
                         ...s,
                         appHistory: [
-                          { applicationName: '', createdAt: data.createdAt ?? new Date().toISOString(), banApplication: false, connectionType: 'CONNECT' },
+                          {
+                            applicationName: '',
+                            createdAt: data.createdAt ?? new Date().toISOString(),
+                            banApplication: false,
+                            connectionType: 'CONNECT'
+                          },
                           ...s.appHistory
                         ]
                       }
@@ -183,7 +188,12 @@ export function useClassTracking(
                     ? {
                         ...s,
                         appHistory: [
-                          { applicationName: '', createdAt: data.createdAt ?? new Date().toISOString(), banApplication: false, connectionType: 'DISCONNECT' },
+                          {
+                            applicationName: '',
+                            createdAt: data.createdAt ?? new Date().toISOString(),
+                            banApplication: false,
+                            connectionType: 'DISCONNECT'
+                          },
                           ...s.appHistory
                         ]
                       }
@@ -219,7 +229,9 @@ export function useClassTracking(
             );
             if ((data.action ?? 0) !== 0) {
               const actionText = data.action === 1 ? 'SAO CHÉP' : data.action === 3 ? 'CẮT' : 'DÁN';
-              onClipboardEvent?.(`Sinh viên ${data.studentName} - ${data.studentCode} đã ${actionText} nội dung từ ${data.applicationName}`);
+              onClipboardEvent?.(
+                `Sinh viên ${data.studentName} - ${data.studentCode} đã ${actionText} nội dung từ ${data.applicationName}`
+              );
             }
             if (data.banApplication) {
               onBanDetected?.(

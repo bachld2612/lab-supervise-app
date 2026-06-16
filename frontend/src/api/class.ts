@@ -65,6 +65,33 @@ const getStudentsByClassId = async (classId: number, pageRequest: PageRequest) =
   }
 };
 
+const getStudentsNotInClass = async (classId: number, pageRequest: PageRequest) => {
+  try {
+    const response = await axiosServices.get(`/api/class/v1/${classId}/student/available`, { params: pageRequest });
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+const addStudentsToClass = async (classId: number, studentIds: number[]) => {
+  try {
+    const response = await axiosServices.post(`/api/class/v1/${classId}/student`, { studentIds });
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+const removeStudentsFromClass = async (classId: number, studentIds: number[]) => {
+  try {
+    const response = await axiosServices.delete(`/api/class/v1/${classId}/student`, { data: { studentIds } });
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
 const getClassStudentTracking = async (classId: number) => {
   try {
     const response = await axiosServices.get(`/api/class/v1/${classId}/tracking`);
@@ -177,6 +204,9 @@ export {
   deleteById,
   getTeacherClasses,
   getStudentsByClassId,
+  getStudentsNotInClass,
+  addStudentsToClass,
+  removeStudentsFromClass,
   getClassStudentTracking,
   getConnectedStudents,
   downloadClassStudentImportTemplate,

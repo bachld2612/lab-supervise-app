@@ -123,4 +123,18 @@ const generateWifiSsid = async (examRoomId: number) => {
   }
 };
 
-export { getList, getById, create, update, deleteById, importStudents, getTracking, getTeacherExamRooms, getConnectedStudents, getStudyStatus, setTrackingEnabled, updateWifiSsid, generateWifiSsid };
+export {
+  getList,
+  getById,
+  create,
+  update,
+  deleteById,
+  importStudents,
+  getTracking,
+  getTeacherExamRooms,
+  getConnectedStudents,
+  getStudyStatus,
+  setTrackingEnabled,
+  updateWifiSsid,
+  generateWifiSsid
+};

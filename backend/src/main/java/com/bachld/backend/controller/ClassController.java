@@ -4,6 +4,7 @@ import com.bachld.backend.config.ConnectedStudentRegistry;
 import com.bachld.backend.dto.request.ClassCreateRequest;
 import com.bachld.backend.dto.request.ClassUpdateRequest;
 import com.bachld.backend.dto.request.ClassWifiSsidRequest;
+import com.bachld.backend.dto.request.StudentClassRequest;
 import com.bachld.backend.dto.response.BaseResponse;
 import com.bachld.backend.service.ClassService;
 import com.bachld.backend.util.auth.AuthFilter;
@@ -119,6 +120,30 @@ public class ClassController {
             @RequestParam(required = false) String keyword
     ) {
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), classService.getStudentsByClassId(classId, pageable, keyword)));
+    }
+
+    @GetMapping("/v1/{classId}/student/available")
+    @AuthFilter(role = "ADMIN,TEACHER")
+    public ResponseEntity<?> getStudentsNotInClass(
+            @PathVariable int classId,
+            @PageableDefault Pageable pageable,
+            @RequestParam(required = false) String keyword
+    ) {
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), classService.getStudentsNotInClass(classId, pageable, keyword)));
+    }
+
+    @PostMapping("/v1/{classId}/student")
+    @AuthFilter(role = "ADMIN,TEACHER")
+    public ResponseEntity<?> addStudentsToClass(@PathVariable int classId, @RequestBody StudentClassRequest request) {
+        classService.addStudentsToClass(classId, request.getStudentIds());
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+    }
+
+    @DeleteMapping("/v1/{classId}/student")
+    @AuthFilter(role = "ADMIN,TEACHER")
+    public ResponseEntity<?> removeStudentsFromClass(@PathVariable int classId, @RequestBody StudentClassRequest request) {
+        classService.removeStudentsFromClass(classId, request.getStudentIds());
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
     }
 
     @GetMapping("v1/template/download")

@@ -64,7 +64,20 @@ import IconButton from 'components/@extended/IconButton';
 import { EmptyTable, HeaderSort, RowEditable } from 'components/third-party/react-table';
 
 // assets
-import { Add, ArrowDown2, ArrowRight2, Command, Edit2, ExportCurve, Eye, ImportCurve, TableDocument, Trash } from 'iconsax-reactjs';
+import {
+  Add,
+  ArrowDown2,
+  ArrowRight2,
+  Command,
+  Edit2,
+  ExportCurve,
+  Eye,
+  ImportCurve,
+  ProfileAdd,
+  ProfileRemove,
+  TableDocument,
+  Trash
+} from 'iconsax-reactjs';
 import {
   Alert,
   Button,
@@ -85,6 +98,7 @@ import { type Classes } from 'types/classes';
 import { deleteById, getList, downloadClassStudentImportTemplate, importStudentIntoClass } from 'api/class';
 import { DEFAULT_PAGE_SIZE, PageRequest } from 'types/paging';
 import StudentListDialog from 'sections/extra-pages/class/max-student-dialog';
+import ManageClassStudentDialog from 'sections/extra-pages/class/manage-class-student-dialog';
 
 function StudentCountCell({ row }: { row: Row<Classes> }) {
   const [open, setOpen] = useState(false);
@@ -269,6 +283,57 @@ function EditAction({
           </Button>
         </DialogActions>
       </Dialog>
+    </Stack>
+  );
+}
+
+function ManageStudentAction({ row, reload, setReload }: { row: Row<Classes>; reload: boolean; setReload: (e: boolean) => void }) {
+  const { user } = useAuth();
+  const [openAdd, setOpenAdd] = useState(false);
+  const [openRemove, setOpenRemove] = useState(false);
+  const [hasPermission, setHasPermission] = useState(false);
+  const disabled = row.original.status === 0;
+
+  useEffect(() => {
+    if ([1].includes(user?.roleId ?? 0)) {
+      setHasPermission(true);
+    }
+  }, [user?.roleId]);
+
+  if (!hasPermission) return null;
+
+  return (
+    <Stack direction="row" sx={{ gap: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Tooltip title={disabled ? 'Không thể thêm sinh viên khi lớp dừng hoạt động' : 'Thêm sinh viên vào lớp'}>
+        <span>
+          <IconButton color="primary" onClick={() => setOpenAdd(true)} disabled={disabled}>
+            <ProfileAdd variant="Outline" />
+          </IconButton>
+        </span>
+      </Tooltip>
+
+      <Tooltip title={disabled ? 'Không thể xóa sinh viên khi lớp dừng hoạt động' : 'Xóa sinh viên khỏi lớp'}>
+        <span>
+          <IconButton color="error" onClick={() => setOpenRemove(true)} disabled={disabled}>
+            <ProfileRemove variant="Outline" />
+          </IconButton>
+        </span>
+      </Tooltip>
+
+      <ManageClassStudentDialog
+        open={openAdd}
+        onClose={() => setOpenAdd(false)}
+        classItem={row.original}
+        mode="add"
+        onChanged={() => setReload(!reload)}
+      />
+      <ManageClassStudentDialog
+        open={openRemove}
+        onClose={() => setOpenRemove(false)}
+        classItem={row.original}
+        mode="remove"
+        onChanged={() => setReload(!reload)}
+      />
     </Stack>
   );
 }
@@ -476,6 +541,14 @@ export default function ClassPage() {
         dataType: 'select',
         enableGrouping: false,
         meta: { width: '10%' }
+      },
+      {
+        id: 'manageStudent',
+        header: 'Sinh viên',
+        cell: ({ row }) => <ManageStudentAction row={row} reload={reload} setReload={setReload} />,
+        enableGrouping: false,
+        enableColumnFilter: false,
+        meta: { className: 'cell-center', width: '8%' }
       },
       {
         id: 'edit',

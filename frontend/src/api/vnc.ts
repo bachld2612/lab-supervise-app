@@ -5,9 +5,7 @@ export interface VncSession {
 }
 
 export const createVncSession = (classId: number, studentUserId: number) =>
-  axiosServices
-    .post<{ statusCode: number; data: VncSession }>(`/api/vnc/v1/session/${classId}/${studentUserId}`)
-    .then((r) => r.data);
+  axiosServices.post<{ statusCode: number; data: VncSession }>(`/api/vnc/v1/session/${classId}/${studentUserId}`).then((r) => r.data);
 
 export const createExamRoomVncSession = (examRoomId: number, studentUserId: number) =>
   axiosServices

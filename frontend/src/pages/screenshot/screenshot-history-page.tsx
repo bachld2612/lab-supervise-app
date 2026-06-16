@@ -466,13 +466,22 @@ export default function ScreenshotHistoryPage() {
               </Button>
             </Stack>
 
-            <Typography variant="caption" color="secondary" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', minHeight: 40 }}>
+            <Typography
+              variant="caption"
+              color="secondary"
+              sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', minHeight: 40 }}
+            >
               Tổng cộng: {totalElements} bản ghi
             </Typography>
           </Stack>
         </Stack>
 
-        <DndContext collisionDetection={closestCenter} modifiers={[restrictToHorizontalAxis]} onDragEnd={handleColumnDragEnd} sensors={columnSensors}>
+        <DndContext
+          collisionDetection={closestCenter}
+          modifiers={[restrictToHorizontalAxis]}
+          onDragEnd={handleColumnDragEnd}
+          sensors={columnSensors}
+        >
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -495,7 +504,12 @@ export default function ScreenshotHistoryPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  <DndContext collisionDetection={closestCenter} modifiers={[restrictToVerticalAxis]} onDragEnd={handleRowDragEnd} sensors={rowSensors}>
+                  <DndContext
+                    collisionDetection={closestCenter}
+                    modifiers={[restrictToVerticalAxis]}
+                    onDragEnd={handleRowDragEnd}
+                    sensors={rowSensors}
+                  >
                     {table.getRowModel().rows.length > 0 ? (
                       <SortableContext items={dataIds} strategy={verticalListSortingStrategy}>
                         {table.getRowModel().rows.map((row) => (
@@ -553,7 +567,12 @@ export default function ScreenshotHistoryPage() {
         </Grid>
       </MainCard>
 
-      <Dialog open={!!selectedImage} onClose={() => setSelectedImage(null)} maxWidth="lg" slotProps={{ paper: { sx: { borderRadius: 2 } } }}>
+      <Dialog
+        open={!!selectedImage}
+        onClose={() => setSelectedImage(null)}
+        maxWidth="lg"
+        slotProps={{ paper: { sx: { borderRadius: 2 } } }}
+      >
         <DialogTitle sx={{ py: 1.5 }}>
           <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Typography variant="h6">
