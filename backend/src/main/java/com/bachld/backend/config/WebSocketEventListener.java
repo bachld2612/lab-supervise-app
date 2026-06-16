@@ -65,12 +65,18 @@ public class WebSocketEventListener {
         Student student = studentRepository.findByUserId(userId).orElse(null);
         if (student == null) return;
 
-        Classes activeClass = findActiveClass(student.getId());
-        if (activeClass == null) {
-            notifyExamRoomIfActive(student, user, type);
-            return;
-        }
+            // Exam room takes priority over regular class: if an exam is active,
+        // only notify the exam topic and skip the class entirely.
+        boolean examHandled = notifyExamRoomIfActive(student, user, type);
+        if (examHandled) return;
 
+        Classes activeClass = findActiveClass(student.getId());
+        if (activeClass != null) {
+            notifyClass(student, user, activeClass, type);
+        }
+    }
+
+    private void notifyClass(Student student, User user, Classes activeClass, String type) {
         StudentClassInfoResponse response = StudentClassInfoResponse.builder()
                 .classId(activeClass.getId())
                 .studentId(student.getId())
@@ -133,7 +139,7 @@ public class WebSocketEventListener {
                 .orElse(null);
     }
 
-    private void notifyExamRoomIfActive(Student student, User user, String type) {
+    private boolean notifyExamRoomIfActive(Student student, User user, String type) {
         ExamRoom examRoom = findActiveExamRoom(student.getId());
 
         if (examRoom == null && "DISCONNECT".equals(type)) {
@@ -144,7 +150,7 @@ public class WebSocketEventListener {
             }
         }
 
-        if (examRoom == null) return;
+        if (examRoom == null) return false;
 
         studentExamRoomRepository.findByStudentIdAndExamRoomId(student.getId(), examRoom.getId()).ifPresent(ser -> {
             StudentExamRoomInfo info = new StudentExamRoomInfo();
@@ -172,5 +178,6 @@ public class WebSocketEventListener {
 
         messagingTemplate.convertAndSend("/topic/exam/" + examRoom.getId(), response);
         log.info("Student {} ({}) [{}] exam {}", student.getCode(), user.getFullName(), type, examRoom.getId());
+        return true;
     }
 }

@@ -1,3 +1,4 @@
+import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
@@ -24,20 +25,18 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: [
-        // { find: '', replacement: path.resolve(__dirname, 'src') },
-        // {
-        //   find: /^~(.+)/,
-        //   replacement: path.join(process.cwd(), 'node_modules/$1')
-        // },
-        // {
-        //   find: /^src(.+)/,
-        //   replacement: path.join(process.cwd(), 'src/$1')
-        // }
-        // {
-        //   find: 'assets',
-        //   replacement: path.join(process.cwd(), 'src/assets')
-        // },
+        {
+          find: '@novnc/novnc/core/rfb',
+          replacement: path.resolve(__dirname, 'node_modules/@novnc/novnc/core/rfb.js')
+        }
       ]
+    },
+    optimizeDeps: {
+      include: ['@novnc/novnc/core/rfb'],
+      esbuildOptions: { target: 'esnext' }
+    },
+    build: {
+      target: 'esnext'
     },
     base: API_URL,
     plugins: [react(), tsconfigPaths()]

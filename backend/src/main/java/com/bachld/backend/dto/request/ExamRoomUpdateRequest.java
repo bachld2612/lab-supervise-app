@@ -32,6 +32,8 @@ public class ExamRoomUpdateRequest {
     @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Ngày thi phải có định dạng yyyy-MM-dd")
     String examDate;
 
+    String periods;
+
     @Pattern(regexp = "^\\d{2}:\\d{2}(:\\d{2})?$", message = "Giờ bắt đầu phải có định dạng HH:mm hoặc HH:mm:ss")
     String startTime;
 

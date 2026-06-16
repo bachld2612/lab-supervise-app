@@ -16,7 +16,8 @@ import useAuth from 'hooks/useAuth';
 
 export default function Error404() {
   const { user } = useAuth();
-  const roleName = user?.roleId === 1 ? 'admin' : user?.roleId == 2 ? 'teacher' : user?.roleId == 4 ? 'it-center' : '';
+  // trang chủ = item đầu sidebar theo role (dashboard chưa xây cho admin/it-center)
+  const homePath = user?.roleId === 1 ? '/user' : user?.roleId == 2 ? '/dashboard/teacher' : user?.roleId == 4 ? '/room' : '/';
   return (
     <Grid
       container
@@ -39,7 +40,7 @@ export default function Error404() {
           <Typography align="center" sx={{ color: 'text.secondary', width: { xs: '73%', sm: '61%' } }}>
             The page you are looking was moved, removed, renamed, or might never exist!
           </Typography>
-          <Button component={Link} to={'/dashboard/' + roleName} variant="contained">
+          <Button component={Link} to={homePath} variant="contained">
             Back To Home
           </Button>
         </Stack>

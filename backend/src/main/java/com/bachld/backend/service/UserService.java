@@ -4,9 +4,12 @@ import com.bachld.backend.dto.request.ChangePasswordRequest;
 import com.bachld.backend.dto.request.UserCreateRequest;
 import com.bachld.backend.dto.request.UserUpdateRequest;
 import com.bachld.backend.dto.response.UserResponse;
+import com.bachld.backend.model.Student;
 import com.bachld.backend.model.User;
+import com.bachld.backend.repository.StudentRepository;
 import com.bachld.backend.repository.UserRepository;
 import com.bachld.backend.util.Util;
+import com.bachld.backend.util.enums.Role;
 import com.bachld.backend.util.enums.Status;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +31,8 @@ public class UserService {
     PasswordEncoder passwordEncoder;
 
     UserRepository userRepository;
+
+    StudentRepository studentRepository;
 
     Util util;
 
@@ -132,10 +136,28 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng có id: " + userId));
 
-        String rawPassword = "tlu" + user.getPhone().substring(user.getPhone().length() - 3);
+        String rawPassword = buildDefaultPassword(user);
         user.setPassword(passwordEncoder.encode(rawPassword));
         user.setRawPassword(rawPassword);
 
         userRepository.save(user);
+    }
+
+    private String buildDefaultPassword(User user) {
+        if (user.getRoleId() != null && user.getRoleId() == Role.STUDENT.getValue()) {
+            Student student = studentRepository.findByUserId(user.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sinh viên của người dùng có id: " + user.getId()));
+            return buildStudentDefaultPassword(student.getCode());
+        }
+
+        return "tlu" + user.getPhone().substring(user.getPhone().length() - 3);
+    }
+
+    private String buildStudentDefaultPassword(String studentCode) {
+        String normalizedCode = studentCode.trim();
+        if (normalizedCode.length() < 3) {
+            throw new IllegalArgumentException("Mã sinh viên phải có ít nhất 3 ký tự để tạo mật khẩu mặc định");
+        }
+        return "tlu" + normalizedCode.substring(normalizedCode.length() - 3);
     }
 }

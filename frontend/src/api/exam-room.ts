@@ -67,19 +67,6 @@ const getTracking = async (examRoomId: number) => {
   }
 };
 
-const importVeyonKey = async (examRoomId: number, keyName: string, encryptedKeyData: string) => {
-  try {
-    const response = await axiosServices.post(`/api/exam-room/v1/${examRoomId}/veyon/import-key`, {
-      examRoomId,
-      keyName,
-      encryptedKeyData
-    });
-    return response.data;
-  } catch (error: Error | any) {
-    return error;
-  }
-};
-
 const getTeacherExamRooms = async () => {
   try {
     const response = await axiosServices.get('/api/exam-room/v1/teacher');
@@ -136,4 +123,4 @@ const generateWifiSsid = async (examRoomId: number) => {
   }
 };
 
-export { getList, getById, create, update, deleteById, importStudents, getTracking, importVeyonKey, getTeacherExamRooms, getConnectedStudents, getStudyStatus, setTrackingEnabled, updateWifiSsid, generateWifiSsid };
+export { getList, getById, create, update, deleteById, importStudents, getTracking, getTeacherExamRooms, getConnectedStudents, getStudyStatus, setTrackingEnabled, updateWifiSsid, generateWifiSsid };

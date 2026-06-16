@@ -28,6 +28,7 @@ public class ExamRoomResponse {
     Integer maxStudent;
     Long currentStudent;
     LocalDate examDate;
+    String periods;
     LocalTime startTime;
     LocalTime endTime;
     Integer status;
@@ -41,7 +42,7 @@ public class ExamRoomResponse {
                              Integer subjectId, String subjectName,
                              Integer semesterId, String semesterName,
                              Integer maxStudent, Long currentStudent,
-                             LocalDate examDate, LocalTime startTime, LocalTime endTime,
+                             LocalDate examDate, String periods, LocalTime startTime, LocalTime endTime,
                              Integer status, Boolean trackingEnabled, String wifiSsid) {
         this.id = id;
         this.code = code;
@@ -58,6 +59,7 @@ public class ExamRoomResponse {
         this.maxStudent = maxStudent;
         this.currentStudent = currentStudent;
         this.examDate = examDate;
+        this.periods = periods;
         this.startTime = startTime;
         this.endTime = endTime;
         this.status = status;

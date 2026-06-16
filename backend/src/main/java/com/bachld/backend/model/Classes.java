@@ -43,15 +43,12 @@ public class Classes extends BaseEntity {
     @Column(name = "end_date")
     LocalDate endDate;
 
-    @Column(name = "veyon_key", columnDefinition = "TEXT")
-    String veyonKey;
-
-    @Column(name = "veyon_key_name", columnDefinition = "TEXT")
-    String veyonKeyName;
-
     @Column(name = "room_id")
     Integer roomId;
 
     @Column(name = "wifi_ssid")
     String wifiSsid;
+
+    @Column(name = "tracking_enabled", columnDefinition = "BOOLEAN DEFAULT TRUE")
+    Boolean trackingEnabled = true;
 }

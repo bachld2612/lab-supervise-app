@@ -14,6 +14,10 @@ public class AppUsageItem {
 
     String applicationName;
 
+    Integer action;
+
+    String clipboardText;
+
     LocalDateTime createdAt;
 
     boolean isBanApplication;

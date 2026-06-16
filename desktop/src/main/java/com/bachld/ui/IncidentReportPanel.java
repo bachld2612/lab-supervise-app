@@ -110,6 +110,7 @@ public class IncidentReportPanel extends JPanel {
                 BorderFactory.createLineBorder(BORDER_COLOR),
                 new EmptyBorder(4, 10, 4, 10)
         ));
+        txtTitle.addActionListener(e -> handleSubmit());
 
         btnSubmit = new JButton("Gửi báo cáo");
         btnSubmit.setFont(new Font("Segoe UI", Font.BOLD, 13));
@@ -283,6 +284,10 @@ public class IncidentReportPanel extends JPanel {
     // ── Actions ────────────────────────────────────────────────────────────────
 
     private void handleSubmit() {
+        if (btnSubmit != null && !btnSubmit.isEnabled()) {
+            return;
+        }
+
         String title = txtTitle.getText().trim();
         if (title.isEmpty()) {
             setFeedback("Tiêu đề không được phép bỏ trống", false);
@@ -392,6 +397,7 @@ public class IncidentReportPanel extends JPanel {
                 }
             });
         });
+        dialog.getRootPane().setDefaultButton(btnSave);
 
         btnPanel.add(btnCancel);
         btnPanel.add(btnSave);

@@ -52,7 +52,15 @@ public class ClassResponse {
 
     String wifiSsid;
 
+    Boolean trackingEnabled;
+
     public ClassResponse(Integer id, String name, Integer currentStudent, Integer maxStudent, Integer sessionNumber, Integer status, Integer subjectId, String subjectName, Integer teacherId, String teacherName, Integer scheduleId, String scheduleName, LocalDate startDate, LocalDate endDate, Integer semesterId, String semesterName, Integer roomId, String roomName, String wifiSsid) {
+        this(id, name, currentStudent, maxStudent, sessionNumber, status, subjectId, subjectName, teacherId,
+                teacherName, scheduleId, scheduleName, startDate, endDate, semesterId, semesterName, roomId,
+                roomName, wifiSsid, true);
+    }
+
+    public ClassResponse(Integer id, String name, Integer currentStudent, Integer maxStudent, Integer sessionNumber, Integer status, Integer subjectId, String subjectName, Integer teacherId, String teacherName, Integer scheduleId, String scheduleName, LocalDate startDate, LocalDate endDate, Integer semesterId, String semesterName, Integer roomId, String roomName, String wifiSsid, Boolean trackingEnabled) {
         this.id = id;
         this.name = name;
         this.currentStudent = currentStudent;
@@ -72,5 +80,6 @@ public class ClassResponse {
         this.roomId = roomId;
         this.roomName = roomName;
         this.wifiSsid = wifiSsid;
+        this.trackingEnabled = trackingEnabled;
     }
 }

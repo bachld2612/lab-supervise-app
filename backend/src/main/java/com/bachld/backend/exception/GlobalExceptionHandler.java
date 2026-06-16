@@ -77,6 +77,15 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<?> handleIllegalStateException(IllegalStateException ex) {
+        Map<String, Object> errors = new HashMap<>();
+        errors.put("statusCode", HttpStatus.UNPROCESSABLE_ENTITY.value());
+        errors.put("message", ex.getMessage());
+        return new ResponseEntity<>(errors, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         Map<String, Object> errors = new HashMap<>();

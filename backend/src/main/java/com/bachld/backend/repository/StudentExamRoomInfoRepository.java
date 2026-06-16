@@ -27,7 +27,8 @@ public interface StudentExamRoomInfoRepository extends JpaRepository<StudentExam
 
     @Query("""
         SELECT new com.bachld.backend.dto.response.StudentAppUsageRaw(
-            s.id, seri.applicationName, seri.createdAt, seri.violation, seri.connectionType
+            s.id, seri.applicationName, seri.action, seri.clipboardTextEncrypted, seri.clipboardKeyEncrypted,
+            seri.clipboardIv, seri.createdAt, seri.violation, seri.connectionType
         )
         FROM StudentExamRoomInfo seri
             JOIN StudentExamRoom ser ON ser.id = seri.studentExamRoomId

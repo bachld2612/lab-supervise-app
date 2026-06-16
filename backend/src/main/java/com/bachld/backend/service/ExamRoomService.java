@@ -10,6 +10,7 @@ import com.bachld.backend.dto.response.StudentAppUsageRaw;
 import com.bachld.backend.model.*;
 import com.bachld.backend.repository.*;
 import com.bachld.backend.util.Util;
+import com.bachld.backend.util.enums.Period;
 import com.bachld.backend.util.enums.Status;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -45,6 +47,7 @@ public class ExamRoomService {
     StudentRepository studentRepository;
     TeacherRepository teacherRepository;
     ConnectedExamStudentRegistry connectedExamStudentRegistry;
+    ClipboardTextCryptoService clipboardTextCryptoService;
     Util util;
 
     public Page<ExamRoomResponse> getList(Pageable pageable, String keyword, Integer semesterId, Integer status) {
@@ -71,6 +74,11 @@ public class ExamRoomService {
 
     public List<ExamRoomResponse> getTeacherExamRooms() {
         User currentUser = util.getCurrentUser();
+        if (com.bachld.backend.util.enums.Role.IT_CENTER.getValue() == currentUser.getRoleId()) {
+            List<ExamRoomResponse> rooms = examRoomRepository.findAllActive();
+            fillStudyStatus(rooms);
+            return rooms;
+        }
         Teacher teacher = teacherRepository.findByUserId(currentUser.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy giảng viên"));
         List<ExamRoomResponse> rooms = examRoomRepository.findByTeacher(teacher.getId());
@@ -97,20 +105,15 @@ public class ExamRoomService {
     @Transactional
     public void create(ExamRoomCreateRequest request) {
         LocalDate examDate = LocalDate.parse(request.getExamDate());
-        LocalTime startTime = LocalTime.parse(request.getStartTime());
-        LocalTime endTime = LocalTime.parse(request.getEndTime());
-
-        if (!startTime.isBefore(endTime)) {
-            throw new IllegalArgumentException("Giờ bắt đầu phải trước giờ kết thúc");
-        }
+        PeriodRange periodRange = parsePeriodRange(request.getPeriods());
 
         if (request.getTeacher1Id().equals(request.getTeacher2Id())) {
             throw new IllegalArgumentException("Hai giảng viên coi thi phải khác nhau");
         }
 
-        validateRoomConflict(request.getRoomId(), examDate, startTime, endTime, null);
-        validateTeacherConflict(request.getTeacher1Id(), examDate, startTime, endTime, null);
-        validateTeacherConflict(request.getTeacher2Id(), examDate, startTime, endTime, null);
+        validateRoomConflict(request.getRoomId(), examDate, periodRange.startTime(), periodRange.endTime(), null);
+        validateTeacherConflict(request.getTeacher1Id(), examDate, periodRange.startTime(), periodRange.endTime(), null);
+        validateTeacherConflict(request.getTeacher2Id(), examDate, periodRange.startTime(), periodRange.endTime(), null);
 
         ExamRoom examRoom = new ExamRoom();
         examRoom.setCode(request.getCode());
@@ -121,8 +124,9 @@ public class ExamRoomService {
         examRoom.setSemesterId(request.getSemesterId());
         examRoom.setMaxStudent(request.getMaxStudent());
         examRoom.setExamDate(examDate);
-        examRoom.setStartTime(startTime);
-        examRoom.setEndTime(endTime);
+        examRoom.setPeriods(periodRange.periods());
+        examRoom.setStartTime(periodRange.startTime());
+        examRoom.setEndTime(periodRange.endTime());
         examRoom.setStatus(Status.ACTIVE.getValue());
         examRoomRepository.save(examRoom);
     }
@@ -144,13 +148,23 @@ public class ExamRoomService {
 
         LocalDate examDate = request.getExamDate() != null
                 ? LocalDate.parse(request.getExamDate()) : examRoom.getExamDate();
-        LocalTime startTime = request.getStartTime() != null
-                ? LocalTime.parse(request.getStartTime()) : examRoom.getStartTime();
-        LocalTime endTime = request.getEndTime() != null
-                ? LocalTime.parse(request.getEndTime()) : examRoom.getEndTime();
+        String periods = examRoom.getPeriods();
+        LocalTime startTime = examRoom.getStartTime();
+        LocalTime endTime = examRoom.getEndTime();
 
-        if (!startTime.isBefore(endTime)) {
-            throw new IllegalArgumentException("Giờ bắt đầu phải trước giờ kết thúc");
+        if (request.getPeriods() != null && !request.getPeriods().isBlank()) {
+            PeriodRange periodRange = parsePeriodRange(request.getPeriods());
+            periods = periodRange.periods();
+            startTime = periodRange.startTime();
+            endTime = periodRange.endTime();
+        } else if (request.getStartTime() != null || request.getEndTime() != null) {
+            startTime = request.getStartTime() != null
+                    ? LocalTime.parse(request.getStartTime()) : examRoom.getStartTime();
+            endTime = request.getEndTime() != null
+                    ? LocalTime.parse(request.getEndTime()) : examRoom.getEndTime();
+            if (!startTime.isBefore(endTime)) {
+                throw new IllegalArgumentException("Giờ bắt đầu phải trước giờ kết thúc");
+            }
         }
         if (examRoom.getTeacher1Id().equals(examRoom.getTeacher2Id())) {
             throw new IllegalArgumentException("Hai giảng viên coi thi phải khác nhau");
@@ -161,6 +175,7 @@ public class ExamRoomService {
         validateTeacherConflict(examRoom.getTeacher2Id(), examDate, startTime, endTime, id);
 
         examRoom.setExamDate(examDate);
+        examRoom.setPeriods(periods);
         examRoom.setStartTime(startTime);
         examRoom.setEndTime(endTime);
         examRoomRepository.save(examRoom);
@@ -257,6 +272,8 @@ public class ExamRoomService {
                         Collectors.mapping(
                                 r -> AppUsageItem.builder()
                                         .applicationName(r.getApplicationName())
+                                        .action(r.getAction() == null ? 0 : r.getAction().getValue())
+                                        .clipboardText(decryptClipboardText(r))
                                         .createdAt(r.getCreatedAt())
                                         .isBanApplication(r.isBanApplication())
                                         .connectionType(r.getConnectionType())
@@ -267,6 +284,17 @@ public class ExamRoomService {
 
         students.forEach(s -> s.setApplicationsToday(usageByStudent.getOrDefault(s.getStudentId(), List.of())));
         return students;
+    }
+
+    private String decryptClipboardText(StudentAppUsageRaw raw) {
+        if (raw.getAction() == null || raw.getAction().getValue() == 0) {
+            return null;
+        }
+        return clipboardTextCryptoService.decrypt(
+                raw.getClipboardTextEncrypted(),
+                raw.getClipboardKeyEncrypted(),
+                raw.getClipboardIv()
+        );
     }
 
     @Transactional
@@ -295,12 +323,48 @@ public class ExamRoomService {
         return ssid;
     }
 
-    public void importVeyonKey(Integer examRoomId, String keyName, String encryptedKeyData) {
-        ExamRoom examRoom = examRoomRepository.findById(examRoomId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy phòng thi có id: " + examRoomId));
-        examRoom.setVeyonKeyName(keyName);
-        examRoom.setVeyonKey(encryptedKeyData);
-        examRoomRepository.save(examRoom);
+    private PeriodRange parsePeriodRange(String periodsStr) {
+        if (periodsStr == null || periodsStr.isBlank()) {
+            throw new IllegalArgumentException("Tiết thi không được để trống");
+        }
+
+        List<Integer> periodList = Arrays.stream(periodsStr.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(value -> {
+                    try {
+                        return Integer.parseInt(value);
+                    } catch (NumberFormatException ex) {
+                        throw new IllegalArgumentException("Tiết thi không hợp lệ: " + value);
+                    }
+                })
+                .distinct()
+                .sorted()
+                .toList();
+
+        if (periodList.isEmpty()) {
+            throw new IllegalArgumentException("Tiết thi không được để trống");
+        }
+
+        for (Integer period : periodList) {
+            if (period < 1 || period > 12) {
+                throw new IllegalArgumentException("Tiết thi phải từ 1 đến 12");
+            }
+        }
+
+        for (int i = 1; i < periodList.size(); i++) {
+            if (periodList.get(i) != periodList.get(i - 1) + 1) {
+                throw new IllegalArgumentException("Các tiết thi phải liên tục");
+            }
+        }
+
+        Period firstPeriod = Period.fromValue(periodList.get(0));
+        Period lastPeriod = Period.fromValue(periodList.get(periodList.size() - 1));
+        String sortedPeriods = periodList.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(","));
+
+        return new PeriodRange(sortedPeriods, firstPeriod.getStartTime(), lastPeriod.getEndTime());
     }
 
     private void validateRoomConflict(Integer roomId, LocalDate examDate, LocalTime startTime, LocalTime endTime, Integer excludeId) {
@@ -346,5 +410,8 @@ public class ExamRoomService {
         ser.setStudentId(studentId);
         ser.setStatus(Status.ACTIVE.getValue());
         return ser;
+    }
+
+    private record PeriodRange(String periods, LocalTime startTime, LocalTime endTime) {
     }
 }

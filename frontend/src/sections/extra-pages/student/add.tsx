@@ -43,12 +43,10 @@ export default function AddStudent() {
     email: Yup.string().email('Email không hợp lệ').required('Email không được phép bỏ trống'),
     code: Yup.string().required('Mã sinh viên không được phép bỏ trống'),
     fullName: Yup.string().required('Tên không được phép bỏ trống'),
-    hometown: Yup.string().required('Quê nhà không được phép bỏ trống'),
-    phone: Yup.string().required('Số điện thoại không được phép bỏ trống'),
+    hometown: Yup.string(),
+    phone: Yup.string(),
     manageClassId: Yup.number().required('Lớp quản lý không được phép bỏ trống').min(1, 'Lớp quản lý không được phép bỏ trống'),
-    birthday: Yup.string()
-      .matches(/^\d{4}-\d{2}-\d{2}$/, 'Ngày sinh phải có định dạng yyyy-MM-dd')
-      .required('Ngày sinh không được phép bỏ trống')
+    birthday: Yup.string().matches(/^$|^\d{4}-\d{2}-\d{2}$/, 'Ngày sinh phải có định dạng yyyy-MM-dd')
   });
 
   const initialValues: Student = {
@@ -159,7 +157,7 @@ export default function AddStudent() {
             </Grid>
 
             <Grid size={{ xs: 12, md: 6 }}>
-              <InputLabel htmlFor="phone" required sx={{ '& .MuiInputLabel-asterisk': { color: 'error.main' }, mb: 1 }}>
+              <InputLabel htmlFor="phone" sx={{ '& .MuiInputLabel-asterisk': { color: 'error.main' }, mb: 1 }}>
                 Số điện thoại
               </InputLabel>
               <TextField
@@ -177,7 +175,7 @@ export default function AddStudent() {
             </Grid>
 
             <Grid size={{ xs: 12, md: 6 }}>
-              <InputLabel htmlFor="birthday" required sx={{ '& .MuiInputLabel-asterisk': { color: 'error.main' }, mb: 1 }}>
+              <InputLabel htmlFor="birthday" sx={{ '& .MuiInputLabel-asterisk': { color: 'error.main' }, mb: 1 }}>
                 Ngày sinh
               </InputLabel>
               <TextField
@@ -195,7 +193,7 @@ export default function AddStudent() {
             </Grid>
 
             <Grid size={{ xs: 12, md: 6 }}>
-              <InputLabel htmlFor="hometown" required sx={{ '& .MuiInputLabel-asterisk': { color: 'error.main' }, mb: 1 }}>
+              <InputLabel htmlFor="hometown" sx={{ '& .MuiInputLabel-asterisk': { color: 'error.main' }, mb: 1 }}>
                 Quê quán
               </InputLabel>
               <TextField

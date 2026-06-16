@@ -24,7 +24,10 @@ public interface StudentClassInfoRepository extends JpaRepository<StudentClassIn
     List<ClassStudentTrackingResponse> findStudentsWithLatestTracking(@Param("classId") Integer classId);
 
     @Query("""
-        SELECT new com.bachld.backend.dto.response.StudentAppUsageRaw(s.id, sci.applicationName, sci.createdAt, sci.isBanApplication, sci.connectionType)
+        SELECT new com.bachld.backend.dto.response.StudentAppUsageRaw(
+            s.id, sci.applicationName, sci.action, sci.clipboardTextEncrypted, sci.clipboardKeyEncrypted,
+            sci.clipboardIv, sci.createdAt, sci.isBanApplication, sci.connectionType
+        )
         FROM StudentClassInfo sci
             JOIN StudentClass stc ON stc.id = sci.studentClassId
             JOIN Student s ON s.id = stc.studentId

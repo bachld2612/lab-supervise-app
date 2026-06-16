@@ -42,17 +42,14 @@ public class ExamRoom extends BaseEntity {
     @Column(name = "exam_date")
     LocalDate examDate;
 
+    @Column(name = "periods")
+    String periods;
+
     @Column(name = "start_time")
     LocalTime startTime;
 
     @Column(name = "end_time")
     LocalTime endTime;
-
-    @Column(name = "veyon_key", columnDefinition = "TEXT")
-    String veyonKey;
-
-    @Column(name = "veyon_key_name", columnDefinition = "TEXT")
-    String veyonKeyName;
 
     @Column(name = "tracking_enabled")
     Boolean trackingEnabled = false;

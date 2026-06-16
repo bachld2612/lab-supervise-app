@@ -18,7 +18,7 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
             c.id, c.name,
             (SELECT CAST(COUNT(stc.studentId) AS integer) FROM StudentClass stc WHERE stc.classId = c.id),
             c.maxStudent, c.sessionNumber, c.status, s.id, s.name, t.id, u.fullName, sc.id, sc.name, c.startDate, c.endDate,
-            sm.id, sm.name, r.id, r.name, c.wifiSsid
+            sm.id, sm.name, r.id, r.name, c.wifiSsid, c.trackingEnabled
         )
         FROM Classes c
             JOIN Semester sm ON sm.id = c.semesterId
@@ -37,7 +37,7 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
             c.id, c.name,
             (SELECT CAST(COUNT(stc.studentId) AS integer) FROM StudentClass stc WHERE stc.classId = c.id),
             c.maxStudent, c.sessionNumber, c.status, s.id, s.name, t.id, u.fullName, sc.id, sc.name, c.startDate, c.endDate,
-            sm.id, sm.name, r.id, r.name, c.wifiSsid
+            sm.id, sm.name, r.id, r.name, c.wifiSsid, c.trackingEnabled
         )
         FROM Classes c
             JOIN Semester sm ON sm.id = c.semesterId
@@ -56,7 +56,7 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
             c.id, c.name,
             (SELECT CAST(COUNT(stc.studentId) AS integer) FROM StudentClass stc WHERE stc.classId = c.id),
             c.maxStudent, c.sessionNumber, c.status, s.id, s.name, t.id, u.fullName, sc.id, sc.name, c.startDate, c.endDate,
-            sm.id, sm.name, r.id, r.name, c.wifiSsid
+            sm.id, sm.name, r.id, r.name, c.wifiSsid, c.trackingEnabled
         )
         FROM Classes c
             JOIN Semester sm ON sm.id = c.semesterId
@@ -77,7 +77,7 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
             c.id, c.name,
             (SELECT CAST(COUNT(stc.studentId) AS integer) FROM StudentClass stc WHERE stc.classId = c.id),
             c.maxStudent, c.sessionNumber, c.status, s.id, s.name, t.id, u.fullName, sc.id, sc.name, c.startDate, c.endDate,
-            sm.id, sm.name, r.id, r.name, c.wifiSsid
+            sm.id, sm.name, r.id, r.name, c.wifiSsid, c.trackingEnabled
         )
         FROM Classes c
             JOIN Semester sm ON sm.id = c.semesterId
@@ -90,6 +90,24 @@ public interface ClassRepository extends JpaRepository<Classes, Integer> {
             AND :today BETWEEN c.startDate AND c.endDate
     """)
     List<ClassResponse> findActiveClassByTeacherUserId(Integer userId, LocalDate today);
+
+    @Query("""
+        SELECT new com.bachld.backend.dto.response.ClassResponse(
+            c.id, c.name,
+            (SELECT CAST(COUNT(stc.studentId) AS integer) FROM StudentClass stc WHERE stc.classId = c.id),
+            c.maxStudent, c.sessionNumber, c.status, s.id, s.name, t.id, u.fullName, sc.id, sc.name, c.startDate, c.endDate,
+            sm.id, sm.name, r.id, r.name, c.wifiSsid, c.trackingEnabled
+        )
+        FROM Classes c
+            JOIN Semester sm ON sm.id = c.semesterId
+            JOIN Subject s ON c.subjectId = s.id
+            JOIN Teacher t ON c.teacherId = t.id
+            JOIN User u ON t.userId = u.id
+            JOIN Schedule sc ON c.scheduleId = sc.id
+            LEFT JOIN Room r ON r.id = c.roomId
+        WHERE c.status = 1
+    """)
+    List<ClassResponse> findAllActiveClasses();
 
     List<Classes> findByRoomIdAndStatus(Integer roomId, Integer status);
 

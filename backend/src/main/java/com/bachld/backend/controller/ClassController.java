@@ -38,7 +38,7 @@ public class ClassController {
     }
 
     @GetMapping("/v1")
-    @AuthFilter(role = "ADMIN")
+    @AuthFilter(role = "ADMIN,IT_CENTER")
     public ResponseEntity<?> getList(
             @PageableDefault Pageable pageable,
             @RequestParam(required = false) String keyword,
@@ -81,7 +81,7 @@ public class ClassController {
     }
 
     @GetMapping("/v1/teacher")
-    @AuthFilter(role = "TEACHER")
+    @AuthFilter(role = "TEACHER,IT_CENTER")
     public ResponseEntity<?> getListByTeacherUserId() {
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), classService.getListByTeacherUserId()));
     }
@@ -99,6 +99,16 @@ public class ClassController {
     ) {
         LocalDate targetDate = LocalDate.now();
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), classService.getTrackingByClassId(classId, targetDate)));
+    }
+
+    @PutMapping("/v1/{classId}/tracking-enabled")
+    @AuthFilter(role = "TEACHER")
+    public ResponseEntity<?> setTrackingEnabled(
+            @PathVariable int classId,
+            @RequestParam boolean enabled
+    ) {
+        classService.setTrackingEnabled(classId, enabled);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
     }
 
     @GetMapping("/v1/{classId}/student")

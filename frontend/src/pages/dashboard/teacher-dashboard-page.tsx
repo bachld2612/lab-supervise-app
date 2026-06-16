@@ -36,6 +36,23 @@ function ExamStatusBadge({ studyStatus }: { studyStatus?: number }) {
   return <Chip label="Sắp diễn ra" color="warning" size="small" />;
 }
 
+const parsePeriodValues = (periods?: string) =>
+  (periods ?? '')
+    .split(',')
+    .map((value) => Number(value.trim()))
+    .filter((value) => Number.isInteger(value))
+    .sort((a, b) => a - b);
+
+const formatExamPeriodRange = (examRoom: ExamRoom) => {
+  const values = parsePeriodValues(examRoom.periods);
+  const timeRange = `${formatTimeWithoutSecond(examRoom.startTime)} - ${formatTimeWithoutSecond(examRoom.endTime)}`;
+
+  if (values.length === 0) return timeRange;
+  if (values.length === 1) return `Tiết ${values[0]} (${timeRange})`;
+
+  return `Tiết ${values[0]} - Tiết ${values[values.length - 1]} (${timeRange})`;
+};
+
 // ==============================|| TEACHER DASHBOARD PAGE ||============================== //
 
 export default function TeacherDashboardPage() {
@@ -219,7 +236,7 @@ export default function TeacherDashboardPage() {
                               </Stack>
                               <Stack direction="row" spacing={1} alignItems="center">
                                 <Clock size={16} />
-                                <Typography variant="body2" color="text.secondary">{formatTimeWithoutSecond(er.startTime)} — {formatTimeWithoutSecond(er.endTime)}</Typography>
+                                <Typography variant="body2" color="text.secondary">{formatExamPeriodRange(er)}</Typography>
                               </Stack>
                               <Typography variant="caption" color="text.disabled">
                                 {er.semesterName}&nbsp;·&nbsp;Phòng {er.roomName}

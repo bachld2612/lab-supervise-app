@@ -6,45 +6,54 @@ import com.bachld.config.RestClient;
 import com.bachld.service.AuthService;
 import com.bachld.service.SessionManager;
 import com.bachld.service.TokenManager;
+import com.bachld.service.vnc.AdminPrivilegeService;
+import com.bachld.service.vnc.VncBootstrapService;
 import com.bachld.ui.LoginFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
-/**
- * LabMonitorApp - Main application entry point
- * Initializes all singletons and launches the login UI
- * 
- * Requirements: 7.4, 8.1, 9.1
- */
 public class LabMonitorApp {
 
     private static final Logger log = LoggerFactory.getLogger(LabMonitorApp.class);
 
     public static void main(String[] args) {
-        AppConfig config = AppConfig.getInstance();
+        String os = System.getProperty("os.name", "").toLowerCase();
+
+        // On Windows: require Administrator, then bootstrap UltraVNC before anything else
+        if (os.contains("win")) {
+            AdminPrivilegeService adminService = new AdminPrivilegeService();
+            if (!adminService.isRunningAsAdmin()) {
+                adminService.relaunchAsAdminAndExit();
+                return;
+            }
+
+            Thread vncThread = new Thread(() -> {
+                try {
+                    new VncBootstrapService().ensureReady();
+                } catch (Exception e) {
+                    log.error("VNC bootstrap error: {}", e.getMessage(), e);
+                }
+            }, "vnc-bootstrap");
+            vncThread.setDaemon(true);
+            vncThread.start();
+        }
+
+        AppConfig.getInstance();
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            log.warn("Could not set system look and feel, using default.", e);
+            log.warn("Could not set system look and feel", e);
         }
 
-        // Initialize singletons (Requirements 7.4, 8.1, 9.1)
         RestClient restClient = RestClient.getInstance();
         TokenManager tokenManager = TokenManager.getInstance();
         SessionManager sessionManager = SessionManager.getInstance();
-        
-        // Create AuthApiClient with RestClient
         AuthApiClient authApiClient = new AuthApiClient(restClient);
-
-        // Create AuthService with dependencies
         AuthService authService = new AuthService(authApiClient, tokenManager, sessionManager);
 
-        // Display LoginFrame on EDT using SwingUtilities.invokeLater()
-        SwingUtilities.invokeLater(() -> {
-            new LoginFrame(authService);
-        });
+        SwingUtilities.invokeLater(() -> new LoginFrame(authService));
     }
 }

@@ -3,14 +3,12 @@ import {
   Box,
   Button,
   Card,
-  CardContent,
   Chip,
   CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Divider,
   FormControlLabel,
   Grid,
   IconButton,
@@ -27,14 +25,15 @@ import {
   Typography
 } from '@mui/material';
 import MainCard from 'components/MainCard';
-import { useEffect, useMemo, useState } from 'react';
-import { useExamRoomTracking, StudentTrackingState } from 'hooks/useExamRoomTracking';
-import { Add, ArrowLeft, Copy, Global, Key, Lock1, MessageText, Refresh, Timer1, Trash, Wifi } from 'iconsax-reactjs';
+import VncViewer from 'components/VncViewer';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useExamRoomTracking, StudentTrackingState, ScreenshotReadyMessage } from 'hooks/useExamRoomTracking';
+import { Add, ArrowLeft, CloseCircle, Copy, Global, Lock1, MessageText, Refresh, Timer1, Trash, VideoTick, Wifi } from 'iconsax-reactjs';
 import { useNavigate, useParams } from 'react-router';
 import { HttpStatusCode } from 'axios';
 import { AllowedApplication } from 'types/allowed-application';
 import * as allowedApplicationApi from 'api/allowed-application';
-import { openWebsiteForExamRoom, sendMessageToExamRoom } from 'api/veyon';
+import { openWebsiteForExamRoom, sendMessageToExamRoom } from 'api/remote-control';
 import {
   getById as getExamRoomById,
   getStudyStatus as getExamStudyStatus,
@@ -42,9 +41,9 @@ import {
   updateWifiSsid,
   generateWifiSsid
 } from 'api/exam-room';
-import ImportVeyonKeyDialog from 'sections/extra-pages/class/import-veyon-key-dialog';
 import StudentActionDialog from 'sections/extra-pages/class/student-action-dialog';
 import { StudentTrackingState as ClassStudentTrackingState } from 'hooks/useClassTracking';
+import { getNextPeriodRefreshDelay } from 'utils/periodRefresh';
 
 function formatTime(isoString: string): string {
   try {
@@ -65,7 +64,13 @@ export default function TeacherExamRoomTrackingPage() {
   const [alert, setAlert] = useState({ open: false, message: '', severity: 'error' as 'success' | 'error' | 'info' | 'warning' });
   const [selectedStudent, setSelectedStudent] = useState<StudentTrackingState | null>(null);
   const [lockedStudents, setLockedStudents] = useState<Set<number>>(new Set());
-  const [importKeyOpen, setImportKeyOpen] = useState(false);
+  const [pinnedStudentIds, setPinnedStudentIds] = useState<Set<number>>(new Set());
+  const [readyScreenshot, setReadyScreenshot] = useState<ScreenshotReadyMessage | null>(null);
+  const [autoScreenshots, setAutoScreenshots] = useState<Array<{ screenshotId: number; imageUrl: string; fullName: string; code: string }>>(
+    []
+  );
+  const pendingManualScreenshotIdsRef = useRef<Set<number>>(new Set());
+  const handledScreenshotIdsRef = useRef<Set<number>>(new Set());
   const [openWebDialogOpen, setOpenWebDialogOpen] = useState(false);
   const [webUrlInput, setWebUrlInput] = useState('');
   const [webUrlLoading, setWebUrlLoading] = useState(false);
@@ -80,11 +85,27 @@ export default function TeacherExamRoomTrackingPage() {
   const [addAppLoading, setAddAppLoading] = useState(false);
   const [examRoomName, setExamRoomName] = useState('');
   const [examStatus, setExamStatus] = useState<number | undefined>(undefined);
+  const [reload, setReload] = useState(false);
   const [trackingEnabled, setTrackingEnabled] = useState(false);
   const [trackingToggleLoading, setTrackingToggleLoading] = useState(false);
   const [accessCodeDialogOpen, setAccessCodeDialogOpen] = useState(false);
   const [accessCodeInput, setAccessCodeInput] = useState('');
   const [accessCodeLoading, setAccessCodeLoading] = useState(false);
+
+  useEffect(() => {
+    if (!examRoomId) {
+      setPinnedStudentIds(new Set());
+      return;
+    }
+
+    try {
+      const raw = sessionStorage.getItem(`exam-room-tracking-pinned:${examRoomId}`);
+      const ids = raw ? (JSON.parse(raw) as number[]) : [];
+      setPinnedStudentIds(new Set(ids));
+    } catch {
+      setPinnedStudentIds(new Set());
+    }
+  }, [examRoomId]);
 
   useEffect(() => {
     if (!accessCodeDialogOpen || !examRoomId) return;
@@ -111,6 +132,46 @@ export default function TeacherExamRoomTrackingPage() {
     getExamStudyStatus(examRoomId).then((res) => {
       if (res?.statusCode === HttpStatusCode.Ok) setExamStatus(res.data as number);
     });
+  }, [examRoomId]);
+
+  useEffect(() => {
+    if (!examRoomId) return;
+
+    let timerId: ReturnType<typeof setTimeout> | undefined;
+
+    const refreshStatus = async () => {
+      const res = await getExamStudyStatus(examRoomId);
+      if (res?.statusCode === HttpStatusCode.Ok) {
+        const nextStatus = res.data as number;
+        setExamStatus((previousStatus) => {
+          if (previousStatus !== undefined && previousStatus !== nextStatus) {
+            setReload((value) => !value);
+          }
+          return nextStatus;
+        });
+      }
+    };
+
+    const schedule = () => {
+      timerId = setTimeout(async () => {
+        await refreshStatus();
+        schedule();
+      }, getNextPeriodRefreshDelay());
+    };
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        refreshStatus();
+      }
+    };
+
+    schedule();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      if (timerId) clearTimeout(timerId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [examRoomId]);
 
   const handleTrackingToggle = async (enabled: boolean) => {
@@ -144,10 +205,25 @@ export default function TeacherExamRoomTrackingPage() {
     });
   };
 
+  const handleCardClick = (student: StudentTrackingState) => {
+    setSelectedStudent(student);
+  };
+
+  const handleTogglePin = (studentId: number) => {
+    if (!examRoomId) return;
+    setPinnedStudentIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(studentId)) next.delete(studentId);
+      else next.add(studentId);
+      sessionStorage.setItem(`exam-room-tracking-pinned:${examRoomId}`, JSON.stringify(Array.from(next)));
+      return next;
+    });
+  };
+
   const { students, loading, connectedStudentIds } = useExamRoomTracking(
     examRoomId,
     (message) => setAlert({ open: true, message, severity: 'error' }),
-    undefined,
+    reload,
     undefined,
     (studentName, studentCode) =>
       setAlert({
@@ -155,15 +231,49 @@ export default function TeacherExamRoomTrackingPage() {
         message: `Sinh viên ${studentName} mã ${studentCode} đã mất kết nối`,
         severity: 'warning'
       }),
-    (apps) => setAllowedApps(apps)
+    (apps) => setAllowedApps(apps),
+    (message) => setReadyScreenshot(message),
+    (message) => setAlert({ open: true, message, severity: 'warning' })
+  );
+
+  useEffect(() => {
+    if (!readyScreenshot?.screenshotId || !readyScreenshot.imageUrl) return;
+    if (handledScreenshotIdsRef.current.has(readyScreenshot.screenshotId)) return;
+
+    handledScreenshotIdsRef.current.add(readyScreenshot.screenshotId);
+    if (pendingManualScreenshotIdsRef.current.delete(readyScreenshot.screenshotId)) {
+      return;
+    }
+
+    const imageUrl = readyScreenshot.imageUrl;
+    const student = students.find((item) => item.studentId === readyScreenshot.studentId);
+    setAutoScreenshots((prev) => [
+      ...prev,
+      {
+        screenshotId: readyScreenshot.screenshotId,
+        imageUrl,
+        fullName: student?.fullName ?? 'Sinh viên',
+        code: student?.code ?? ''
+      }
+    ]);
+  }, [readyScreenshot, students]);
+
+  const liveSelectedStudent = selectedStudent
+    ? (students.find((student) => student.studentId === selectedStudent.studentId) ?? selectedStudent)
+    : null;
+  const orderedStudents = useMemo(
+    () => [...students].sort((a, b) => Number(pinnedStudentIds.has(b.studentId)) - Number(pinnedStudentIds.has(a.studentId))),
+    [students, pinnedStudentIds]
   );
 
   const activityFeed = useMemo(() => {
     type FeedEntry = {
-      eventType: 'app' | 'connect' | 'disconnect';
+      eventType: 'app' | 'connect' | 'disconnect' | 'copy' | 'paste' | 'cut';
       studentName: string;
+      studentCode: string;
       applicationName?: string;
       banApplication?: boolean;
+      clipboardText?: string;
       createdAt: string;
     };
     const entries: FeedEntry[] = [];
@@ -173,12 +283,23 @@ export default function TeacherExamRoomTrackingPage() {
           entries.push({
             eventType: e.connectionType === 'CONNECT' ? 'connect' : 'disconnect',
             studentName: s.fullName,
+            studentCode: s.code,
+            createdAt: e.createdAt
+          });
+        } else if ((e.action ?? 0) !== 0) {
+          entries.push({
+            eventType: e.action === 1 ? 'copy' : e.action === 3 ? 'cut' : 'paste',
+            studentName: s.fullName,
+            studentCode: s.code,
+            applicationName: e.applicationName,
+            clipboardText: e.clipboardText,
             createdAt: e.createdAt
           });
         } else {
           entries.push({
             eventType: 'app',
             studentName: s.fullName,
+            studentCode: s.code,
             applicationName: e.applicationName,
             banApplication: e.banApplication,
             createdAt: e.createdAt
@@ -327,17 +448,6 @@ export default function TeacherExamRoomTrackingPage() {
             <Button
               variant="outlined"
               size="small"
-              startIcon={<Key size={15} />}
-              onClick={() => setImportKeyOpen(true)}
-              sx={{ whiteSpace: 'nowrap' }}
-            >
-              Import khóa Veyon
-            </Button>
-          )}
-          {examRoomId && (
-            <Button
-              variant="outlined"
-              size="small"
               startIcon={<Wifi size={15} />}
               onClick={() => setAccessCodeDialogOpen(true)}
               sx={{ whiteSpace: 'nowrap' }}
@@ -430,72 +540,76 @@ export default function TeacherExamRoomTrackingPage() {
                 </Box>
               ) : (
                 <Grid container spacing={1.5}>
-                  {students.map((student, idx) => {
+                  {orderedStudents.map((student) => {
                     const isLocked = lockedStudents.has(student.userId);
+                    const isPinned = pinnedStudentIds.has(student.studentId);
                     const isOnline = connectedStudentIds.has(student.studentId);
-                    const latestEntry = student.appHistory.find((e) => !e.connectionType) ?? null;
+                    const latestEntry = student.appHistory.find((e) => !e.connectionType && (e.action ?? 0) === 0) ?? null;
                     const isViolation = isOnline && latestEntry?.banApplication === true;
+                    const borderColor = isViolation ? 'error.main' : isOnline ? 'success.main' : 'divider';
+                    const dotColor = isViolation ? 'error.main' : isOnline ? 'success.main' : 'text.disabled';
                     return (
-                      <Grid key={student.studentId} size={{ xs: 12, sm: 6, md: 3 }}>
-                        <Tooltip title="Bấm để xem chi tiết và điều khiển máy" placement="top" arrow>
-                          <Card
-                            onClick={() => setSelectedStudent(student)}
+                      <Grid key={student.studentId} size={{ xs: 12, sm: isPinned ? 12 : 6 }}>
+                        <Card
+                          sx={{
+                            border: '2px solid',
+                            borderColor,
+                            borderRadius: 2,
+                            bgcolor: isViolation ? 'rgba(255,86,48,0.04)' : 'background.paper',
+                            overflow: 'hidden',
+                            boxShadow: isPinned ? 3 : 0
+                          }}
+                        >
+                          <Box
                             sx={{
-                              border: '2px solid',
-                              borderColor: isViolation ? 'error.main' : isOnline ? 'success.main' : 'divider',
-                              borderRadius: 2,
-                              cursor: 'pointer',
-                              bgcolor: isViolation ? 'rgba(255,86,48,0.08)' : 'background.paper',
-                              transition: 'transform 0.15s, box-shadow 0.15s',
-                              '&:hover': { transform: 'translateY(-2px)', boxShadow: 3 }
+                              px: 1.5,
+                              py: 0.75,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              borderBottom: '1px solid',
+                              borderColor: 'divider',
+                              minHeight: 40
                             }}
                           >
-                            <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
-                              <Stack spacing={0.75}>
-                                <Stack direction="row" alignItems="center" justifyContent="space-between">
-                                  <Typography variant="caption" color="text.disabled" fontFamily="monospace" fontWeight="bold">
-                                    {`PC-${String(idx + 1).padStart(2, '0')}`}
-                                  </Typography>
-                                  <Stack direction="row" spacing={0.5} alignItems="center">
-                                    {isLocked && (
-                                      <Box sx={{ color: 'warning.main', display: 'flex', alignItems: 'center' }}>
-                                        <Lock1 size={12} />
-                                      </Box>
-                                    )}
-                                    <Box
-                                      sx={{
-                                        width: 8,
-                                        height: 8,
-                                        borderRadius: '50%',
-                                        bgcolor: isViolation ? 'error.main' : isOnline ? 'success.main' : 'text.disabled'
-                                      }}
-                                    />
-                                  </Stack>
-                                </Stack>
-                                <Typography variant="body2" fontWeight="bold" noWrap title={student.fullName}>
-                                  {student.fullName}
-                                </Typography>
-                                <Typography variant="caption" color="text.secondary">
-                                  {student.code}
-                                </Typography>
-                                <Divider />
-                                {isViolation ? (
-                                  <Typography variant="caption" color="error.main" noWrap fontWeight="medium">
-                                    {latestEntry!.applicationName}
-                                  </Typography>
-                                ) : !isOnline ? (
-                                  <Typography variant="caption" color="text.disabled" sx={{ fontStyle: 'italic' }}>
-                                    {student.appHistory.length === 0 ? 'Chưa kết nối' : 'Offline'}
-                                  </Typography>
-                                ) : (
-                                  <Typography variant="caption" color={latestEntry ? 'primary.main' : 'text.disabled'} noWrap>
-                                    {latestEntry?.applicationName ?? 'Chưa có dữ liệu'}
-                                  </Typography>
-                                )}
-                              </Stack>
-                            </CardContent>
-                          </Card>
-                        </Tooltip>
+                            <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0, flex: 1 }}>
+                              <Box sx={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, bgcolor: dotColor }} />
+                              {isLocked && (
+                                <Box sx={{ color: 'warning.main', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+                                  <Lock1 size={12} />
+                                </Box>
+                              )}
+                              <Typography variant="body2" fontWeight="bold" noWrap sx={{ flex: 1 }}>
+                                {student.fullName}
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary" noWrap sx={{ flexShrink: 0 }}>
+                                {student.code}
+                              </Typography>
+                            </Stack>
+                            <Tooltip title={isPinned ? 'Bỏ ghim màn hình' : 'Ghim màn hình'} arrow>
+                              <IconButton
+                                size="small"
+                                color={isPinned ? 'primary' : 'default'}
+                                onClick={() => handleTogglePin(student.studentId)}
+                                sx={{ ml: 0.75, flexShrink: 0, p: 0.5 }}
+                              >
+                                <VideoTick size={17} variant={isPinned ? 'Bold' : 'Outline'} />
+                              </IconButton>
+                            </Tooltip>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              onClick={() => handleCardClick(student)}
+                              sx={{ ml: 1, flexShrink: 0, py: 0.25, px: 1, fontSize: '0.7rem', lineHeight: 1.5 }}
+                            >
+                              Chi tiết
+                            </Button>
+                          </Box>
+
+                          {examRoomId && (
+                            <VncViewer classId={examRoomId} studentUserId={student.userId} isOnline={isOnline} mode="exam-room" />
+                          )}
+                        </Card>
                       </Grid>
                     );
                   })}
@@ -557,39 +671,60 @@ export default function TeacherExamRoomTrackingPage() {
                                   ? 'success.main'
                                   : entry.eventType === 'disconnect'
                                     ? 'warning.main'
-                                    : entry.banApplication
-                                      ? 'error.main'
-                                      : 'primary.main'
+                                    : entry.eventType === 'copy' || entry.eventType === 'paste' || entry.eventType === 'cut'
+                                      ? 'warning.main'
+                                      : entry.banApplication
+                                        ? 'error.main'
+                                        : 'primary.main'
                             }}
                           />
-                          <Typography
-                            variant="caption"
-                            color={
-                              entry.eventType === 'connect'
-                                ? 'success.main'
-                                : entry.eventType === 'disconnect'
-                                  ? 'warning.main'
-                                  : entry.banApplication
-                                    ? 'error.main'
-                                    : 'text.primary'
-                            }
-                            sx={{ lineHeight: 1.6 }}
-                          >
-                            {entry.eventType === 'connect' ? (
-                              <>
-                                <strong>{entry.studentName}</strong> đã kết nối
-                              </>
-                            ) : entry.eventType === 'disconnect' ? (
-                              <>
-                                <strong>{entry.studentName}</strong> đã ngắt kết nối
-                              </>
-                            ) : (
-                              <>
-                                <strong>{entry.studentName}</strong> mở {entry.applicationName}
-                                {entry.banApplication ? ' ⚠️ vi phạm' : ''}
-                              </>
-                            )}
-                          </Typography>
+                          <Tooltip title={entry.clipboardText ?? ''} arrow placement="left">
+                            <Typography
+                              variant="caption"
+                              color={
+                                entry.eventType === 'connect'
+                                  ? 'success.main'
+                                  : entry.eventType === 'disconnect'
+                                    ? 'warning.main'
+                                    : entry.eventType === 'copy' || entry.eventType === 'paste' || entry.eventType === 'cut'
+                                      ? 'warning.main'
+                                      : entry.banApplication
+                                        ? 'error.main'
+                                        : 'text.primary'
+                              }
+                              sx={{ lineHeight: 1.6 }}
+                            >
+                              {entry.eventType === 'connect' ? (
+                                <>
+                                  <strong>{entry.studentName}</strong> đã kết nối
+                                </>
+                              ) : entry.eventType === 'disconnect' ? (
+                                <>
+                                  <strong>{entry.studentName}</strong> đã ngắt kết nối
+                                </>
+                              ) : entry.eventType === 'copy' ? (
+                                <>
+                                  Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã SAO CHÉP nội dung từ{' '}
+                                  {entry.applicationName}
+                                </>
+                              ) : entry.eventType === 'paste' ? (
+                                <>
+                                  Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã DÁN nội dung từ{' '}
+                                  {entry.applicationName}
+                                </>
+                              ) : entry.eventType === 'cut' ? (
+                                <>
+                                  Sinh viên <strong>{entry.studentName}</strong> - {entry.studentCode} đã CẮT nội dung từ{' '}
+                                  {entry.applicationName}
+                                </>
+                              ) : (
+                                <>
+                                  <strong>{entry.studentName}</strong> mở {entry.applicationName}
+                                  {entry.banApplication ? ' ⚠️ vi phạm' : ''}
+                                </>
+                              )}
+                            </Typography>
+                          </Tooltip>
                         </Stack>
                       ))}
                     </Stack>
@@ -638,9 +773,6 @@ export default function TeacherExamRoomTrackingPage() {
           </MainCard>
         </Box>
       </Stack>
-
-      {/* Veyon key import dialog (reuse existing) */}
-      {examRoomId && <ImportVeyonKeyDialog open={importKeyOpen} onClose={() => setImportKeyOpen(false)} classId={examRoomId} isExamRoom />}
 
       {/* Add allowed app dialog */}
       <Dialog
@@ -861,20 +993,55 @@ export default function TeacherExamRoomTrackingPage() {
       </Dialog>
 
       {/* Student action dialog */}
-      {selectedStudent && examRoomId && (
+      {liveSelectedStudent && examRoomId && (
         <StudentActionDialog
-          open={!!selectedStudent}
+          open={!!liveSelectedStudent}
           onClose={() => setSelectedStudent(null)}
-          student={selectedStudent as unknown as ClassStudentTrackingState}
+          student={liveSelectedStudent as unknown as ClassStudentTrackingState}
           classId={examRoomId}
           isExamRoom
           examRoomId={examRoomId}
-          isLocked={lockedStudents.has(selectedStudent.userId)}
-          isOnline={connectedStudentIds.has(selectedStudent.studentId)}
+          isLocked={lockedStudents.has(liveSelectedStudent.userId)}
+          isOnline={connectedStudentIds.has(liveSelectedStudent.studentId)}
           onLockChange={handleLockChange}
           isActive={examStatus === 1}
+          onScreenshotRequested={(screenshotId) => pendingManualScreenshotIdsRef.current.add(screenshotId)}
+          readyScreenshot={readyScreenshot}
         />
       )}
+
+      {autoScreenshots.map((screenshot) => (
+        <Dialog
+          key={screenshot.screenshotId}
+          open
+          onClose={() => setAutoScreenshots((prev) => prev.filter((item) => item.screenshotId !== screenshot.screenshotId))}
+          maxWidth="lg"
+          slotProps={{ paper: { sx: { borderRadius: 2 } } }}
+        >
+          <DialogTitle sx={{ py: 1.5 }}>
+            <Stack direction="row" alignItems="center" justifyContent="space-between">
+              <Typography variant="h6">
+                Màn hình — {screenshot.fullName} — {screenshot.code}
+              </Typography>
+              <IconButton
+                onClick={() => setAutoScreenshots((prev) => prev.filter((item) => item.screenshotId !== screenshot.screenshotId))}
+                size="small"
+                sx={{ color: 'text.secondary' }}
+              >
+                <CloseCircle size={20} />
+              </IconButton>
+            </Stack>
+          </DialogTitle>
+          <DialogContent sx={{ p: 1.5, pt: 0 }}>
+            <Box
+              component="img"
+              src={screenshot.imageUrl}
+              alt={`Screenshot — ${screenshot.fullName}`}
+              sx={{ width: '100%', display: 'block', borderRadius: 1 }}
+            />
+          </DialogContent>
+        </Dialog>
+      ))}
     </Stack>
   );
 }

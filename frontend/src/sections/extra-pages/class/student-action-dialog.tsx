@@ -20,15 +20,14 @@ import { Camera, CloseCircle, DocumentUpload, Global, Lock1, MessageText, Monito
 import { useEffect, useRef, useState } from 'react';
 import { AppUsageEntry, StudentTrackingState } from 'hooks/useClassTracking';
 import {
-  getScreenshot,
   lockScreen,
   openWebsiteForStudent,
   sendMessageToStudent,
   lockScreenForExamRoom,
-  getScreenshotForExamRoom,
   openWebsiteForExamRoomStudent,
   sendMessageToExamRoomStudent
-} from 'api/veyon';
+} from 'api/remote-control';
+import { requestClassScreenshot, requestExamRoomScreenshot } from 'api/screenshot';
 import { sendFileToStudent } from 'api/class';
 import { ChangeEvent } from 'react';
 import { HttpStatusCode } from 'axios';
@@ -73,6 +72,13 @@ interface StudentActionDialogProps {
   isExamRoom?: boolean;
   examRoomId?: number;
   isActive?: boolean;
+  onScreenshotRequested?: (screenshotId: number) => void;
+  readyScreenshot?: {
+    screenshotId: number;
+    studentId: number;
+    studentUserId: number;
+    imageUrl?: string;
+  } | null;
 }
 
 export default function StudentActionDialog({
@@ -85,11 +91,14 @@ export default function StudentActionDialog({
   onLockChange,
   isExamRoom = false,
   examRoomId,
-  isActive = true
+  isActive = true,
+  onScreenshotRequested,
+  readyScreenshot = null
 }: StudentActionDialogProps) {
   const [lockLoading, setLockLoading] = useState(false);
   const [screenshotLoading, setScreenshotLoading] = useState(false);
-  const [screenshotData, setScreenshotData] = useState<string | null>(null);
+  const [screenshotImageUrl, setScreenshotImageUrl] = useState<string | null>(null);
+  const [pendingScreenshotId, setPendingScreenshotId] = useState<number | null>(null);
   const [screenshotOpen, setScreenshotOpen] = useState(false);
   const [openWebDialogOpen, setOpenWebDialogOpen] = useState(false);
   const [webUrlInput, setWebUrlInput] = useState('');
@@ -109,7 +118,9 @@ export default function StudentActionDialog({
 
   useEffect(() => {
     if (!open) {
-      setScreenshotData(null);
+      setScreenshotImageUrl(null);
+      setPendingScreenshotId(null);
+      setScreenshotLoading(false);
       setScreenshotOpen(false);
       setOpenWebDialogOpen(false);
       setWebUrlInput('');
@@ -121,6 +132,33 @@ export default function StudentActionDialog({
   }, [open, student.studentId]);
 
   const showSnackbar = (message: string, severity: 'success' | 'error') => setSnackbar({ open: true, message, severity });
+
+  useEffect(() => {
+    if (!readyScreenshot || !pendingScreenshotId) return;
+    if (readyScreenshot.screenshotId !== pendingScreenshotId || readyScreenshot.studentUserId !== student.userId) return;
+
+    if (!readyScreenshot.imageUrl) {
+      setScreenshotLoading(false);
+      showSnackbar('Không nhận được URL ảnh màn hình', 'error');
+      return;
+    }
+
+    setScreenshotImageUrl(readyScreenshot.imageUrl);
+    setScreenshotOpen(true);
+    setPendingScreenshotId(null);
+    setScreenshotLoading(false);
+  }, [readyScreenshot, pendingScreenshotId, student.userId]);
+
+  useEffect(() => {
+    if (!pendingScreenshotId) return;
+    const timer = window.setTimeout(() => {
+      setPendingScreenshotId(null);
+      setScreenshotLoading(false);
+      showSnackbar('Máy sinh viên chưa gửi ảnh màn hình về server', 'error');
+    }, 15000);
+
+    return () => window.clearTimeout(timer);
+  }, [pendingScreenshotId]);
 
   const handleSendFileSelected = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] ?? null;
@@ -213,22 +251,22 @@ export default function StudentActionDialog({
   const handleScreenshot = async () => {
     setScreenshotLoading(true);
     try {
-      let res: { statusCode: number; data: string };
+      let res: { statusCode: number; data: { id: number; imageUrl: string | null } };
       if (isExamRoom && examRoomId) {
-        res = await getScreenshotForExamRoom(examRoomId, student.userId);
+        res = await requestExamRoomScreenshot(examRoomId, student.userId);
       } else {
-        res = await getScreenshot(classId, student.userId);
+        res = await requestClassScreenshot(classId, student.userId);
       }
-      if (res.statusCode === HttpStatusCode.Ok && res.data) {
-        setScreenshotData(res.data);
-        setScreenshotOpen(true);
+      if (res.statusCode === HttpStatusCode.Ok && res.data?.id) {
+        onScreenshotRequested?.(res.data.id);
+        setPendingScreenshotId(res.data.id);
       } else {
-        showSnackbar('Không nhận được dữ liệu ảnh', 'error');
+        setScreenshotLoading(false);
+        showSnackbar('Không nhận được mã ảnh màn hình', 'error');
       }
     } catch (error: unknown) {
-      showSnackbar(extractApiErrorMessage(error, 'Không thể chụp màn hình, vui lòng thử lại'), 'error');
-    } finally {
       setScreenshotLoading(false);
+      showSnackbar(extractApiErrorMessage(error, 'Không thể chụp màn hình, vui lòng thử lại'), 'error');
     }
   };
 
@@ -695,17 +733,17 @@ export default function StudentActionDialog({
       >
         <DialogTitle sx={{ py: 1.5 }}>
           <Stack direction="row" alignItems="center" justifyContent="space-between">
-            <Typography variant="h6">Màn hình — {student.fullName}</Typography>
+            <Typography variant="h6">Màn hình — {student.fullName} — {student.code}</Typography>
             <IconButton onClick={() => setScreenshotOpen(false)} size="small" sx={{ color: 'text.secondary' }}>
               <CloseCircle size={20} />
             </IconButton>
           </Stack>
         </DialogTitle>
         <DialogContent sx={{ p: 1.5, pt: 0 }}>
-          {screenshotData && (
+          {screenshotImageUrl && (
             <Box
               component="img"
-              src={`data:image/jpeg;base64,${screenshotData}`}
+              src={screenshotImageUrl}
               alt={`Screenshot — ${student.fullName}`}
               sx={{ width: '100%', display: 'block', borderRadius: 1 }}
             />

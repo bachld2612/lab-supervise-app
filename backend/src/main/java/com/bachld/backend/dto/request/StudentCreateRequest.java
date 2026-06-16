@@ -29,13 +29,10 @@ public class StudentCreateRequest {
     @NotEmpty(message = "Tên không được phép bỏ trống")
     String fullName;
 
-    @NotEmpty(message = "Quê nhà không được phép bỏ trống")
     String hometown;
 
-    @NotEmpty(message = "Số điện thoại không được phép bỏ trống")
     String phone;
 
-    @NotEmpty(message = "Ngày sinh không được phép bỏ trống")
     @Pattern(
             regexp = "^$|^\\d{4}-\\d{2}-\\d{2}$",
             message = "Ngày sinh phải có định dạng yyyy-MM-dd"

@@ -13,6 +13,13 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainFrame extends JFrame {
     private final AuthService authService;
@@ -24,11 +31,17 @@ public class MainFrame extends JFrame {
     private final com.bachld.service.SemesterService semesterService;
     private final UserService userService;
     private com.bachld.service.TrackingService trackingService;
+    private com.bachld.service.TrackingService clipboardMonitorService;
+    private final com.bachld.service.VncService vncService = com.bachld.service.VncService.getInstance();
+    private com.bachld.service.VncWatchdog vncWatchdog;
     private JPanel contentArea;
     private CardLayout cardLayout;
     private SidebarPanel sidebarPanel;
     private TrayIcon trayIcon;
     private PersonalComputerPanel pcPanel;
+    private DashboardPanel dashboardPanel;
+    private javax.swing.Timer scheduleRefreshTimer;
+    private final ExecutorService lifecycleExecutor = Executors.newSingleThreadExecutor(daemonThreadFactory("main-frame-lifecycle"));
 
     public MainFrame(AuthService authService, PersonalComputerService pcService,
                      com.bachld.service.ClassService classService,
@@ -49,14 +62,26 @@ public class MainFrame extends JFrame {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("win")) {
             this.trackingService = new com.bachld.service.WindowsTrackingService(webSocketService);
+            this.clipboardMonitorService = new com.bachld.service.ClipboardMonitorService(webSocketService);
         } else if (os.contains("linux")) {
             this.trackingService = new com.bachld.service.LinuxX11TrackingService(webSocketService);
         }
         if (this.trackingService != null) {
             this.trackingService.start();
         }
+        if (this.clipboardMonitorService != null) {
+            this.clipboardMonitorService.start();
+        }
+
+        if (os.contains("win")) {
+            // UltraVNC bootstrap already ran in LabMonitorApp.main() before login.
+            // Watchdog handles self-healing if the service goes down at runtime.
+            vncWatchdog = new com.bachld.service.VncWatchdog(vncService);
+            vncWatchdog.start();
+        }
 
         initFrame();
+        scheduleNextPeriodRefresh();
         setupSystemTray();
     }
 
@@ -85,7 +110,8 @@ public class MainFrame extends JFrame {
         contentArea.setOpaque(false);
         contentArea.setBorder(new EmptyBorder(0, 30, 30, 30));
 
-        contentArea.add(wrapInPageWrapper(new DashboardPanel(classService, examRoomService, semesterService), "Trang chủ"), "HOME");
+        dashboardPanel = new DashboardPanel(classService, examRoomService, semesterService);
+        contentArea.add(wrapInPageWrapper(dashboardPanel, "Trang chủ"), "HOME");
         pcPanel = new PersonalComputerPanel(pcService);
         contentArea.add(pcPanel, "PC_MGMT");
         contentArea.add(wrapInPageWrapper(new IncidentReportPanel(incidentReportService), "Báo cáo sự cố"), "INCIDENT_REPORT");
@@ -152,15 +178,28 @@ public class MainFrame extends JFrame {
     }
 
     private void exitApplication() {
+        setEnabled(false);
+        lifecycleExecutor.submit(() -> {
+            cleanupSession();
+            System.exit(0);
+        });
+    }
+
+    private void cleanupSession() {
+        stopScheduleRefreshTimer();
         if (trackingService != null) {
             trackingService.stop();
+        }
+        if (clipboardMonitorService != null) {
+            clipboardMonitorService.stop();
         }
         if (webSocketService != null) {
             webSocketService.disconnect();
         }
+        if (vncWatchdog != null) vncWatchdog.stop();
+        vncService.stop();
         com.bachld.service.TokenManager.getInstance().clearToken();
-        removeTrayIcon();
-        System.exit(0);
+        SwingUtilities.invokeLater(this::removeTrayIcon);
     }
 
     private void removeTrayIcon() {
@@ -247,16 +286,15 @@ public class MainFrame extends JFrame {
         );
 
         if (confirm == JOptionPane.YES_OPTION) {
-            if (trackingService != null) {
-                trackingService.stop();
-            }
-            if (webSocketService != null) {
-                webSocketService.disconnect();
-            }
-            com.bachld.service.TokenManager.getInstance().clearToken();
-            removeTrayIcon();
-            this.dispose();
-            new LoginFrame(authService).setVisible(true);
+            setEnabled(false);
+            lifecycleExecutor.submit(() -> {
+                cleanupSession();
+                SwingUtilities.invokeLater(() -> {
+                    dispose();
+                    lifecycleExecutor.shutdownNow();
+                    new LoginFrame(authService).setVisible(true);
+                });
+            });
         }
     }
 
@@ -315,30 +353,89 @@ public class MainFrame extends JFrame {
     }
 
     private void showIpExistsDialog(String storedIp) {
-        int choice = JOptionPane.showConfirmDialog(
+        JOptionPane.showMessageDialog(
                 this,
-                "Thông tin địa chỉ IP hiện tại của bạn là: " + storedIp + "\nBạn có muốn cập nhật không?",
+                "Địa chỉ IP hiện tại của bạn là: " + storedIp
+                        + "\nNếu địa chỉ IP chưa chính xác, vui lòng báo cáo lại giáo viên để được thay đổi.",
                 "Thông tin địa chỉ IP",
-                JOptionPane.YES_NO_OPTION,
                 JOptionPane.INFORMATION_MESSAGE
         );
-        if (choice == JOptionPane.YES_OPTION) {
-            showPage("PC_MGMT");
-        }
     }
 
     private void showIpMissingDialog() {
         JOptionPane.showMessageDialog(
                 this,
-                "Bạn chưa cập nhật địa chỉ IP, vui lòng cập nhật ngay.",
+                "Chưa có thông tin địa chỉ IP cho máy tính của bạn."
+                        + "\nVui lòng báo cáo lại giáo viên để được cập nhật.",
                 "Chưa có địa chỉ IP",
                 JOptionPane.WARNING_MESSAGE
         );
-        showPage("PC_MGMT");
     }
 
     public void showPage(String pageId) {
         cardLayout.show(contentArea, pageId);
         sidebarPanel.setActiveItem(pageId);
+    }
+
+    private void scheduleNextPeriodRefresh() {
+        stopScheduleRefreshTimer();
+
+        long delayMillis = nextPeriodBoundaryDelayMillis();
+        scheduleRefreshTimer = new javax.swing.Timer((int) Math.min(delayMillis, Integer.MAX_VALUE), e -> {
+            if (dashboardPanel != null) {
+                dashboardPanel.refreshScheduleDataSilently();
+            }
+            scheduleNextPeriodRefresh();
+        });
+        scheduleRefreshTimer.setRepeats(false);
+        scheduleRefreshTimer.start();
+    }
+
+    private void stopScheduleRefreshTimer() {
+        if (scheduleRefreshTimer != null) {
+            scheduleRefreshTimer.stop();
+            scheduleRefreshTimer = null;
+        }
+    }
+
+    private long nextPeriodBoundaryDelayMillis() {
+        List<LocalTime> boundaries = List.of(
+                LocalTime.of(7, 0), LocalTime.of(7, 50),
+                LocalTime.of(7, 55), LocalTime.of(8, 45),
+                LocalTime.of(8, 50), LocalTime.of(9, 40),
+                LocalTime.of(9, 45), LocalTime.of(10, 35),
+                LocalTime.of(10, 40), LocalTime.of(11, 30),
+                LocalTime.of(11, 35), LocalTime.of(12, 25),
+                LocalTime.of(12, 55), LocalTime.of(13, 45),
+                LocalTime.of(13, 50), LocalTime.of(14, 40),
+                LocalTime.of(14, 45), LocalTime.of(15, 35),
+                LocalTime.of(15, 40), LocalTime.of(16, 30),
+                LocalTime.of(16, 35), LocalTime.of(17, 25),
+                LocalTime.of(17, 30), LocalTime.of(18, 20)
+        );
+
+        LocalTime now = LocalTime.now();
+        LocalTime next = boundaries.stream()
+                .filter(boundary -> boundary.isAfter(now))
+                .findFirst()
+                .orElse(boundaries.get(0));
+
+        Duration delay = next.isAfter(now)
+                ? Duration.between(now, next)
+                : Duration.between(now, LocalTime.MAX).plusNanos(1).plus(Duration.between(LocalTime.MIN, next));
+
+        return Math.max(1_000L, delay.toMillis() + 3_000L);
+    }
+
+    private static ThreadFactory daemonThreadFactory(String threadNamePrefix) {
+        ThreadFactory defaultFactory = Executors.defaultThreadFactory();
+        AtomicInteger counter = new AtomicInteger(1);
+
+        return runnable -> {
+            Thread thread = defaultFactory.newThread(runnable);
+            thread.setName(threadNamePrefix + "-" + counter.getAndIncrement());
+            thread.setDaemon(true);
+            return thread;
+        };
     }
 }

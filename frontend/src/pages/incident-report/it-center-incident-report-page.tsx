@@ -596,7 +596,7 @@ export default function ItCenterIncidentReportPage() {
         })}
       >
         <Typography variant="h3" gutterBottom>
-          Báo cáo sự cố
+          Danh sách sự cố
         </Typography>
       </Stack>
 

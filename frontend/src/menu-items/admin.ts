@@ -20,13 +20,13 @@ const adminMenu: NavItemType = {
   title: 'Văn phòng khoa',
   type: 'group',
   children: [
-    {
-      id: 'admin-dashboard',
-      title: 'Trang chủ',
-      type: 'item',
-      url: '/dashboard/admin',
-      icon: icons.monitor
-    },
+    // {
+    //   id: 'admin-dashboard',
+    //   title: 'Trang chủ',
+    //   type: 'item',
+    //   url: '/dashboard/admin',
+    //   icon: icons.monitor
+    // },
     {
       id: 'user-management',
       title: 'Quản lý nhân viên',
@@ -81,6 +81,13 @@ const adminMenu: NavItemType = {
       title: 'Quản lý phòng thi',
       type: 'item',
       url: '/exam-room',
+      icon: icons.table
+    },
+    {
+      id: 'screenshot-history',
+      title: 'Lịch sử ảnh màn hình',
+      type: 'item',
+      url: '/screenshot-history',
       icon: icons.table
     },
     {
