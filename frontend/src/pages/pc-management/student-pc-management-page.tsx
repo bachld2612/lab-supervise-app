@@ -347,7 +347,7 @@ export default function StudentPcManagementPage() {
         })}
       >
         <Typography variant="h3" gutterBottom>
-          Quản lý máy tính sinh viên
+          Quản lý IP sinh viên
         </Typography>
       </Stack>
 

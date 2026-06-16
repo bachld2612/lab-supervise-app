@@ -23,14 +23,19 @@ public class JwtInterceptor implements ClientHttpRequestInterceptor {
     
     private static final Logger logger = LoggerFactory.getLogger(JwtInterceptor.class);
     private final TokenManager tokenManager;
-    
+    private volatile TokenRefresher tokenRefresher;
+
     /**
      * Constructs a JwtInterceptor with the specified TokenManager.
-     * 
+     *
      * @param tokenManager the TokenManager instance to retrieve JWT tokens from
      */
     public JwtInterceptor(TokenManager tokenManager) {
         this.tokenManager = tokenManager;
+    }
+
+    public void setTokenRefresher(TokenRefresher tokenRefresher) {
+        this.tokenRefresher = tokenRefresher;
     }
     
     /**
@@ -54,19 +59,31 @@ public class JwtInterceptor implements ClientHttpRequestInterceptor {
         
         // Only add Authorization header if a token exists
         if (tokenManager.hasToken()) {
-            String token = tokenManager.getToken();
-            request.getHeaders().set("Authorization", "Bearer " + token);
+            request.getHeaders().set("Authorization", "Bearer " + tokenManager.getToken());
             logger.debug("Added Authorization header to request");
         }
-        
+
         // Continue with the request execution
         ClientHttpResponse response = execution.execute(request, body);
-        
+
+        // On 401, transparently refresh the access token once and retry.
+        boolean isAuthEndpoint = request.getURI().getPath().contains("/api/auth/");
+        if (response != null && response.getStatusCode().value() == 401
+                && tokenRefresher != null && !isAuthEndpoint) {
+            logger.debug("Got 401, attempting token refresh and retry");
+            String newToken = tokenRefresher.refresh();
+            if (newToken != null && !newToken.isEmpty()) {
+                response.close();
+                request.getHeaders().set("Authorization", "Bearer " + newToken);
+                response = execution.execute(request, body);
+            }
+        }
+
         // Log response status if response is not null
         if (response != null) {
             logger.info("Request completed - Status: {}", response.getStatusCode().value());
         }
-        
+
         return response;
     }
 }

@@ -2,7 +2,6 @@ import React, { createContext, useCallback, useEffect, useReducer } from 'react'
 
 // third-party
 import { Chance } from 'chance';
-import { jwtDecode } from 'jwt-decode';
 
 // reducer - state management
 import { LOGIN, LOGOUT } from 'contexts/auth-reducer/actions';
@@ -10,12 +9,12 @@ import authReducer from 'contexts/auth-reducer/auth';
 
 // project-imports
 import Loader from 'components/Loader';
-import axios from 'utils/axios';
+import axios, { refreshAccessToken } from 'utils/axios';
+import { setAccessToken, clearAccessToken } from 'utils/authToken';
 import { openSnackbar } from 'api/snackbar';
 
 // types
 import { AuthProps, JWTContextType } from 'types/auth';
-import { KeyedObject } from 'types/root';
 
 const chance = new Chance();
 
@@ -26,24 +25,12 @@ const initialState: AuthProps = {
   user: null
 };
 
-const verifyToken: (st: string) => boolean = (token) => {
-  if (!token) {
-    return false;
-  }
-  const decoded: KeyedObject = jwtDecode(token);
-  /**
-   * Property 'exp' does not exist on type '<T = unknown>(token: string, options?: JwtDecodeOptions | undefined) => T'.
-   */
-  return decoded.exp > Date.now() / 1000;
-};
-
+// Access token is kept in-memory only; the refresh token lives in an HttpOnly cookie.
 const setSession = (token?: string | null) => {
   if (token) {
-    localStorage.setItem('token', token);
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    setAccessToken(token);
   } else {
-    localStorage.removeItem('token');
-    delete axios.defaults.headers.common.Authorization;
+    clearAccessToken();
   }
 };
 
@@ -57,9 +44,9 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
   useEffect(() => {
     const init = async () => {
       try {
-        const token = window.localStorage.getItem('token');
-        if (token && verifyToken(token)) {
-          setSession(token);
+        // No persisted access token: bootstrap the session from the refresh cookie.
+        const token = await refreshAccessToken();
+        if (token) {
           const response = await axios.get('/api/user/v1/profile');
           const userProfile = response.data.data || response.data;
           dispatch({
@@ -157,7 +144,13 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
     window.localStorage.setItem('users', JSON.stringify(users));
   };
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    try {
+      // Revoke server-side: delete refresh token from DB + blacklist access token, clear cookie.
+      await axios.post('/api/auth/v1/logout');
+    } catch (err) {
+      console.error(err);
+    }
     setSession(null);
     dispatch({ type: LOGOUT });
   }, []);

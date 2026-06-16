@@ -2,6 +2,7 @@ package com.bachld.backend.filter;
 
 
 import com.bachld.backend.service.JwtService;
+import com.bachld.backend.service.TokenBlacklistService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,14 +28,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
 
+    private final TokenBlacklistService tokenBlacklistService;
+
     @Autowired
     @Qualifier("handlerExceptionResolver")
     private HandlerExceptionResolver resolver;
 
     @Autowired
-    public JwtAuthFilter(UserDetailsService userDetailsService, JwtService jwtService) {
+    public JwtAuthFilter(UserDetailsService userDetailsService, JwtService jwtService,
+                         TokenBlacklistService tokenBlacklistService) {
         this.userDetailsService = userDetailsService;
         this.jwtService = jwtService;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     @Override
@@ -52,6 +57,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 token = authHeader.substring(7);
                 id = jwtService.extractId(token);
+            }
+
+            if (token != null && tokenBlacklistService.isBlacklisted(jwtService.extractJti(token))) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
             }
 
             if (id != null && SecurityContextHolder.getContext().getAuthentication() == null) {

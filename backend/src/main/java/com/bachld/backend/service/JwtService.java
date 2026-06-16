@@ -13,6 +13,7 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Component
@@ -33,6 +34,7 @@ public class JwtService {
     private String createToken(Map<String, Object> claims, String id) {
         return Jwts.builder()
                 .claims(claims)
+                .id(UUID.randomUUID().toString()) // jti, used for access-token blacklist
                 .subject(id)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * EXPIRE_MINUTE))
@@ -51,6 +53,10 @@ public class JwtService {
 
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
+    }
+
+    public String extractJti(String token) {
+        return extractClaim(token, Claims::getId);
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

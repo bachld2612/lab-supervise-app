@@ -425,6 +425,7 @@ public class LoginPanel extends JPanel {
 
                     com.bachld.service.WebSocketService wsService =
                             com.bachld.service.WebSocketService.getInstance(com.bachld.service.TokenManager.getInstance());
+                    wsService.setTokenRefresher(authService::refreshAccessToken);
                     wsService.connect();
 
                     com.bachld.client.IncidentReportApiClient incidentApiClient =

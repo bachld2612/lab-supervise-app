@@ -56,6 +56,35 @@ public class AuthService {
         LoginWorker worker = new LoginWorker(email, password, wifiSsid, callback);
         worker.execute();
     }
+
+    /**
+     * Synchronously renews the access token using the refresh-token cookie and
+     * stores it in the TokenManager. Serialized so concurrent callers (interceptor
+     * retry + WebSocket connect) share one effective refresh. Returns the new
+     * token, or null on failure.
+     */
+    public synchronized String refreshAccessToken() {
+        AuthResponse response = authApiClient.refresh();
+        if (response != null && response.getStatusCode() == 200
+                && response.getData() != null && response.getData().getToken() != null) {
+            String token = response.getData().getToken();
+            tokenManager.setToken(token);
+            return token;
+        }
+        return null;
+    }
+
+    /**
+     * Logs out server-side (revoke refresh token + blacklist access token).
+     * Best-effort; local cleanup is the caller's responsibility.
+     */
+    public void logout() {
+        try {
+            authApiClient.logout();
+        } catch (Exception e) {
+            logger.warn("Server logout failed: {}", e.getMessage());
+        }
+    }
     
     /**
      * Callback interface for authentication results.

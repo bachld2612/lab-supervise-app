@@ -7,6 +7,10 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+
 /**
  * RestClient singleton provides a configured RestTemplate instance for API communication.
  * 
@@ -21,16 +25,23 @@ public class RestClient {
     private static volatile RestClient instance;
     private final RestTemplate restTemplate;
     private final String baseUrl;
-    
+    private final CookieManager cookieManager;
+    private JwtInterceptor jwtInterceptor;
+
     private static final int CONNECTION_TIMEOUT = 5000; // 5 seconds
     private static final int READ_TIMEOUT = 10000; // 10 seconds
-    
+
     /**
      * Private constructor to prevent direct instantiation.
      * Initializes RestTemplate with all required configurations.
      */
     private RestClient() {
         this.baseUrl = AppConfig.getInstance().getServerApiUrl();
+        // Install a process-wide cookie manager so HttpURLConnection (used by
+        // SimpleClientHttpRequestFactory) captures and resends the HttpOnly
+        // refresh-token cookie automatically.
+        this.cookieManager = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
+        CookieHandler.setDefault(cookieManager);
         this.restTemplate = createRestTemplate();
     }
     
@@ -68,6 +79,21 @@ public class RestClient {
     public String getBaseUrl() {
         return baseUrl;
     }
+
+    /**
+     * Registers the refresher used by the JWT interceptor to transparently renew
+     * an expired access token (on 401) and retry the request once.
+     */
+    public void setTokenRefresher(TokenRefresher refresher) {
+        if (jwtInterceptor != null) {
+            jwtInterceptor.setTokenRefresher(refresher);
+        }
+    }
+
+    /** Clears all stored cookies (e.g. the refresh-token cookie on logout). */
+    public void clearCookies() {
+        cookieManager.getCookieStore().removeAll();
+    }
     
     /**
      * Creates and configures a RestTemplate instance with all required settings.
@@ -92,7 +118,7 @@ public class RestClient {
         
         // Register JWT interceptor for automatic token injection
         TokenManager tokenManager = TokenManager.getInstance();
-        JwtInterceptor jwtInterceptor = new JwtInterceptor(tokenManager);
+        this.jwtInterceptor = new JwtInterceptor(tokenManager);
         template.getInterceptors().add(jwtInterceptor);
         
         // Register custom error handler for HTTP error processing

@@ -54,6 +54,9 @@ public class LabMonitorApp {
         AuthApiClient authApiClient = new AuthApiClient(restClient);
         AuthService authService = new AuthService(authApiClient, tokenManager, sessionManager);
 
+        // Let the REST interceptor transparently refresh the access token on 401.
+        restClient.setTokenRefresher(authService::refreshAccessToken);
+
         SwingUtilities.invokeLater(() -> new LoginFrame(authService));
     }
 }
