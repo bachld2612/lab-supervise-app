@@ -29,6 +29,8 @@ import { type ExamRoom } from 'types/exam-room';
 import { type Semester } from 'types/semester';
 import { HttpStatusCode } from 'axios';
 import formatDate, { formatTimeWithoutSecond } from 'utils/formatDate';
+import StudentListDialog from 'sections/extra-pages/class/max-student-dialog';
+import ExamRoomStudentListDialog from 'sections/extra-pages/exam-room/exam-room-student-list-dialog';
 
 function ExamStatusBadge({ studyStatus }: { studyStatus?: number }) {
   if (studyStatus === 1) return <Chip label="Đang diễn ra" color="success" size="small" />;
@@ -72,6 +74,10 @@ export default function TeacherDashboardPage() {
   const [examKeywordInput, setExamKeywordInput] = useState('');
   const [examVisibleCount, setExamVisibleCount] = useState(3);
   const [classVisibleCount, setClassVisibleCount] = useState(3);
+  // Student-list dialogs are rendered at page root (NOT inside the card) so their
+  // clicks don't bubble through the React tree to the card's navigate onClick.
+  const [classSizeItem, setClassSizeItem] = useState<Classes | null>(null);
+  const [examSizeItem, setExamSizeItem] = useState<ExamRoom | null>(null);
   const [alert, setAlert] = useState({
     open: false,
     message: '',
@@ -266,7 +272,16 @@ export default function TeacherDashboardPage() {
                                   Sĩ số
                                 </Typography>
                               </Stack>
-                              <Typography variant="body1" fontWeight="bold" color="primary.main">
+                              <Typography
+                                variant="body1"
+                                fontWeight="bold"
+                                color="primary.main"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setExamSizeItem(er);
+                                }}
+                                sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+                              >
                                 {er.currentStudent}/{er.maxStudent}
                               </Typography>
                             </Stack>
@@ -411,7 +426,16 @@ export default function TeacherDashboardPage() {
                                     Sĩ số
                                   </Typography>
                                 </Stack>
-                                <Typography variant="body1" fontWeight="bold" color="primary.main">
+                                <Typography
+                                  variant="body1"
+                                  fontWeight="bold"
+                                  color="primary.main"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setClassSizeItem(cls);
+                                  }}
+                                  sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+                                >
                                   {cls.currentStudent}/{cls.maxStudent}
                                 </Typography>
                               </Stack>
@@ -441,6 +465,9 @@ export default function TeacherDashboardPage() {
           </Box>
         </MainCard>
       </Box>
+
+      <StudentListDialog open={!!classSizeItem} onClose={() => setClassSizeItem(null)} classItem={classSizeItem} />
+      <ExamRoomStudentListDialog open={!!examSizeItem} onClose={() => setExamSizeItem(null)} examRoom={examSizeItem} />
     </Stack>
   );
 }

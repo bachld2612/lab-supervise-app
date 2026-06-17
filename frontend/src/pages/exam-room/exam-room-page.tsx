@@ -41,6 +41,7 @@ import { getList, deleteById, importStudents } from 'api/exam-room';
 import { downloadClassStudentImportTemplate } from 'api/class';
 import { DEFAULT_PAGE_SIZE } from 'types/paging';
 import ManageExamRoomStudentDialog from 'sections/extra-pages/exam-room/manage-exam-room-student-dialog';
+import ExamRoomStudentListDialog from 'sections/extra-pages/exam-room/exam-room-student-list-dialog';
 import formatDate, { formatTimeWithoutSecond } from 'utils/formatDate';
 import { parsePeriodValues } from 'sections/extra-pages/exam-room/form-helpers';
 import {
@@ -80,6 +81,23 @@ const formatPeriodRange = (periods?: string, startTime?: string, endTime?: strin
 
   return `Tiết ${values[0]} - Tiết ${values[values.length - 1]} (${timeRange})`;
 };
+
+function ExamRoomStudentCountCell({ examRoom }: { examRoom: ExamRoom }) {
+  const [open, setOpen] = useState(false);
+  const isFull = examRoom.currentStudent >= examRoom.maxStudent && examRoom.maxStudent > 0;
+
+  return (
+    <>
+      <Typography
+        onClick={() => setOpen(true)}
+        sx={{ color: isFull ? 'error.main' : 'text.primary', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+      >
+        {examRoom.currentStudent}/{examRoom.maxStudent}
+      </Typography>
+      <ExamRoomStudentListDialog open={open} onClose={() => setOpen(false)} examRoom={examRoom} />
+    </>
+  );
+}
 
 const nonOrderableColumnId: UniqueIdentifier[] = ['manageStudent', 'actions'];
 
@@ -283,14 +301,7 @@ export default function ExamRoomPage() {
           header: 'Sĩ số',
           enableSorting: false,
           meta: { className: 'cell-center' },
-          cell: ({ row }) => (
-            <Typography
-              variant="body2"
-              sx={{ color: row.original.currentStudent >= row.original.maxStudent && row.original.maxStudent > 0 ? 'error.main' : 'text.primary' }}
-            >
-              {row.original.currentStudent}/{row.original.maxStudent}
-            </Typography>
-          )
+          cell: ({ row }) => <ExamRoomStudentCountCell examRoom={row.original} />
         },
         {
           id: 'status',
