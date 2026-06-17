@@ -35,7 +35,7 @@ import {
 } from '@mui/material';
 import MainCard from 'components/MainCard';
 import IconButton from 'components/@extended/IconButton';
-import { Add, Edit2, Eye, ExportCurve, ImportCurve, Trash } from 'iconsax-reactjs';
+import { Add, Edit2, Eye, ExportCurve, ImportCurve, ProfileAdd, ProfileRemove, Trash } from 'iconsax-reactjs';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { HttpStatusCode } from 'axios';
@@ -48,6 +48,7 @@ import { getList as getSemesterList } from 'api/semester';
 import { getList as getRoomList } from 'api/room';
 import { downloadClassStudentImportTemplate } from 'api/class';
 import { DEFAULT_PAGE_SIZE } from 'types/paging';
+import ManageExamRoomStudentDialog from 'sections/extra-pages/exam-room/manage-exam-room-student-dialog';
 import formatDate, { formatTimeWithoutSecond } from 'utils/formatDate';
 import { Teacher } from 'types/teacher';
 import { Subject } from 'types/subject';
@@ -442,6 +443,7 @@ export default function ExamRoomPage() {
   const [alert, setAlert] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' | 'info' | 'warning' });
 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [studentDialog, setStudentDialog] = useState<{ item: ExamRoom; mode: 'add' | 'remove' } | null>(null);
   const [editItem, setEditItem] = useState<ExamRoom | null>(null);
   const [deleteItem, setDeleteItem] = useState<ExamRoom | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -613,7 +615,6 @@ export default function ExamRoomPage() {
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell>#</TableCell>
                 <TableCell>Mã phòng</TableCell>
                 <TableCell>Môn học</TableCell>
                 <TableCell>Phòng</TableCell>
@@ -624,26 +625,26 @@ export default function ExamRoomPage() {
                 <TableCell>Học kỳ</TableCell>
                 <TableCell align="center">Sĩ số</TableCell>
                 <TableCell align="center">Trạng thái</TableCell>
+                {isAdmin && <TableCell align="center">Sinh viên</TableCell>}
                 <TableCell align="center">Hành động</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {tableLoading ? (
                 <TableRow>
-                  <TableCell colSpan={12} align="center" sx={{ py: 4 }}>
+                  <TableCell colSpan={isAdmin ? 13 : 12} align="center" sx={{ py: 4 }}>
                     <CircularProgress size={28} />
                   </TableCell>
                 </TableRow>
               ) : data.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={12} align="center" sx={{ py: 4 }}>
+                  <TableCell colSpan={isAdmin ? 13 : 12} align="center" sx={{ py: 4 }}>
                     <Typography color="text.secondary">Không có dữ liệu</Typography>
                   </TableCell>
                 </TableRow>
               ) : (
                 data.map((row, idx) => (
                   <TableRow key={row.id} hover>
-                    <TableCell>{pageNumber * pageSize + idx + 1}</TableCell>
                     <TableCell>
                       <Typography variant="body2" fontWeight="medium">
                         {row.code}
@@ -667,6 +668,36 @@ export default function ExamRoomPage() {
                     <TableCell align="center">
                       <Chip label={row.status === 1 ? 'Hoạt động' : 'Dừng'} color={row.status === 1 ? 'success' : 'error'} size="small" />
                     </TableCell>
+                    {isAdmin && (
+                      <TableCell align="center">
+                        <Stack direction="row" spacing={0.5} justifyContent="center">
+                          <Tooltip title={row.status === 0 ? 'Không thể thêm sinh viên' : 'Thêm sinh viên vào phòng thi'}>
+                            <span>
+                              <IconButton
+                                color="primary"
+                                size="small"
+                                onClick={() => setStudentDialog({ item: row, mode: 'add' })}
+                                disabled={row.status === 0}
+                              >
+                                <ProfileAdd variant="Outline" />
+                              </IconButton>
+                            </span>
+                          </Tooltip>
+                          <Tooltip title={row.status === 0 ? 'Không thể xóa sinh viên' : 'Xóa sinh viên khỏi phòng thi'}>
+                            <span>
+                              <IconButton
+                                color="error"
+                                size="small"
+                                onClick={() => setStudentDialog({ item: row, mode: 'remove' })}
+                                disabled={row.status === 0}
+                              >
+                                <ProfileRemove variant="Outline" />
+                              </IconButton>
+                            </span>
+                          </Tooltip>
+                        </Stack>
+                      </TableCell>
+                    )}
                     <TableCell align="center">
                       <Stack direction="row" spacing={0.5} justifyContent="center">
                         {isTeacher && (
@@ -726,6 +757,14 @@ export default function ExamRoomPage() {
         </TableContainer>
 
         <input ref={importFileRef} type="file" accept=".xlsx,.xls" style={{ display: 'none' }} onChange={handleImportStudents} />
+
+        <ManageExamRoomStudentDialog
+          open={!!studentDialog}
+          onClose={() => setStudentDialog(null)}
+          examRoom={studentDialog?.item ?? null}
+          mode={studentDialog?.mode ?? 'add'}
+          onChanged={() => setReload((p) => !p)}
+        />
 
         <Divider />
 

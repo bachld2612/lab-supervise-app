@@ -624,7 +624,7 @@ export default function TeacherExamRoomTrackingPage() {
           <MainCard content={false}>
             <Tabs value={rightTab} onChange={(_, v) => setRightTab(v)} sx={{ borderBottom: 1, borderColor: 'divider', px: 2, pt: 1 }}>
               <Tab label="Hoạt động" sx={{ fontSize: 13 }} />
-              <Tab label={`Whitelist (${allowedApps.length})`} sx={{ fontSize: 13 }} />
+              <Tab label={`DS ứng dụng được phép (${allowedApps.length})`} sx={{ fontSize: 13 }} />
             </Tabs>
 
             {/* Tab 0: Activity feed */}

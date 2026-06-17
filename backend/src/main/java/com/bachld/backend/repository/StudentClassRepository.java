@@ -45,4 +45,16 @@ public interface StudentClassRepository extends JpaRepository<StudentClass, Inte
             AND c.status = 1
     """)
     List<ClassScheduleView> findOtherClassSchedulesByStudentId(Integer studentId, Integer excludeClassId);
+
+    @Query("""
+        SELECT new com.bachld.backend.dto.response.ClassScheduleView(
+            c.startDate, c.endDate, sc.daysOfWeek, sc.startTime, sc.endTime
+        )
+        FROM StudentClass stc
+            JOIN Classes c ON c.id = stc.classId
+            JOIN Schedule sc ON sc.id = c.scheduleId
+        WHERE stc.studentId = :studentId
+            AND c.status = 1
+    """)
+    List<ClassScheduleView> findClassSchedulesByStudentId(Integer studentId);
 }

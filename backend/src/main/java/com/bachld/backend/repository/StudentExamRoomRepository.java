@@ -2,8 +2,10 @@ package com.bachld.backend.repository;
 
 import com.bachld.backend.model.StudentExamRoom;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,6 +18,10 @@ public interface StudentExamRoomRepository extends JpaRepository<StudentExamRoom
     List<StudentExamRoom> findByExamRoomId(Integer examRoomId);
 
     long countByExamRoomIdAndStatus(Integer examRoomId, int status);
+
+    @Modifying
+    @Transactional
+    void deleteByExamRoomIdAndStudentIdIn(Integer examRoomId, List<Integer> studentIds);
 
     @Query("""
         SELECT ser FROM StudentExamRoom ser

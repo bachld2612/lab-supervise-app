@@ -58,6 +58,42 @@ const importStudents = async (examRoomId: number, formData: FormData) => {
   }
 };
 
+const getStudentsByExamRoomId = async (examRoomId: number, pageRequest: PageRequest) => {
+  try {
+    const response = await axiosServices.get(`/api/exam-room/v1/${examRoomId}/student`, { params: pageRequest });
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+const getStudentsNotInExamRoom = async (examRoomId: number, pageRequest: PageRequest) => {
+  try {
+    const response = await axiosServices.get(`/api/exam-room/v1/${examRoomId}/student/available`, { params: pageRequest });
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+const addStudentsToExamRoom = async (examRoomId: number, studentIds: number[]) => {
+  try {
+    const response = await axiosServices.post(`/api/exam-room/v1/${examRoomId}/student`, { studentIds });
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
+const removeStudentsFromExamRoom = async (examRoomId: number, studentIds: number[]) => {
+  try {
+    const response = await axiosServices.delete(`/api/exam-room/v1/${examRoomId}/student`, { data: { studentIds } });
+    return response.data;
+  } catch (error: Error | any) {
+    return error;
+  }
+};
+
 const getTracking = async (examRoomId: number) => {
   try {
     const response = await axiosServices.get(`/api/exam-room/v1/${examRoomId}/tracking`);
@@ -130,6 +166,10 @@ export {
   update,
   deleteById,
   importStudents,
+  getStudentsByExamRoomId,
+  getStudentsNotInExamRoom,
+  addStudentsToExamRoom,
+  removeStudentsFromExamRoom,
   getTracking,
   getTeacherExamRooms,
   getConnectedStudents,
