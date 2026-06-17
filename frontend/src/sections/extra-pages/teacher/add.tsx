@@ -95,7 +95,7 @@ export default function AddTeacher() {
         <Typography variant="h3">Thêm giảng viên</Typography>
       </Box>
 
-      <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', ml: 30, mr: 30 }}>
+      <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', maxWidth: 720, mx: 'auto' }}>
         <form onSubmit={formik.handleSubmit} noValidate>
           <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ mb: 3 }}>
             Thông tin giảng viên
