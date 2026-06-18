@@ -15,7 +15,10 @@ import java.util.Map;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RemoteCommandMessage {
+
     String commandId;
+
     String type;
+
     Map<String, Object> arguments;
 }

@@ -45,10 +45,15 @@ public class FileShareService {
     private static final long TEMP_FILE_TTL_SECONDS = 300;
 
     StudentClassRepository studentClassRepository;
+
     StudentRepository studentRepository;
+
     RemoteCommandService remoteCommandService;
+
     Util util;
+
     ConcurrentHashMap<String, TempSharedFile> tempFiles = new ConcurrentHashMap<>();
+
     ScheduledExecutorService cleanupExecutor = Executors.newSingleThreadScheduledExecutor(new CleanupThreadFactory());
 
     @NonFinal

@@ -1,12 +1,18 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
-const axiosServices = axios.create({ baseURL: import.meta.env.VITE_APP_API_URL || 'http://localhost:8080/' });
+import { getAccessToken, setAccessToken, clearAccessToken } from './authToken';
+
+const axiosServices = axios.create({
+  baseURL: import.meta.env.VITE_APP_API_URL || 'http://localhost:8080/',
+  // Send/receive the HttpOnly refresh-token cookie on cross-origin requests
+  withCredentials: true
+});
 
 // ==============================|| AXIOS - FOR MOCK SERVICES ||============================== //
 
 axiosServices.interceptors.request.use(
   async (config) => {
-    const accessToken = localStorage.getItem('token');
+    const accessToken = getAccessToken();
     if (accessToken) {
       config.headers['Authorization'] = `Bearer ${accessToken}`;
     }
@@ -17,11 +23,49 @@ axiosServices.interceptors.request.use(
   }
 );
 
+// Single-flight refresh: concurrent 401s share one /refresh call.
+let refreshPromise: Promise<string | null> | null = null;
+
+export async function refreshAccessToken(): Promise<string | null> {
+  if (!refreshPromise) {
+    refreshPromise = axiosServices
+      .post('/api/auth/v1/refresh')
+      .then((res) => {
+        const token: string | null = res.data?.data?.token ?? null;
+        setAccessToken(token);
+        return token;
+      })
+      .catch(() => {
+        clearAccessToken();
+        return null;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+  return refreshPromise;
+}
+
 axiosServices.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401 && !window.location.href.includes('/login')) {
-      redirectWithBasePath('/login');
+  async (error) => {
+    const original = error.config || {};
+    const status = error.response?.status;
+    const url: string = original.url || '';
+    const isAuthEndpoint = url.includes('/api/auth/');
+
+    // On 401, try one transparent refresh-and-retry (except for auth endpoints).
+    if (status === 401 && !original._retry && !isAuthEndpoint) {
+      original._retry = true;
+      const token = await refreshAccessToken();
+      if (token) {
+        original.headers = original.headers || {};
+        original.headers['Authorization'] = `Bearer ${token}`;
+        return axiosServices(original);
+      }
+      if (!window.location.href.includes('/login')) {
+        redirectWithBasePath('/login');
+      }
     }
     return Promise.reject((error.response && error.response.data) || 'Wrong Services');
   }

@@ -4,6 +4,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,17 +17,22 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Component
 @Configuration
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtService {
 
     @Value("${jwt.secret-key}")
-    public String SECRET;
+    @NonFinal
+    String SECRET;
 
     @Value("${jwt.expire-minute}")
-    public int EXPIRE_MINUTE;
+    @NonFinal
+    int EXPIRE_MINUTE;
 
     public String generateToken(String id) {
         Map<String, Object> claims = new HashMap<>();
@@ -33,6 +42,7 @@ public class JwtService {
     private String createToken(Map<String, Object> claims, String id) {
         return Jwts.builder()
                 .claims(claims)
+                .id(UUID.randomUUID().toString()) // jti, used for access-token blacklist
                 .subject(id)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * EXPIRE_MINUTE))
@@ -51,6 +61,10 @@ public class JwtService {
 
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
+    }
+
+    public String extractJti(String token) {
+        return extractClaim(token, Claims::getId);
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

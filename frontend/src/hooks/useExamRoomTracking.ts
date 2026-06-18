@@ -4,6 +4,8 @@ import SockJS from 'sockjs-client';
 import { getTracking, getConnectedStudents } from 'api/exam-room';
 import { AllowedApplication } from 'types/allowed-application';
 import { HttpStatusCode } from 'axios';
+import { getAccessToken } from 'utils/authToken';
+import { refreshAccessToken } from 'utils/axios';
 
 const WS_URL = `${import.meta.env.VITE_APP_API_URL || 'http://localhost:8080/'}ws`;
 
@@ -129,13 +131,16 @@ export function useExamRoomTracking(
   useEffect(() => {
     if (!examRoomId) return;
 
-    const token = window.localStorage.getItem('token');
-    if (!token) return;
-
     const client = new Client({
       webSocketFactory: () => new SockJS(WS_URL),
-      connectHeaders: { Authorization: `Bearer ${token}` },
       reconnectDelay: 5000,
+      // Refresh the in-memory access token before each (re)connect so the short-lived
+      // token is always current; bootstrap from the refresh cookie if missing.
+      beforeConnect: async () => {
+        let token = getAccessToken();
+        if (!token) token = await refreshAccessToken();
+        client.connectHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+      },
       onConnect: () => {
         setConnected(true);
         client.subscribe(`/topic/exam/${examRoomId}`, (message: IMessage) => {
@@ -163,7 +168,12 @@ export function useExamRoomTracking(
                     ? {
                         ...s,
                         appHistory: [
-                          { applicationName: '', createdAt: data.createdAt ?? new Date().toISOString(), banApplication: false, connectionType: 'CONNECT' },
+                          {
+                            applicationName: '',
+                            createdAt: data.createdAt ?? new Date().toISOString(),
+                            banApplication: false,
+                            connectionType: 'CONNECT'
+                          },
                           ...s.appHistory
                         ]
                       }
@@ -186,7 +196,12 @@ export function useExamRoomTracking(
                     ? {
                         ...s,
                         appHistory: [
-                          { applicationName: '', createdAt: data.createdAt ?? new Date().toISOString(), banApplication: false, connectionType: 'DISCONNECT' },
+                          {
+                            applicationName: '',
+                            createdAt: data.createdAt ?? new Date().toISOString(),
+                            banApplication: false,
+                            connectionType: 'DISCONNECT'
+                          },
                           ...s.appHistory
                         ]
                       }
@@ -222,7 +237,9 @@ export function useExamRoomTracking(
             );
             if ((data.action ?? 0) !== 0) {
               const actionText = data.action === 1 ? 'SAO CHÉP' : data.action === 3 ? 'CẮT' : 'DÁN';
-              onClipboardEvent?.(`Sinh viên ${data.studentName} - ${data.studentCode} đã ${actionText} nội dung từ ${data.applicationName}`);
+              onClipboardEvent?.(
+                `Sinh viên ${data.studentName} - ${data.studentCode} đã ${actionText} nội dung từ ${data.applicationName}`
+              );
             }
             if (data.banApplication) {
               onViolationDetected?.(

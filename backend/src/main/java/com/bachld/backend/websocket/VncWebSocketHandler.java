@@ -2,7 +2,10 @@ package com.bachld.backend.websocket;
 
 import com.bachld.backend.service.VncSessionService;
 import com.bachld.backend.service.VncSessionService.VncSessionData;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -27,12 +30,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class VncWebSocketHandler extends BinaryWebSocketHandler {
 
-    private final VncSessionService vncSessionService;
+    VncSessionService vncSessionService;
 
     @Value("${vnc.server.port:5900}")
-    private int vncPort;
+    @NonFinal
+    int vncPort;
 
     private record RelayContext(
             Socket vncSocket,
@@ -41,7 +46,7 @@ public class VncWebSocketHandler extends BinaryWebSocketHandler {
             LinkedBlockingQueue<byte[]> wsQueue
     ) {}
 
-    private final ConcurrentHashMap<String, RelayContext> relays = new ConcurrentHashMap<>();
+    ConcurrentHashMap<String, RelayContext> relays = new ConcurrentHashMap<>();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession ws) throws Exception {

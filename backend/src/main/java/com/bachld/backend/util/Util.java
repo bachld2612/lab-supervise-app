@@ -7,11 +7,13 @@ import com.bachld.backend.repository.*;
 import com.bachld.backend.util.enums.Status;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -25,36 +27,29 @@ import java.util.Optional;
 import java.util.Set;
 
 @Component
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class Util {
 
-    @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository;
 
-    @Autowired
-    private RoleRepository roleRepository;
+    RoleRepository roleRepository;
 
-    @Autowired
-    private TeacherRepository teacherRepository;
+    TeacherRepository teacherRepository;
 
-    @Autowired
-    private StudentRepository studentRepository;
+    StudentRepository studentRepository;
 
-    @Autowired
-    private SubjectRepository subjectRepository;
-    @Autowired
-    private SectionRepository sectionRepository;
+    SubjectRepository subjectRepository;
 
-    @Autowired
-    private PersonalComputerRepository personalComputerRepository;
+    SectionRepository sectionRepository;
 
-    @Autowired
-    private ClassRepository classRepository;
+    PersonalComputerRepository personalComputerRepository;
 
-    @Autowired
-    private ScheduleRepository scheduleRepository;
+    ClassRepository classRepository;
 
-    @Autowired
-    private Validator validator;
+    ScheduleRepository scheduleRepository;
+
+    Validator validator;
 
     public User getCurrentUser() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();

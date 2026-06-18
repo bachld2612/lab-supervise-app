@@ -23,6 +23,8 @@ public class AuthApiClient {
     private static final Logger logger = LoggerFactory.getLogger(AuthApiClient.class);
     private final RestClient restClient;
     private static final String LOGIN_ENDPOINT = "/api/auth/v1/login";
+    private static final String REFRESH_ENDPOINT = "/api/auth/v1/refresh";
+    private static final String LOGOUT_ENDPOINT = "/api/auth/v1/logout";
     
     /**
      * Constructs an AuthApiClient with the specified RestClient.
@@ -84,6 +86,37 @@ public class AuthApiClient {
                 "Failed to authenticate: " + e.getMessage(),
                 e
             );
+        }
+    }
+
+    /**
+     * Exchanges the refresh-token cookie (sent automatically by the cookie
+     * manager) for a new access token. Returns null if refresh fails.
+     */
+    public AuthResponse refresh() {
+        try {
+            RestTemplate restTemplate = restClient.getRestTemplate();
+            String url = restClient.getBaseUrl() + REFRESH_ENDPOINT;
+            ResponseEntity<AuthResponse> responseEntity =
+                    restTemplate.postForEntity(url, null, AuthResponse.class);
+            return responseEntity.getBody();
+        } catch (Exception e) {
+            logger.warn("Token refresh failed: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Logs out server-side: deletes the refresh token from DB and blacklists the
+     * current access token. Best-effort — failures are swallowed.
+     */
+    public void logout() {
+        try {
+            RestTemplate restTemplate = restClient.getRestTemplate();
+            String url = restClient.getBaseUrl() + LOGOUT_ENDPOINT;
+            restTemplate.postForEntity(url, null, Void.class);
+        } catch (Exception e) {
+            logger.warn("Logout request failed: {}", e.getMessage());
         }
     }
 }

@@ -63,6 +63,9 @@ const ItCenterDashboardPage = Loadable(lazy(() => import('pages/dashboard/it-cen
 const TeacherClassTrackingPage = Loadable(lazy(() => import('pages/teacher/teacher-class-tracking-page')));
 const TeacherExamRoomTrackingPage = Loadable(lazy(() => import('pages/teacher/teacher-exam-room-tracking-page')));
 const ExamRoomPage = Loadable(lazy(() => import('pages/exam-room/exam-room-page')));
+const AddExamRoom = Loadable(lazy(() => import('sections/extra-pages/exam-room/add')));
+const EditExamRoom = Loadable(lazy(() => import('sections/extra-pages/exam-room/edit')));
+const DetailExamRoom = Loadable(lazy(() => import('sections/extra-pages/exam-room/detail')));
 const BanApplicationPage = Loadable(lazy(() => import('pages/ban-application/ban-application-page')));
 const RoomPage = Loadable(lazy(() => import('pages/room/room-page')));
 const ItCenterIncidentReportPage = Loadable(lazy(() => import('pages/incident-report/it-center-incident-report-page')));
@@ -238,6 +241,18 @@ const MainRoutes = {
         {
           path: 'exam-room',
           element: <ExamRoomPage />
+        },
+        {
+          path: 'exam-room/add',
+          element: <AddExamRoom />
+        },
+        {
+          path: 'exam-room/edit/:id',
+          element: <EditExamRoom />
+        },
+        {
+          path: 'exam-room/detail/:id',
+          element: <DetailExamRoom />
         },
         {
           path: 'teacher/exam-room/:id/tracking',

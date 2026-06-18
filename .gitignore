@@ -5,3 +5,10 @@ desktop/logs/lab-monitor.log
 CLAUDE.md
 /docs/
 /diagram/
+
+### Claude / AI agents (ignore everywhere, keep local) ###
+**/CLAUDE.md
+**/CLAUDE.local.md
+**/AGENTS.md
+**/.claude/
+**/.antigravity/

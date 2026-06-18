@@ -7,33 +7,54 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ExamRoomResponse {
 
     Integer id;
+
     String code;
+
     Integer roomId;
+
     String roomName;
+
     Integer teacher1Id;
+
     String teacher1Name;
+
     Integer teacher2Id;
+
     String teacher2Name;
+
     Integer subjectId;
+
     String subjectName;
+
     Integer semesterId;
+
     String semesterName;
+
     Integer maxStudent;
+
     Long currentStudent;
+
     LocalDate examDate;
+
     String periods;
+
     LocalTime startTime;
+
     LocalTime endTime;
+
     Integer status;
+
     Boolean trackingEnabled;
+
     Integer studyStatus;
+
     String wifiSsid;
 
     public ExamRoomResponse(Integer id, String code, Integer roomId, String roomName,

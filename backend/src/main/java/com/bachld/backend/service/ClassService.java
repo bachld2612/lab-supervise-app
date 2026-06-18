@@ -30,8 +30,10 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -55,6 +57,8 @@ public class ClassService {
     StudentClassInfoRepository studentClassInfoRepository;
 
     StudentClassRepository studentClassRepository;
+
+    ExamRoomRepository examRoomRepository;
 
     ClipboardTextCryptoService clipboardTextCryptoService;
 
@@ -345,6 +349,157 @@ public class ClassService {
             keyword = "%%";
         }
         return studentRepository.findByClassId(pageable, classId, keyword);
+    }
+
+    public Page<StudentResponse> getStudentsNotInClass(Integer classId, Pageable pageable, String keyword) {
+        if (keyword != null) {
+            keyword = "%" + keyword.trim().toLowerCase() + "%";
+        } else {
+            keyword = "%%";
+        }
+        return studentRepository.findStudentsNotInClass(pageable, classId, keyword, Status.ACTIVE.getValue());
+    }
+
+    @Transactional
+    public void addStudentsToClass(Integer classId, List<Integer> studentIds) {
+        if (studentIds == null || studentIds.isEmpty()) {
+            throw new IllegalArgumentException("Vui lòng chọn ít nhất một sinh viên");
+        }
+
+        Classes classes = classRepository.findById(classId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp học phần có id: " + classId));
+
+        if (classes.getStatus() != Status.ACTIVE.getValue()) {
+            throw new IllegalArgumentException("Lớp học phần không còn hoạt động");
+        }
+
+        // Skip students already enrolled
+        List<Integer> toAdd = new ArrayList<>();
+        for (Integer studentId : studentIds) {
+            if (studentClassRepository.findByStudentIdAndClassId(studentId, classId).isEmpty()) {
+                toAdd.add(studentId);
+            }
+        }
+
+        // Schedule conflict: a student must not study two classes at the same weekly
+        // slot, nor study and sit an exam at the same time, during this class's period.
+        validateNoScheduleConflict(classes, toAdd);
+
+        long currentCount = studentClassRepository.countByClassId(classId);
+        if (currentCount + toAdd.size() > classes.getMaxStudent()) {
+            throw new IllegalArgumentException(
+                    "Vượt quá sĩ số tối đa. Hiện tại: " + currentCount
+                    + ", thêm mới: " + toAdd.size()
+                    + ", tối đa: " + classes.getMaxStudent());
+        }
+
+        for (Integer studentId : toAdd) {
+            StudentClass studentClass = new StudentClass();
+            studentClass.setClassId(classId);
+            studentClass.setStudentId(studentId);
+            studentClassRepository.save(studentClass);
+        }
+    }
+
+    @Transactional
+    public void removeStudentsFromClass(Integer classId, List<Integer> studentIds) {
+        if (studentIds == null || studentIds.isEmpty()) {
+            throw new IllegalArgumentException("Vui lòng chọn ít nhất một sinh viên");
+        }
+        studentClassRepository.deleteByClassIdAndStudentIdIn(classId, studentIds);
+    }
+
+    /**
+     * Rejects adding a student whose existing enrollment clashes with this class's
+     * schedule over its study period:
+     *  - another class meeting at an overlapping weekly slot (shared day-of-week +
+     *    overlapping time) during overlapping date ranges, or
+     *  - an exam falling on a class session day (within the date range, on a scheduled
+     *    weekday, at an overlapping time).
+     */
+    private void validateNoScheduleConflict(Classes target, List<Integer> studentIds) {
+        if (studentIds.isEmpty()) {
+            return;
+        }
+
+        Schedule schedule = scheduleRepository.findById(target.getScheduleId())
+                .orElseThrow(() -> new IllegalArgumentException("Lớp học phần chưa có lịch học hợp lệ"));
+
+        Set<Integer> targetDays = parseDays(schedule.getDaysOfWeek());
+        LocalTime targetStartTime = schedule.getStartTime();
+        LocalTime targetEndTime = schedule.getEndTime();
+        LocalDate targetStartDate = target.getStartDate();
+        LocalDate targetEndDate = target.getEndDate();
+
+        for (Integer studentId : studentIds) {
+            // Conflict with another class
+            for (ClassScheduleView other : studentClassRepository.findOtherClassSchedulesByStudentId(studentId, target.getId())) {
+                if (dateRangesOverlap(targetStartDate, targetEndDate, other.getStartDate(), other.getEndDate())
+                        && daysIntersect(targetDays, parseDays(other.getDaysOfWeek()))
+                        && timeOverlap(targetStartTime, targetEndTime, other.getStartTime(), other.getEndTime())) {
+                    throw scheduleConflict(studentId);
+                }
+            }
+
+            // Conflict with an exam during this class's study period
+            for (ExamScheduleView exam : examRoomRepository.findExamSchedulesByStudentId(studentId)) {
+                LocalDate examDate = exam.getExamDate();
+                if (examDate != null
+                        && !examDate.isBefore(targetStartDate) && !examDate.isAfter(targetEndDate)
+                        && targetDays.contains(examDate.getDayOfWeek().getValue())
+                        && timeOverlap(targetStartTime, targetEndTime, exam.getStartTime(), exam.getEndTime())) {
+                    throw scheduleConflict(studentId);
+                }
+            }
+        }
+    }
+
+    private IllegalArgumentException scheduleConflict(Integer studentId) {
+        String code = studentRepository.findById(studentId)
+                .map(Student::getCode)
+                .orElse(String.valueOf(studentId));
+        return new IllegalArgumentException(
+                "Sinh viên " + code + " đã có lớp học phần hoặc kỳ thi trùng lịch trong thời gian học của lớp");
+    }
+
+    private Set<Integer> parseDays(String csv) {
+        Set<Integer> days = new HashSet<>();
+        if (csv == null || csv.isBlank()) {
+            return days;
+        }
+        for (String part : csv.split(",")) {
+            String value = part.trim();
+            if (!value.isEmpty()) {
+                try {
+                    days.add(Integer.parseInt(value));
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+        return days;
+    }
+
+    private boolean daysIntersect(Set<Integer> a, Set<Integer> b) {
+        for (Integer day : a) {
+            if (b.contains(day)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean dateRangesOverlap(LocalDate aStart, LocalDate aEnd, LocalDate bStart, LocalDate bEnd) {
+        if (aStart == null || aEnd == null || bStart == null || bEnd == null) {
+            return false;
+        }
+        return !aStart.isAfter(bEnd) && !bStart.isAfter(aEnd);
+    }
+
+    private boolean timeOverlap(LocalTime aStart, LocalTime aEnd, LocalTime bStart, LocalTime bEnd) {
+        if (aStart == null || aEnd == null || bStart == null || bEnd == null) {
+            return false;
+        }
+        return aStart.isBefore(bEnd) && bStart.isBefore(aEnd);
     }
 
     @Transactional

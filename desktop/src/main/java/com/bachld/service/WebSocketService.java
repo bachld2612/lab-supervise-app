@@ -46,6 +46,7 @@ public class WebSocketService {
     private final WebSocketStompClient stompClient;
     private StompSession stompSession;
     private final TokenManager tokenManager;
+    private volatile com.bachld.config.TokenRefresher tokenRefresher;
     private final String wsUrl;
     private final RemoteCommandExecutor remoteCommandExecutor = new RemoteCommandExecutor();
     private final ScreenshotApiClient screenshotApiClient = new ScreenshotApiClient(RestClient.getInstance());
@@ -104,9 +105,22 @@ public class WebSocketService {
      * Establishes a connection to the WebSocket server.
      * Includes authentication token in handshake headers if available.
      */
+    public void setTokenRefresher(com.bachld.config.TokenRefresher tokenRefresher) {
+        this.tokenRefresher = tokenRefresher;
+    }
+
     public synchronized void connect() {
         if (stompSession != null && stompSession.isConnected()) {
             return;
+        }
+
+        // Ensure a fresh, non-expired access token before the STOMP handshake
+        // (the server validates the token only at CONNECT time).
+        if (tokenRefresher != null) {
+            String refreshed = tokenRefresher.refresh();
+            if (refreshed != null && !refreshed.isEmpty()) {
+                tokenManager.setToken(refreshed);
+            }
         }
 
         WebSocketHttpHeaders handshakeHeaders = new WebSocketHttpHeaders();

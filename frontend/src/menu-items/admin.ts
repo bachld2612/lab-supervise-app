@@ -17,7 +17,7 @@ const icons = {
 
 const adminMenu: NavItemType = {
   id: 'group-admin',
-  title: 'Văn phòng khoa',
+  title: 'Phòng đào tạo',
   type: 'group',
   children: [
     // {

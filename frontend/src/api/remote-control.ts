@@ -52,7 +52,9 @@ export const openWebsiteForExamRoomStudent = async (
   studentId: number,
   websiteUrl: string
 ): Promise<{ statusCode: number; data: null }> => {
-  const response = await axiosServices.post(`/api/remote-control/v1/exam-room/${examRoomId}/student/${studentId}/open-website`, { websiteUrl });
+  const response = await axiosServices.post(`/api/remote-control/v1/exam-room/${examRoomId}/student/${studentId}/open-website`, {
+    websiteUrl
+  });
   return response.data;
 };
 

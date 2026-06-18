@@ -116,9 +116,7 @@ export default function UserList() {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <MenuItem onClick={handleOpenChangePassword}>
-          Đổi mật khẩu
-        </MenuItem>
+        <MenuItem onClick={handleOpenChangePassword}>Đổi mật khẩu</MenuItem>
         <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
       </Menu>
 

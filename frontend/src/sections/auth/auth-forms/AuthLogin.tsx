@@ -1,6 +1,5 @@
 import { useState, SyntheticEvent } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { preload } from 'swr';
 
 // material-ui
 import Button from '@mui/material/Button';
@@ -21,7 +20,6 @@ import AnimateButton from 'components/@extended/AnimateButton';
 import IconButton from 'components/@extended/IconButton';
 import useAuth from 'hooks/useAuth';
 import useScriptRef from 'hooks/useScriptRef';
-import { fetcher } from 'utils/axios';
 
 // assets
 import { Eye, EyeSlash } from 'iconsax-reactjs';
@@ -62,7 +60,6 @@ export default function AuthLogin({ forgot }: { forgot?: string }) {
             if (scriptedRef.current) {
               setStatus({ success: true });
               setSubmitting(false);
-              preload('api/menu/dashboard', fetcher); // load menu on login success
             }
           } catch (err: any) {
             console.error(err);

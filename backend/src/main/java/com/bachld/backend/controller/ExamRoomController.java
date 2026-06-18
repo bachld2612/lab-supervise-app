@@ -3,6 +3,7 @@ package com.bachld.backend.controller;
 import com.bachld.backend.dto.request.ClassWifiSsidRequest;
 import com.bachld.backend.dto.request.ExamRoomCreateRequest;
 import com.bachld.backend.dto.request.ExamRoomUpdateRequest;
+import com.bachld.backend.dto.request.StudentExamRoomRequest;
 import com.bachld.backend.dto.response.BaseResponse;
 import com.bachld.backend.service.ExamRoomService;
 import com.bachld.backend.util.auth.AuthFilter;
@@ -87,6 +88,42 @@ public class ExamRoomController {
     ) throws IOException {
         return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(),
                 examRoomService.importStudents(examRoomId, file)));
+    }
+
+    @GetMapping("/v1/{examRoomId}/student")
+    @AuthFilter(role = "ADMIN,TEACHER")
+    public ResponseEntity<?> getStudentsByExamRoomId(
+            @PathVariable int examRoomId,
+            @PageableDefault Pageable pageable,
+            @RequestParam(required = false) String keyword
+    ) {
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(),
+                examRoomService.getStudentsByExamRoomId(examRoomId, pageable, keyword)));
+    }
+
+    @GetMapping("/v1/{examRoomId}/student/available")
+    @AuthFilter(role = "ADMIN,TEACHER")
+    public ResponseEntity<?> getStudentsNotInExamRoom(
+            @PathVariable int examRoomId,
+            @PageableDefault Pageable pageable,
+            @RequestParam(required = false) String keyword
+    ) {
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(),
+                examRoomService.getStudentsNotInExamRoom(examRoomId, pageable, keyword)));
+    }
+
+    @PostMapping("/v1/{examRoomId}/student")
+    @AuthFilter(role = "ADMIN")
+    public ResponseEntity<?> addStudentsToExamRoom(@PathVariable int examRoomId, @RequestBody StudentExamRoomRequest request) {
+        examRoomService.addStudentsToExamRoom(examRoomId, request.getStudentIds());
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+    }
+
+    @DeleteMapping("/v1/{examRoomId}/student")
+    @AuthFilter(role = "ADMIN")
+    public ResponseEntity<?> removeStudentsFromExamRoom(@PathVariable int examRoomId, @RequestBody StudentExamRoomRequest request) {
+        examRoomService.removeStudentsFromExamRoom(examRoomId, request.getStudentIds());
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
     }
 
     @GetMapping("/v1/{examRoomId}/tracking")

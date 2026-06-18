@@ -32,7 +32,7 @@ import { EmptyTable, HeaderSort } from 'components/third-party/react-table';
 import useAuth from 'hooks/useAuth';
 import { CloseCircle } from 'iconsax-reactjs';
 import { useEffect, useMemo, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import { Classes } from 'types/classes';
 import { DEFAULT_PAGE_SIZE, PageRequest } from 'types/paging';
 import { Student } from 'types/student';
@@ -265,7 +265,7 @@ export default function StudentListDialog({ open, onClose, classItem }: { open: 
               <Grid>
                 <Stack direction="row" sx={{ gap: 1, alignItems: 'center', marginLeft: 2 }}>
                   <Typography variant="caption" color="secondary">
-                    <FormattedMessage id="row-per-page" />
+                    Số bản ghi mỗi trang
                   </Typography>
                   <FormControl sx={{ m: 1 }}>
                     <Select

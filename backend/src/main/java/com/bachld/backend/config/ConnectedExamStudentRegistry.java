@@ -1,5 +1,7 @@
 package com.bachld.backend.config;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -7,13 +9,14 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ConnectedExamStudentRegistry {
 
     // examRoomId → set of studentIds currently connected
-    private final ConcurrentHashMap<Integer, Set<Integer>> examRoomToStudents = new ConcurrentHashMap<>();
+    ConcurrentHashMap<Integer, Set<Integer>> examRoomToStudents = new ConcurrentHashMap<>();
 
     // studentId → examRoomId they connected to (for post-exam disconnect)
-    private final ConcurrentHashMap<Integer, Integer> studentToExamRoom = new ConcurrentHashMap<>();
+    ConcurrentHashMap<Integer, Integer> studentToExamRoom = new ConcurrentHashMap<>();
 
     public void register(Integer examRoomId, Integer studentId) {
         examRoomToStudents.computeIfAbsent(examRoomId, k -> ConcurrentHashMap.newKeySet()).add(studentId);

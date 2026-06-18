@@ -29,6 +29,8 @@ import { type ExamRoom } from 'types/exam-room';
 import { type Semester } from 'types/semester';
 import { HttpStatusCode } from 'axios';
 import formatDate, { formatTimeWithoutSecond } from 'utils/formatDate';
+import StudentListDialog from 'sections/extra-pages/class/max-student-dialog';
+import ExamRoomStudentListDialog from 'sections/extra-pages/exam-room/exam-room-student-list-dialog';
 
 function ExamStatusBadge({ studyStatus }: { studyStatus?: number }) {
   if (studyStatus === 1) return <Chip label="Đang diễn ra" color="success" size="small" />;
@@ -72,6 +74,10 @@ export default function TeacherDashboardPage() {
   const [examKeywordInput, setExamKeywordInput] = useState('');
   const [examVisibleCount, setExamVisibleCount] = useState(3);
   const [classVisibleCount, setClassVisibleCount] = useState(3);
+  // Student-list dialogs are rendered at page root (NOT inside the card) so their
+  // clicks don't bubble through the React tree to the card's navigate onClick.
+  const [classSizeItem, setClassSizeItem] = useState<Classes | null>(null);
+  const [examSizeItem, setExamSizeItem] = useState<ExamRoom | null>(null);
   const [alert, setAlert] = useState({
     open: false,
     message: '',
@@ -109,16 +115,18 @@ export default function TeacherDashboardPage() {
     fetchAll();
   }, [intl, logout]);
 
-  useEffect(() => { setExamVisibleCount(3); }, [examKeyword, examSemester]);
-  useEffect(() => { setClassVisibleCount(3); }, [classKeyword, classSemester]);
+  useEffect(() => {
+    setExamVisibleCount(3);
+  }, [examKeyword, examSemester]);
+  useEffect(() => {
+    setClassVisibleCount(3);
+  }, [classKeyword, classSemester]);
 
   const filteredClasses = useMemo(() => {
     const kw = classKeyword.trim().toLowerCase();
     let list = classSemester === null ? classes : classes.filter((c) => c.semesterId === classSemester.id);
-    if (kw) list = list.filter((c) =>
-      c.name?.toLowerCase().includes(kw) || c.subjectName?.toLowerCase().includes(kw)
-    );
-    const priority = (s?: number) => s === 1 ? 0 : s === 2 ? 2 : 1;
+    if (kw) list = list.filter((c) => c.name?.toLowerCase().includes(kw) || c.subjectName?.toLowerCase().includes(kw));
+    const priority = (s?: number) => (s === 1 ? 0 : s === 2 ? 2 : 1);
     return [...list].sort((a, b) => {
       const diff = priority(a.studyStatus) - priority(b.studyStatus);
       if (diff !== 0) return diff;
@@ -129,10 +137,8 @@ export default function TeacherDashboardPage() {
   const filteredExamRooms = useMemo(() => {
     const kw = examKeyword.trim().toLowerCase();
     let list = examSemester === null ? examRooms : examRooms.filter((e) => e.semesterId === examSemester.id);
-    if (kw) list = list.filter((e) =>
-      e.code?.toLowerCase().includes(kw) || e.subjectName?.toLowerCase().includes(kw)
-    );
-    const examPriority = (s?: number) => s === 1 ? 0 : s === 2 ? 2 : 1;
+    if (kw) list = list.filter((e) => e.code?.toLowerCase().includes(kw) || e.subjectName?.toLowerCase().includes(kw));
+    const examPriority = (s?: number) => (s === 1 ? 0 : s === 2 ? 2 : 1);
     return [...list].sort((a, b) => {
       const diff = examPriority(a.studyStatus) - examPriority(b.studyStatus);
       if (diff !== 0) return diff;
@@ -163,7 +169,13 @@ export default function TeacherDashboardPage() {
 
       {/* ── Exam Rooms Section ── */}
       <Box>
-        <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ sm: 'center' }} spacing={2} sx={{ mb: 2 }}>
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          justifyContent="space-between"
+          alignItems={{ sm: 'center' }}
+          spacing={2}
+          sx={{ mb: 2 }}
+        >
           <Stack direction="row" spacing={1.5} alignItems="center">
             <Calendar1 size={22} />
             <Typography variant="h4">Lịch thi</Typography>
@@ -175,7 +187,9 @@ export default function TeacherDashboardPage() {
               placeholder="Tìm mã phòng, môn thi..."
               value={examKeywordInput}
               onChange={(e) => setExamKeywordInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') setExamKeyword(examKeywordInput); }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') setExamKeyword(examKeywordInput);
+              }}
               sx={{ minWidth: 220 }}
             />
             {semesters.length > 0 && (
@@ -197,7 +211,9 @@ export default function TeacherDashboardPage() {
           <Box sx={{ p: 3 }}>
             {filteredExamRooms.length === 0 ? (
               <Box textAlign="center" py={5}>
-                <Typography color="text.secondary" variant="h6">Không có lịch thi nào</Typography>
+                <Typography color="text.secondary" variant="h6">
+                  Không có lịch thi nào
+                </Typography>
               </Box>
             ) : (
               <Stack spacing={3}>
@@ -228,15 +244,21 @@ export default function TeacherDashboardPage() {
                             <Stack spacing={1.5}>
                               <Stack direction="row" spacing={1} alignItems="center">
                                 <Book1 size={16} />
-                                <Typography variant="body2" color="text.secondary">{er.subjectName}</Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                  {er.subjectName}
+                                </Typography>
                               </Stack>
                               <Stack direction="row" spacing={1} alignItems="center">
                                 <Calendar size={16} />
-                                <Typography variant="body2" color="text.secondary">{formatDate(er.examDate)}</Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                  {formatDate(er.examDate)}
+                                </Typography>
                               </Stack>
                               <Stack direction="row" spacing={1} alignItems="center">
                                 <Clock size={16} />
-                                <Typography variant="body2" color="text.secondary">{formatExamPeriodRange(er)}</Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                  {formatExamPeriodRange(er)}
+                                </Typography>
                               </Stack>
                               <Typography variant="caption" color="text.disabled">
                                 {er.semesterName}&nbsp;·&nbsp;Phòng {er.roomName}
@@ -246,9 +268,20 @@ export default function TeacherDashboardPage() {
                             <Stack direction="row" justifyContent="space-between" alignItems="center">
                               <Stack direction="row" spacing={0.75} alignItems="center">
                                 <People size={16} />
-                                <Typography variant="body2" color="text.secondary">Sĩ số</Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                  Sĩ số
+                                </Typography>
                               </Stack>
-                              <Typography variant="body1" fontWeight="bold" color="primary.main">
+                              <Typography
+                                variant="body1"
+                                fontWeight="bold"
+                                color="primary.main"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setExamSizeItem(er);
+                                }}
+                                sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+                              >
                                 {er.currentStudent}/{er.maxStudent}
                               </Typography>
                             </Stack>
@@ -280,7 +313,13 @@ export default function TeacherDashboardPage() {
 
       {/* ── Classes Section ── */}
       <Box>
-        <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ sm: 'center' }} spacing={2} sx={{ mb: 2 }}>
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          justifyContent="space-between"
+          alignItems={{ sm: 'center' }}
+          spacing={2}
+          sx={{ mb: 2 }}
+        >
           <Stack direction="row" spacing={1.5} alignItems="center">
             <Book1 size={22} />
             <Typography variant="h4">Lớp học</Typography>
@@ -295,7 +334,9 @@ export default function TeacherDashboardPage() {
               placeholder="Tìm tên lớp, môn học..."
               value={classKeywordInput}
               onChange={(e) => setClassKeywordInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') setClassKeyword(classKeywordInput); }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') setClassKeyword(classKeywordInput);
+              }}
               sx={{ minWidth: 220 }}
             />
             {semesters.length > 0 && (
@@ -317,7 +358,9 @@ export default function TeacherDashboardPage() {
           <Box sx={{ p: 3 }}>
             {filteredClasses.length === 0 ? (
               <Box textAlign="center" py={5}>
-                <Typography color="text.secondary" variant="h6">Không có lớp học nào</Typography>
+                <Typography color="text.secondary" variant="h6">
+                  Không có lớp học nào
+                </Typography>
               </Box>
             ) : (
               <Stack spacing={3}>
@@ -342,7 +385,9 @@ export default function TeacherDashboardPage() {
                           <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
                             <Stack spacing={2}>
                               <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
-                                <Typography variant="h6" fontWeight="bold" sx={{ flex: 1, pr: 1 }}>{cls.name}</Typography>
+                                <Typography variant="h6" fontWeight="bold" sx={{ flex: 1, pr: 1 }}>
+                                  {cls.name}
+                                </Typography>
                                 <Chip
                                   label={isActive ? 'Đang học' : isEnded ? 'Đã kết thúc' : 'Sắp diễn ra'}
                                   color={isActive ? 'success' : isEnded ? 'default' : 'warning'}
@@ -353,15 +398,21 @@ export default function TeacherDashboardPage() {
                               <Stack spacing={1.5}>
                                 <Stack direction="row" spacing={1} alignItems="center">
                                   <Book1 size={16} />
-                                  <Typography variant="body2" color="text.secondary">{cls.subjectName}</Typography>
+                                  <Typography variant="body2" color="text.secondary">
+                                    {cls.subjectName}
+                                  </Typography>
                                 </Stack>
                                 <Stack direction="row" spacing={1} alignItems="center">
                                   <Calendar size={16} />
-                                  <Typography variant="body2" color="text.secondary">{cls.scheduleName}</Typography>
+                                  <Typography variant="body2" color="text.secondary">
+                                    {cls.scheduleName}
+                                  </Typography>
                                 </Stack>
                                 <Stack direction="row" spacing={1} alignItems="center">
                                   <Timer1 size={16} />
-                                  <Typography variant="body2" color="text.secondary">{formatDate(cls.startDate)} → {formatDate(cls.endDate)}</Typography>
+                                  <Typography variant="body2" color="text.secondary">
+                                    {formatDate(cls.startDate)} → {formatDate(cls.endDate)}
+                                  </Typography>
                                 </Stack>
                                 <Typography variant="caption" color="text.disabled">
                                   {cls.semesterName}&nbsp;·&nbsp;{cls.sessionNumber} buổi học
@@ -371,9 +422,20 @@ export default function TeacherDashboardPage() {
                               <Stack direction="row" justifyContent="space-between" alignItems="center">
                                 <Stack direction="row" spacing={0.75} alignItems="center">
                                   <People size={16} />
-                                  <Typography variant="body2" color="text.secondary">Sĩ số</Typography>
+                                  <Typography variant="body2" color="text.secondary">
+                                    Sĩ số
+                                  </Typography>
                                 </Stack>
-                                <Typography variant="body1" fontWeight="bold" color="primary.main">
+                                <Typography
+                                  variant="body1"
+                                  fontWeight="bold"
+                                  color="primary.main"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setClassSizeItem(cls);
+                                  }}
+                                  sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+                                >
                                   {cls.currentStudent}/{cls.maxStudent}
                                 </Typography>
                               </Stack>
@@ -403,6 +465,9 @@ export default function TeacherDashboardPage() {
           </Box>
         </MainCard>
       </Box>
+
+      <StudentListDialog open={!!classSizeItem} onClose={() => setClassSizeItem(null)} classItem={classSizeItem} />
+      <ExamRoomStudentListDialog open={!!examSizeItem} onClose={() => setExamSizeItem(null)} examRoom={examSizeItem} />
     </Stack>
   );
 }

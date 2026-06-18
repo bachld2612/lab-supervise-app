@@ -15,10 +15,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ScreenshotReadyMessage {
+
     String type;
+
     Integer screenshotId;
+
     Integer studentId;
+
     Integer studentUserId;
+
     String imageUrl;
+
     LocalDateTime createdAt;
 }

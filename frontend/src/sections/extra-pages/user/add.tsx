@@ -90,7 +90,7 @@ export default function AddUser() {
         <Typography variant="h3">Thêm nhân viên</Typography>
       </Box>
 
-      <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', ml: 30, mr: 30 }}>
+      <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', maxWidth: 720, mx: 'auto' }}>
         <form onSubmit={formik.handleSubmit} noValidate>
           <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ mb: 3 }}>
             Thông tin nhân viên
@@ -212,7 +212,7 @@ export default function AddUser() {
                     <span style={{ color: 'rgba(0,0,0,0.6)' }}>Phân quyền</span>
                   </MenuItem>
 
-                  <MenuItem value="1">Nhân viên văn phòng khoa</MenuItem>
+                  <MenuItem value="1">Nhân viên phòng đào tạo</MenuItem>
                   <MenuItem value="4">Nhân viên trung tâm tin học</MenuItem>
                 </Select>
 

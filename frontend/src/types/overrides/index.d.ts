@@ -12,6 +12,7 @@ declare module '@mui/material' {
 declare module '@tanstack/react-table' {
   export interface ColumnMeta {
     className?: string;
+    width?: string | number;
   }
 
   export interface TableMeta {

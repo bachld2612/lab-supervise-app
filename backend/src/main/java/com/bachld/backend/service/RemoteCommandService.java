@@ -1,7 +1,9 @@
 package com.bachld.backend.service;
 
 import com.bachld.backend.dto.websocket.RemoteCommandMessage;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -10,15 +12,16 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RemoteCommandService {
 
-    private static final String SCREENSHOT_COMMAND = "SCREENSHOT";
-    private static final String OPEN_WEBSITE_COMMAND = "OPEN_WEBSITE";
-    private static final String SHOW_MESSAGE_COMMAND = "SHOW_MESSAGE";
-    private static final String LOCK_SCREEN_COMMAND = "LOCK_SCREEN";
-    private static final String FILE_AVAILABLE_COMMAND = "FILE_AVAILABLE";
+    static final String SCREENSHOT_COMMAND = "SCREENSHOT";
+    static final String OPEN_WEBSITE_COMMAND = "OPEN_WEBSITE";
+    static final String SHOW_MESSAGE_COMMAND = "SHOW_MESSAGE";
+    static final String LOCK_SCREEN_COMMAND = "LOCK_SCREEN";
+    static final String FILE_AVAILABLE_COMMAND = "FILE_AVAILABLE";
 
-    private final SimpMessagingTemplate messagingTemplate;
+    SimpMessagingTemplate messagingTemplate;
 
     public void sendScreenshotCommand(Integer studentUserId, Integer screenshotId) {
         RemoteCommandMessage message = RemoteCommandMessage.builder()

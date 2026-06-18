@@ -1,5 +1,6 @@
 package com.bachld.backend.repository;
 
+import com.bachld.backend.dto.response.ExamScheduleView;
 import com.bachld.backend.model.ExamRoom;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,18 @@ public interface ExamRoomRepository extends JpaRepository<ExamRoom, Integer> {
             AND er.status = 1
     """)
     List<ExamRoom> findActiveByStudentId(@Param("studentId") Integer studentId, @Param("today") LocalDate today);
+
+    @Query("""
+        SELECT new com.bachld.backend.dto.response.ExamScheduleView(
+            er.examDate, er.startTime, er.endTime
+        )
+        FROM ExamRoom er
+            JOIN StudentExamRoom ser ON ser.examRoomId = er.id
+        WHERE ser.studentId = :studentId
+            AND er.status = 1
+            AND ser.status = 1
+    """)
+    List<ExamScheduleView> findExamSchedulesByStudentId(@Param("studentId") Integer studentId);
 
     @Query("""
         SELECT COUNT(er)

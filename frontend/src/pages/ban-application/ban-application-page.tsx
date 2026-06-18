@@ -395,7 +395,7 @@ export default function BanApplicationPage() {
               sx={{ minWidth: 200 }}
             />
             <Select
-              value={pageRequest.status as string || ''}
+              value={(pageRequest.status as string) || ''}
               onChange={(event) => setPageRequest({ ...pageRequest, page: 0, status: event.target.value })}
               displayEmpty
               input={<OutlinedInput />}

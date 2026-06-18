@@ -21,7 +21,10 @@ export default function GuestGuard({ children }: GuardProps) {
     const rolePath: string = roleId === 1 ? '/user' : roleId === 2 ? '/dashboard/teacher' : roleId === 4 ? '/room' : '/';
 
     if (isLoggedIn && user) {
-      navigate(location?.state?.from ? location?.state?.from : rolePath, {
+      // Always land on the role's home page. Do NOT honor location.state.from:
+      // after logout it holds the previous page, which would let a different
+      // account jump into a page it has no permission for.
+      navigate(rolePath, {
         state: { from: '' },
         replace: true
       });

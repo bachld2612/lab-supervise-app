@@ -198,7 +198,13 @@ public class MainFrame extends JFrame {
         }
         if (vncWatchdog != null) vncWatchdog.stop();
         vncService.stop();
+        // Revoke server-side (delete refresh token + blacklist access token), then
+        // clear local token + refresh cookie.
+        if (authService != null) {
+            authService.logout();
+        }
         com.bachld.service.TokenManager.getInstance().clearToken();
+        com.bachld.config.RestClient.getInstance().clearCookies();
         SwingUtilities.invokeLater(this::removeTrayIcon);
     }
 

@@ -3,13 +3,13 @@ package com.bachld.backend.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+/** Body returned by the refresh endpoint: a freshly minted access token. */
 @Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class FileSharePayload {
-    String fileName;
-    String fileContentBase64;
-    long fileSize;
+public class TokenResponse {
+
+    String token;
 }

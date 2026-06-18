@@ -225,7 +225,9 @@ export default function StudentPcManagementPage() {
     try {
       const res = await updateStudentPcIp(editTarget.userId, editIp.trim());
       if (res.statusCode === HttpStatusCode.Ok) {
-        setStudents((prev) => prev.map((student) => (student.userId === editTarget.userId ? { ...student, ipAddress: editIp.trim() } : student)));
+        setStudents((prev) =>
+          prev.map((student) => (student.userId === editTarget.userId ? { ...student, ipAddress: editIp.trim() } : student))
+        );
         setAlert({ open: true, message: 'Cập nhật địa chỉ IP thành công', severity: 'success' });
         setEditTarget(null);
       } else if (res.statusCode === HttpStatusCode.Unauthorized) {
@@ -269,7 +271,13 @@ export default function StudentPcManagementPage() {
         id: 'ipAddress',
         header: 'Địa chỉ IP',
         cell: ({ row }) => (
-          <Box component="span" sx={{ color: row.original.ipAddress ? 'text.primary' : 'text.disabled', fontStyle: row.original.ipAddress ? 'normal' : 'italic' }}>
+          <Box
+            component="span"
+            sx={{
+              color: row.original.ipAddress ? 'text.primary' : 'text.disabled',
+              fontStyle: row.original.ipAddress ? 'normal' : 'italic'
+            }}
+          >
             {row.original.ipAddress || 'Chưa cài đặt'}
           </Box>
         ),
@@ -347,7 +355,7 @@ export default function StudentPcManagementPage() {
         })}
       >
         <Typography variant="h3" gutterBottom>
-          Quản lý máy tính sinh viên
+          Quản lý IP sinh viên
         </Typography>
       </Stack>
 
@@ -358,7 +366,11 @@ export default function StudentPcManagementPage() {
           onClose={() => setAlert((a) => ({ ...a, open: false }))}
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         >
-          <Alert severity={alert.severity} variant="filled" sx={{ width: '100%', borderRadius: 2, fontSize: 15, textAlign: 'center', py: 1.5, px: 2 }}>
+          <Alert
+            severity={alert.severity}
+            variant="filled"
+            sx={{ width: '100%', borderRadius: 2, fontSize: 15, textAlign: 'center', py: 1.5, px: 2 }}
+          >
             {alert.message}
           </Alert>
         </Snackbar>
@@ -459,7 +471,12 @@ export default function StudentPcManagementPage() {
           </Typography>
         </Stack>
 
-        <DndContext collisionDetection={closestCenter} modifiers={[restrictToHorizontalAxis]} onDragEnd={handleColumnDragEnd} sensors={columnSensors}>
+        <DndContext
+          collisionDetection={closestCenter}
+          modifiers={[restrictToHorizontalAxis]}
+          onDragEnd={handleColumnDragEnd}
+          sensors={columnSensors}
+        >
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -482,7 +499,12 @@ export default function StudentPcManagementPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  <DndContext collisionDetection={closestCenter} modifiers={[restrictToVerticalAxis]} onDragEnd={handleRowDragEnd} sensors={rowSensors}>
+                  <DndContext
+                    collisionDetection={closestCenter}
+                    modifiers={[restrictToVerticalAxis]}
+                    onDragEnd={handleRowDragEnd}
+                    sensors={rowSensors}
+                  >
                     {table.getRowModel().rows.length > 0 ? (
                       <SortableContext items={dataIds} strategy={verticalListSortingStrategy}>
                         {table.getRowModel().rows.map((row) => (
@@ -494,7 +516,11 @@ export default function StudentPcManagementPage() {
                     ) : (
                       <TableRow sx={{ '&.MuiTableRow-root:hover': { bgcolor: 'transparent' } }}>
                         <TableCell colSpan={table.getAllColumns().length}>
-                          <EmptyTable msg={selectedClass || selectedExamRoom ? 'Không có sinh viên' : 'Chọn lớp học phần hoặc phòng thi để xem danh sách'} />
+                          <EmptyTable
+                            msg={
+                              selectedClass || selectedExamRoom ? 'Không có sinh viên' : 'Chọn lớp học phần hoặc phòng thi để xem danh sách'
+                            }
+                          />
                         </TableCell>
                       </TableRow>
                     )}

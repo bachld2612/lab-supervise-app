@@ -40,7 +40,7 @@ const teacherMenu: NavItemType = {
     },
     {
       id: 'pc-management',
-      title: 'Quản lý máy tính sinh viên',
+      title: 'Quản lý IP sinh viên',
       type: 'item',
       url: 'pc-management',
       icon: icons.cpu

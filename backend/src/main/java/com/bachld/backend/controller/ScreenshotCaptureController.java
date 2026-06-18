@@ -35,7 +35,9 @@ public class ScreenshotCaptureController {
     static final String EXAM_NOT_ACTIVE = "Phong thi hien khong hoat dong";
 
     ScreenshotCaptureService screenshotCaptureService;
+
     ClassService classService;
+
     ExamRoomService examRoomService;
 
     @PostMapping("/v1/class/{classId}/students/{studentUserId}/request")

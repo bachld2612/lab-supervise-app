@@ -4,9 +4,12 @@ import com.bachld.backend.config.ConnectedExamStudentRegistry;
 import com.bachld.backend.dto.request.ExamRoomCreateRequest;
 import com.bachld.backend.dto.request.ExamRoomUpdateRequest;
 import com.bachld.backend.dto.response.AppUsageItem;
+import com.bachld.backend.dto.response.ClassScheduleView;
 import com.bachld.backend.dto.response.ClassStudentTrackingResponse;
 import com.bachld.backend.dto.response.ExamRoomResponse;
+import com.bachld.backend.dto.response.ExamScheduleView;
 import com.bachld.backend.dto.response.StudentAppUsageRaw;
+import com.bachld.backend.dto.response.StudentResponse;
 import com.bachld.backend.model.*;
 import com.bachld.backend.repository.*;
 import com.bachld.backend.util.Util;
@@ -31,8 +34,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -42,12 +47,21 @@ import java.util.stream.Collectors;
 public class ExamRoomService {
 
     ExamRoomRepository examRoomRepository;
+
     StudentExamRoomRepository studentExamRoomRepository;
+
     StudentExamRoomInfoRepository studentExamRoomInfoRepository;
+
     StudentRepository studentRepository;
+
+    StudentClassRepository studentClassRepository;
+
     TeacherRepository teacherRepository;
+
     ConnectedExamStudentRegistry connectedExamStudentRegistry;
+
     ClipboardTextCryptoService clipboardTextCryptoService;
+
     Util util;
 
     public Page<ExamRoomResponse> getList(Pageable pageable, String keyword, Integer semesterId, Integer status) {
@@ -402,6 +416,134 @@ public class ExamRoomService {
         if (!now.isBefore(examRoom.getStartTime()) && !now.isAfter(examRoom.getEndTime())) return 1;
         if (now.isAfter(examRoom.getEndTime())) return 2;
         return 0;
+    }
+
+    public Page<StudentResponse> getStudentsByExamRoomId(Integer examRoomId, Pageable pageable, String keyword) {
+        keyword = (keyword != null) ? "%" + keyword.trim().toLowerCase() + "%" : "%%";
+        return studentRepository.findByExamRoomId(pageable, examRoomId, keyword);
+    }
+
+    public Page<StudentResponse> getStudentsNotInExamRoom(Integer examRoomId, Pageable pageable, String keyword) {
+        keyword = (keyword != null) ? "%" + keyword.trim().toLowerCase() + "%" : "%%";
+        return studentRepository.findStudentsNotInExamRoom(pageable, examRoomId, keyword, Status.ACTIVE.getValue());
+    }
+
+    @Transactional
+    public void addStudentsToExamRoom(Integer examRoomId, List<Integer> studentIds) {
+        if (studentIds == null || studentIds.isEmpty()) {
+            throw new IllegalArgumentException("Vui lòng chọn ít nhất một sinh viên");
+        }
+
+        ExamRoom examRoom = examRoomRepository.findById(examRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy phòng thi có id: " + examRoomId));
+
+        if (examRoom.getStatus() != Status.ACTIVE.getValue()) {
+            throw new IllegalArgumentException("Phòng thi không còn hoạt động");
+        }
+
+        // Skip students already enrolled
+        List<Integer> toAdd = new ArrayList<>();
+        for (Integer studentId : studentIds) {
+            if (studentExamRoomRepository.findByStudentIdAndExamRoomId(studentId, examRoomId).isEmpty()) {
+                toAdd.add(studentId);
+            }
+        }
+
+        // Conflict: student must not have a class session or another exam at this exam's time.
+        validateNoScheduleConflict(examRoom, toAdd);
+
+        long currentCount = studentExamRoomRepository.countByExamRoomIdAndStatus(examRoomId, Status.ACTIVE.getValue());
+        if (currentCount + toAdd.size() > examRoom.getMaxStudent()) {
+            throw new IllegalArgumentException(
+                    "Vượt quá sĩ số tối đa. Hiện tại: " + currentCount
+                    + ", thêm mới: " + toAdd.size()
+                    + ", tối đa: " + examRoom.getMaxStudent());
+        }
+
+        List<StudentExamRoom> toEnroll = new ArrayList<>();
+        for (Integer studentId : toAdd) {
+            toEnroll.add(buildStudentExamRoom(examRoomId, studentId));
+        }
+        studentExamRoomRepository.saveAll(toEnroll);
+    }
+
+    @Transactional
+    public void removeStudentsFromExamRoom(Integer examRoomId, List<Integer> studentIds) {
+        if (studentIds == null || studentIds.isEmpty()) {
+            throw new IllegalArgumentException("Vui lòng chọn ít nhất một sinh viên");
+        }
+        studentExamRoomRepository.deleteByExamRoomIdAndStudentIdIn(examRoomId, studentIds);
+    }
+
+    /**
+     * Rejects adding a student who, at this exam's date/time, would already be in a
+     * class session (a class whose schedule covers the exam date + overlapping time)
+     * or another exam (same date + overlapping time).
+     */
+    private void validateNoScheduleConflict(ExamRoom examRoom, List<Integer> studentIds) {
+        if (studentIds.isEmpty()) {
+            return;
+        }
+
+        LocalDate examDate = examRoom.getExamDate();
+        LocalTime examStart = examRoom.getStartTime();
+        LocalTime examEnd = examRoom.getEndTime();
+        if (examDate == null || examStart == null || examEnd == null) {
+            return;
+        }
+        int examDow = examDate.getDayOfWeek().getValue();
+
+        for (Integer studentId : studentIds) {
+            // Conflict with a class session on the exam day
+            for (ClassScheduleView cls : studentClassRepository.findClassSchedulesByStudentId(studentId)) {
+                if (cls.getStartDate() != null && cls.getEndDate() != null
+                        && !examDate.isBefore(cls.getStartDate()) && !examDate.isAfter(cls.getEndDate())
+                        && parseDays(cls.getDaysOfWeek()).contains(examDow)
+                        && timeOverlap(examStart, examEnd, cls.getStartTime(), cls.getEndTime())) {
+                    throw scheduleConflict(studentId);
+                }
+            }
+
+            // Conflict with another exam at the same date/time
+            for (ExamScheduleView other : examRoomRepository.findExamSchedulesByStudentId(studentId)) {
+                if (examDate.equals(other.getExamDate())
+                        && timeOverlap(examStart, examEnd, other.getStartTime(), other.getEndTime())) {
+                    throw scheduleConflict(studentId);
+                }
+            }
+        }
+    }
+
+    private IllegalArgumentException scheduleConflict(Integer studentId) {
+        String code = studentRepository.findById(studentId)
+                .map(Student::getCode)
+                .orElse(String.valueOf(studentId));
+        return new IllegalArgumentException(
+                "Sinh viên " + code + " bị trùng lịch: đã có lớp học hoặc kỳ thi vào thời gian thi này");
+    }
+
+    private Set<Integer> parseDays(String csv) {
+        Set<Integer> days = new HashSet<>();
+        if (csv == null || csv.isBlank()) {
+            return days;
+        }
+        for (String part : csv.split(",")) {
+            String value = part.trim();
+            if (!value.isEmpty()) {
+                try {
+                    days.add(Integer.parseInt(value));
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+        return days;
+    }
+
+    private boolean timeOverlap(LocalTime aStart, LocalTime aEnd, LocalTime bStart, LocalTime bEnd) {
+        if (aStart == null || aEnd == null || bStart == null || bEnd == null) {
+            return false;
+        }
+        return aStart.isBefore(bEnd) && bStart.isBefore(aEnd);
     }
 
     private StudentExamRoom buildStudentExamRoom(Integer examRoomId, Integer studentId) {

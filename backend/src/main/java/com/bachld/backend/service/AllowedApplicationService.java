@@ -32,9 +32,13 @@ import java.util.stream.Collectors;
 public class AllowedApplicationService {
 
     AllowedApplicationRepository allowedApplicationRepository;
+
     ExamRoomRepository examRoomRepository;
+
     TeacherRepository teacherRepository;
+
     SimpMessagingTemplate messagingTemplate;
+
     Util util;
 
     public Page<AllowedApplicationResponse> getList(Integer examRoomId, Pageable pageable, String keyword) {
@@ -44,7 +48,7 @@ public class AllowedApplicationService {
 
     public void create(AllowedApplicationCreateRequest request) {
         Teacher teacher = getCurrentTeacher();
-        ExamRoom examRoom = getExamRoomAndCheckTeacher(request.getExamRoomId(), teacher.getId());
+        getExamRoomAndCheckTeacher(request.getExamRoomId(), teacher.getId());
 
         AllowedApplication entity = new AllowedApplication();
         entity.setExamRoomId(request.getExamRoomId());
@@ -98,14 +102,13 @@ public class AllowedApplicationService {
         messagingTemplate.convertAndSend("/topic/exam/" + examRoomId, msg);
     }
 
-    private ExamRoom getExamRoomAndCheckTeacher(Integer examRoomId, Integer teacherId) {
+    private void getExamRoomAndCheckTeacher(Integer examRoomId, Integer teacherId) {
         ExamRoom examRoom = examRoomRepository.findById(examRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy phòng thi có id: " + examRoomId));
 
         if (!teacherId.equals(examRoom.getTeacher1Id()) && !teacherId.equals(examRoom.getTeacher2Id())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền thao tác với phòng thi này");
         }
-        return examRoom;
     }
 
     private Teacher getCurrentTeacher() {
