@@ -1,8 +1,12 @@
 package com.bachld.backend.util.enums;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 
+@Getter
 public enum TrackingAction {
+
     NORMAL(0),
     COPY(1),
     PASTE(2),
@@ -12,10 +16,6 @@ public enum TrackingAction {
 
     TrackingAction(int value) {
         this.value = value;
-    }
-
-    public int getValue() {
-        return value;
     }
 
     public static TrackingAction fromValue(Integer value) {

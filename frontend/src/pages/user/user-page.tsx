@@ -720,7 +720,7 @@ export default function User() {
               slotProps={{ input: { 'aria-label': 'Role Filter' } }}
             >
               <MenuItem value="">Vai trò</MenuItem>
-              <MenuItem value="1">Nhân viên văn phòng khoa</MenuItem>
+              <MenuItem value="1">Nhân viên phòng đào tạo</MenuItem>
               <MenuItem value="4">Nhân viên trung tâm tin học</MenuItem>
             </Select>
 

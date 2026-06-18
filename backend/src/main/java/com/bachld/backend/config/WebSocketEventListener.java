@@ -5,7 +5,9 @@ import com.bachld.backend.model.*;
 import com.bachld.backend.repository.*;
 import com.bachld.backend.util.enums.Role;
 import com.bachld.backend.util.enums.Status;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -25,19 +27,30 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WebSocketEventListener {
 
-    private final SimpMessagingTemplate messagingTemplate;
-    private final StudentRepository studentRepository;
-    private final StudentClassRepository studentClassRepository;
-    private final ScheduleRepository scheduleRepository;
-    private final UserRepository userRepository;
-    private final ConnectedStudentRegistry connectedStudentRegistry;
-    private final ConnectedExamStudentRegistry connectedExamStudentRegistry;
-    private final StudentClassInfoRepository studentClassInfoRepository;
-    private final ExamRoomRepository examRoomRepository;
-    private final StudentExamRoomRepository studentExamRoomRepository;
-    private final StudentExamRoomInfoRepository studentExamRoomInfoRepository;
+    SimpMessagingTemplate messagingTemplate;
+
+    StudentRepository studentRepository;
+
+    StudentClassRepository studentClassRepository;
+
+    ScheduleRepository scheduleRepository;
+
+    UserRepository userRepository;
+
+    ConnectedStudentRegistry connectedStudentRegistry;
+
+    ConnectedExamStudentRegistry connectedExamStudentRegistry;
+
+    StudentClassInfoRepository studentClassInfoRepository;
+
+    ExamRoomRepository examRoomRepository;
+
+    StudentExamRoomRepository studentExamRoomRepository;
+
+    StudentExamRoomInfoRepository studentExamRoomInfoRepository;
 
     @EventListener
     public void handleSessionConnected(SessionConnectedEvent event) {

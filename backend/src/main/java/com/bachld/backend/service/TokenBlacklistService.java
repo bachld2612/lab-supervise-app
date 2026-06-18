@@ -1,5 +1,7 @@
 package com.bachld.backend.service;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -12,9 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * because access tokens are short-lived.
  */
 @Service
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TokenBlacklistService {
 
-    private final Map<String, Long> blacklist = new ConcurrentHashMap<>();
+    Map<String, Long> blacklist = new ConcurrentHashMap<>();
 
     /** Blacklist a token jti until its natural expiry (epoch millis). */
     public void blacklist(String jti, long expiresAtEpochMs) {

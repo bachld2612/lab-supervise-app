@@ -47,13 +47,21 @@ import java.util.stream.Collectors;
 public class ExamRoomService {
 
     ExamRoomRepository examRoomRepository;
+
     StudentExamRoomRepository studentExamRoomRepository;
+
     StudentExamRoomInfoRepository studentExamRoomInfoRepository;
+
     StudentRepository studentRepository;
+
     StudentClassRepository studentClassRepository;
+
     TeacherRepository teacherRepository;
+
     ConnectedExamStudentRegistry connectedExamStudentRegistry;
+
     ClipboardTextCryptoService clipboardTextCryptoService;
+
     Util util;
 
     public Page<ExamRoomResponse> getList(Pageable pageable, String keyword, Integer semesterId, Integer status) {

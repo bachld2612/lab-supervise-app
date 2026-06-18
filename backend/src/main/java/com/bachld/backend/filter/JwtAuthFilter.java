@@ -21,18 +21,24 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+
 @Component
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private final UserDetailsService userDetailsService;
+    UserDetailsService userDetailsService;
 
-    private final JwtService jwtService;
+    JwtService jwtService;
 
-    private final TokenBlacklistService tokenBlacklistService;
+    TokenBlacklistService tokenBlacklistService;
 
     @Autowired
     @Qualifier("handlerExceptionResolver")
-    private HandlerExceptionResolver resolver;
+    @NonFinal
+    HandlerExceptionResolver resolver;
 
     @Autowired
     public JwtAuthFilter(UserDetailsService userDetailsService, JwtService jwtService,

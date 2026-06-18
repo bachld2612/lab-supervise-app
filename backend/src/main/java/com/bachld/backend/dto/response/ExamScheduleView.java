@@ -8,8 +8,9 @@ import java.time.LocalTime;
 
 /** Projection of an exam's date + time window, for schedule conflict checks. */
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ExamScheduleView {
 

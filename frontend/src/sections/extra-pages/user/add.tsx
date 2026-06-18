@@ -212,7 +212,7 @@ export default function AddUser() {
                     <span style={{ color: 'rgba(0,0,0,0.6)' }}>Phân quyền</span>
                   </MenuItem>
 
-                  <MenuItem value="1">Nhân viên văn phòng khoa</MenuItem>
+                  <MenuItem value="1">Nhân viên phòng đào tạo</MenuItem>
                   <MenuItem value="4">Nhân viên trung tâm tin học</MenuItem>
                 </Select>
 

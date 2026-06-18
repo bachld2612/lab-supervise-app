@@ -4,6 +4,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,13 +22,17 @@ import java.util.function.Function;
 
 @Component
 @Configuration
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtService {
 
     @Value("${jwt.secret-key}")
-    public String SECRET;
+    @NonFinal
+    String SECRET;
 
     @Value("${jwt.expire-minute}")
-    public int EXPIRE_MINUTE;
+    @NonFinal
+    int EXPIRE_MINUTE;
 
     public String generateToken(String id) {
         Map<String, Object> claims = new HashMap<>();

@@ -7,14 +7,21 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.nio.file.Path;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+
 @Configuration
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StaticResourceConfig implements WebMvcConfigurer {
 
     @Value("${storage.screenshot-dir:uploads/screenshots}")
-    private String screenshotDir;
+    @NonFinal
+    String screenshotDir;
 
     @Value("${storage.screenshot-url-path:/resources/images/screenshots}")
-    private String screenshotUrlPath;
+    @NonFinal
+    String screenshotUrlPath;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

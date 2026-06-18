@@ -36,15 +36,25 @@ import java.util.Objects;
 public class VncController {
 
     VncSessionService vncSessionService;
+
     PersonalComputerRepository personalComputerRepository;
+
     ClassRepository classRepository;
+
     ExamRoomRepository examRoomRepository;
+
     StudentRepository studentRepository;
+
     StudentClassRepository studentClassRepository;
+
     StudentExamRoomRepository studentExamRoomRepository;
+
     TeacherRepository teacherRepository;
+
     ConnectedStudentRegistry connectedStudentRegistry;
+
     ConnectedExamStudentRegistry connectedExamStudentRegistry;
+
     Util util;
 
     @PostMapping("/v1/session/{classId}/{studentUserId}")

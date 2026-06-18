@@ -26,6 +26,7 @@ import com.bachld.backend.util.enums.Status;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,30 +52,43 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ScreenshotCaptureService {
 
     static final String SCREENSHOT_READY = "SCREENSHOT_READY";
 
-    final RemoteCommandService remoteCommandService;
-    final ScreenshotCaptureRepository screenshotCaptureRepository;
-    final StudentRepository studentRepository;
-    final StudentClassRepository studentClassRepository;
-    final StudentExamRoomRepository studentExamRoomRepository;
-    final ClassRepository classRepository;
-    final ExamRoomRepository examRoomRepository;
-    final TeacherRepository teacherRepository;
-    final SimpMessagingTemplate messagingTemplate;
-    final Util util;
-    final EntityManager entityManager;
+    RemoteCommandService remoteCommandService;
+
+    ScreenshotCaptureRepository screenshotCaptureRepository;
+
+    StudentRepository studentRepository;
+
+    StudentClassRepository studentClassRepository;
+
+    StudentExamRoomRepository studentExamRoomRepository;
+
+    ClassRepository classRepository;
+
+    ExamRoomRepository examRoomRepository;
+
+    TeacherRepository teacherRepository;
+
+    SimpMessagingTemplate messagingTemplate;
+
+    Util util;
+
+    EntityManager entityManager;
 
     @Value("${storage.screenshot-dir:uploads/screenshots}")
+    @NonFinal
     String screenshotDir;
 
     @Value("${storage.screenshot-url-path:/resources/images/screenshots}")
+    @NonFinal
     String screenshotUrlPath;
 
     @Value("${app.public-base-url:http://localhost:8080}")
+    @NonFinal
     String publicBaseUrl;
 
     @Transactional

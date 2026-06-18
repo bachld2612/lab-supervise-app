@@ -5,11 +5,13 @@ import com.bachld.backend.model.User;
 import com.bachld.backend.repository.RoleRepository;
 import com.bachld.backend.util.Util;
 import com.bachld.backend.util.enums.Status;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,13 +21,13 @@ import java.util.List;
 
 @Aspect
 @Component
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthFilterAspect {
 
-    @Autowired
-    private RoleRepository roleRepository;
+    RoleRepository roleRepository;
 
-    @Autowired
-    private Util util;
+    Util util;
 
     @Around("@annotation(AuthFilter)")
     public Object authFilterExecute(ProceedingJoinPoint pjp) throws Throwable {

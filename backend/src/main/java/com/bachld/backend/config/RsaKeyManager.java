@@ -1,6 +1,9 @@
 package com.bachld.backend.config;
 
 import jakarta.annotation.PostConstruct;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,14 +24,18 @@ import java.util.Base64;
 
 @Slf4j
 @Component
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RsaKeyManager {
 
     @Value("${security.rsa-private-key}")
-    private String privateKeyBase64;
+    @NonFinal
+    String privateKeyBase64;
 
-    private PrivateKey privateKey;
+    @NonFinal
+    PrivateKey privateKey;
 
-    private PublicKey publicKey;
+    @NonFinal
+    PublicKey publicKey;
 
     @PostConstruct
     public void init() throws Exception {

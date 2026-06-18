@@ -13,17 +13,23 @@ import java.time.LocalDateTime;
 public class IncidentReportResponse {
 
     Integer id;
+
     String title;
-    Integer status; // 0=chờ xử lý, 1=đã xử lý, 2=từ chối
+
+    Integer status; // 0=chờ xử lý, 1=đã xử lý, 2=từ chố
 
     Integer roomId;
+
     String roomName;
 
     Integer reporterId;
+
     String reporterName;
+
     String reporterRole;
 
     Integer handlerId;
+
     String handlerName;
 
     LocalDateTime createdAt;

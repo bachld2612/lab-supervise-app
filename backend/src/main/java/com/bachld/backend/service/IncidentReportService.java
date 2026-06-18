@@ -33,9 +33,13 @@ import java.util.List;
 public class IncidentReportService {
 
     IncidentReportRepository incidentReportRepository;
+
     ClassRepository classRepository;
+
     ScheduleRepository scheduleRepository;
+
     RoomRepository roomRepository;
+
     Util util;
 
     public Page<IncidentReportResponse> getList(Pageable pageable, String keyword, Integer status, Integer roomId) {

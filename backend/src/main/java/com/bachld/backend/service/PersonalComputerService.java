@@ -29,10 +29,15 @@ import java.util.stream.Collectors;
 public class PersonalComputerService {
 
     PersonalComputerRepository personalComputerRepository;
+
     StudentClassRepository studentClassRepository;
+
     StudentExamRoomRepository studentExamRoomRepository;
+
     StudentRepository studentRepository;
+
     UserRepository userRepository;
+
     Util util;
 
     public void update(PersonalComputerUpdateRequest request) {

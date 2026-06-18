@@ -31,7 +31,9 @@ public class RemoteControlController {
     static final String EXAM_NOT_ACTIVE = "Phong thi hien khong hoat dong";
 
     RemoteControlService remoteControlService;
+
     ClassService classService;
+
     ExamRoomService examRoomService;
 
     @PostMapping("/class/lock-screen")

@@ -25,10 +25,15 @@ import java.util.List;
 public class RemoteControlService {
 
     RemoteCommandService remoteCommandService;
+
     ClassRepository classRepository;
+
     ExamRoomRepository examRoomRepository;
+
     StudentClassRepository studentClassRepository;
+
     StudentExamRoomRepository studentExamRoomRepository;
+
     StudentRepository studentRepository;
 
     public void lockScreen(LockScreenRequest request) {

@@ -8,8 +8,9 @@ import java.time.LocalTime;
 
 /** Projection of a class's study period + weekly schedule, for conflict checks. */
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ClassScheduleView {
 

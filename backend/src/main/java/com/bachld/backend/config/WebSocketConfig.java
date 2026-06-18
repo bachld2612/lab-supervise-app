@@ -6,7 +6,9 @@ import com.bachld.backend.repository.ClassRepository;
 import com.bachld.backend.repository.TeacherRepository;
 import com.bachld.backend.service.JwtService;
 import com.bachld.backend.service.UserPrincipalService;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
@@ -29,13 +31,17 @@ import java.util.List;
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final JwtService jwtService;
-    private final UserPrincipalService userDetailsService;
-    private final TeacherRepository teacherRepository;
-    private final ClassRepository classRepository;
+    JwtService jwtService;
+
+    UserPrincipalService userDetailsService;
+
+    TeacherRepository teacherRepository;
+
+    ClassRepository classRepository;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {

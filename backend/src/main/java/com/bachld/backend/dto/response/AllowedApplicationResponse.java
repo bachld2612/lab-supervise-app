@@ -11,8 +11,12 @@ import lombok.experimental.FieldDefaults;
 public class AllowedApplicationResponse {
 
     Integer id;
+
     Integer examRoomId;
+
     String applicationName;
+
     String imageUrl;
+
     Integer status;
 }
