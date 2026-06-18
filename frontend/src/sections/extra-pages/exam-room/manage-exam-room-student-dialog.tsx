@@ -25,12 +25,7 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
-import {
-  addStudentsToExamRoom,
-  getStudentsByExamRoomId,
-  getStudentsNotInExamRoom,
-  removeStudentsFromExamRoom
-} from 'api/exam-room';
+import { addStudentsToExamRoom, getStudentsByExamRoomId, getStudentsNotInExamRoom, removeStudentsFromExamRoom } from 'api/exam-room';
 import { openSnackbar } from 'api/snackbar';
 import { HttpStatusCode } from 'axios';
 import MainCard from 'components/MainCard';
