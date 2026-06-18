@@ -30,6 +30,7 @@ import java.time.LocalDate;
 public class ClassController {
 
     ClassService classService;
+
     ConnectedStudentRegistry connectedStudentRegistry;
 
     @GetMapping("/v1/{classId}/connected-students")

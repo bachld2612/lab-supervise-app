@@ -1,5 +1,6 @@
 HELP.md
 target/
+*.class
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -38,3 +39,10 @@ build/
 
 # Local screenshot/image storage
 uploads/
+
+### Claude / AI agents ###
+.claude/
+.claude*/
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md

@@ -32,9 +32,13 @@ import java.util.stream.Collectors;
 public class AllowedApplicationService {
 
     AllowedApplicationRepository allowedApplicationRepository;
+
     ExamRoomRepository examRoomRepository;
+
     TeacherRepository teacherRepository;
+
     SimpMessagingTemplate messagingTemplate;
+
     Util util;
 
     public Page<AllowedApplicationResponse> getList(Integer examRoomId, Pageable pageable, String keyword) {

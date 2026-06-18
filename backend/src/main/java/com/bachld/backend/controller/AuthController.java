@@ -44,6 +44,7 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest) {
         AuthResult result = authService.login(loginRequest);
         ResponseCookie cookie = buildRefreshCookie(result.getRefreshToken(), Duration.ofDays(REFRESH_TOKEN_EXPIRED_DAY));
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(new BaseResponse<>(HttpStatus.OK.value(), result.getResponse()));
@@ -60,6 +61,7 @@ public class AuthController {
                                     HttpServletRequest request) {
         authService.logout(refreshToken, extractAccessToken(request));
         ResponseCookie cleared = buildRefreshCookie("", Duration.ZERO);
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cleared.toString())
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "Đăng xuất thành công"));
