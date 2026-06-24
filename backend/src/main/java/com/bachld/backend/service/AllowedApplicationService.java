@@ -52,7 +52,7 @@ public class AllowedApplicationService {
 
         AllowedApplication entity = new AllowedApplication();
         entity.setExamRoomId(request.getExamRoomId());
-        entity.setApplicationName(request.getApplicationName());
+        entity.setApplicationName(request.getApplicationName().trim());
         entity.setImageUrl(request.getImageUrl());
         entity.setStatus(Status.ACTIVE.getValue());
         allowedApplicationRepository.save(entity);
@@ -68,7 +68,7 @@ public class AllowedApplicationService {
         getExamRoomAndCheckTeacher(entity.getExamRoomId(), teacher.getId());
 
         if (request.getApplicationName() != null && !request.getApplicationName().isBlank()) {
-            entity.setApplicationName(request.getApplicationName());
+            entity.setApplicationName(request.getApplicationName().trim());
         }
         if (request.getImageUrl() != null) {
             entity.setImageUrl(request.getImageUrl());

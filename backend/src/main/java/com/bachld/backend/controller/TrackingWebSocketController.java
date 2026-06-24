@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class TrackingWebSocketController {
 
-    static final long VIOLATION_SCREENSHOT_COOLDOWN_SECONDS = 30;
+    static final long VIOLATION_SCREENSHOT_COOLDOWN_SECONDS = 5;
 
     TrackingService trackingService;
 

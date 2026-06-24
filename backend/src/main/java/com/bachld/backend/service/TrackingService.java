@@ -59,6 +59,10 @@ public class TrackingService {
                 .toLowerCase();
     }
 
+    private static String normalizeToken(String s) {
+        return normalize(s).trim();
+    }
+
     @Transactional
     public StudentClassInfoResponse processTracking(Integer userId, StudentClassInfoCreateRequest request) {
         Student student = studentRepository.findByUserId(userId).orElse(null);
@@ -89,9 +93,13 @@ public class TrackingService {
             boolean isViolation = false;
             if (trackingEnabled) {
                 List<String> allowedApps = allowedApplicationRepository.findActiveAppNamesByExamRoomId(exam.getId());
-                String normalizedApp = normalize(appName);
-                isViolation = allowedApps.stream()
-                        .noneMatch(allowed -> normalizedApp.contains(normalize(allowed)));
+                String normalizedApp = normalizeToken(appName);
+                if (!normalizedApp.isEmpty()) {
+                    isViolation = allowedApps.stream()
+                            .map(TrackingService::normalizeToken)
+                            .filter(allowed -> !allowed.isEmpty())
+                            .noneMatch(normalizedApp::contains);
+                }
             }
 
             StudentExamRoomInfo info = new StudentExamRoomInfo();
