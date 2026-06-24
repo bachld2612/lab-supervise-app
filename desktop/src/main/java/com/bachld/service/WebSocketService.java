@@ -433,8 +433,8 @@ public class WebSocketService {
                 TrayIcon[] icons = SystemTray.getSystemTray().getTrayIcons();
                 if (icons.length > 0) {
                     icons[0].displayMessage(
-                            "File nháº­n Ä‘Æ°á»£c",
-                            "\"" + fileName + "\" Ä‘Ã£ Ä‘Æ°á»£c lÆ°u vÃ o Downloads.",
+                            "File nhận được",
+                            "\"" + fileName + "\" đã được lưu vào Downloads.",
                             TrayIcon.MessageType.INFO
                     );
                 }
