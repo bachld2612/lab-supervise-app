@@ -175,7 +175,36 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
     console.log('email - ', email);
   };
 
-  const updateProfile = () => {};
+  const updateProfile = async () => {
+    try {
+      const response = await axios.get('/api/user/v1/profile');
+      const userProfile = response.data.data || response.data;
+      dispatch({
+        type: LOGIN,
+        payload: {
+          isLoggedIn: true,
+          user: {
+            ...userProfile,
+            name: userProfile.fullName
+          }
+        }
+      });
+    } catch (err) {
+      console.error(err);
+      if (state.user) {
+        dispatch({
+          type: LOGIN,
+          payload: {
+            isLoggedIn: true,
+            user: {
+              ...state.user,
+              rawPassword: null
+            }
+          }
+        });
+      }
+    }
+  };
 
   if (state.isInitialized !== undefined && !state.isInitialized) {
     return <Loader />;

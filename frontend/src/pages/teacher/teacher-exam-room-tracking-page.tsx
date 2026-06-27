@@ -233,7 +233,12 @@ export default function TeacherExamRoomTrackingPage() {
     examRoomId,
     (message) => setAlert({ open: true, message, severity: 'error' }),
     reload,
-    undefined,
+    (studentName, studentCode) =>
+      setAlert({
+        open: true,
+        message: `Sinh viên ${studentName} mã ${studentCode} đã kết nối`,
+        severity: 'success'
+      }),
     (studentName, studentCode) =>
       setAlert({
         open: true,
@@ -430,8 +435,10 @@ export default function TeacherExamRoomTrackingPage() {
   return (
     <Stack sx={{ p: 0 }}>
       <Snackbar
+        key={alert.message}
         open={alert.open}
         autoHideDuration={3000}
+        disableWindowBlurListener
         onClose={() => setAlert((prev) => ({ ...prev, open: false }))}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >

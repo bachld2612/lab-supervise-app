@@ -514,16 +514,32 @@ public class LoginPanel extends JPanel {
             ancestor.dispose();
         }
 
+        if (mustChangePassword()) {
+            new ChangePasswordDialog(mainFrame, context.userService, true, () -> runStartupChecks(mainFrame, context.pcService)).setVisible(true);
+        } else {
+            runStartupChecks(mainFrame, context.pcService);
+        }
+    }
+
+    private void runStartupChecks(MainFrame mainFrame, com.bachld.service.PersonalComputerService pcService) {
         // Auto-detect VPN IP, update on server, then show IP dialog
         String vpnIp = VpnUtil.getActiveVpnIp();
         if (vpnIp != null) {
-            context.pcService.updateComputerAsync(vpnIp, new com.bachld.service.PersonalComputerService.UpdateCallback() {
+            pcService.updateComputerAsync(vpnIp, new com.bachld.service.PersonalComputerService.UpdateCallback() {
                 @Override public void onSuccess() { mainFrame.checkIpOnStartup(); }
                 @Override public void onError(String errorMessage) { mainFrame.checkIpOnStartup(); }
             });
         } else {
             mainFrame.checkIpOnStartup();
         }
+    }
+
+    private boolean mustChangePassword() {
+        com.bachld.model.response.User currentUser =
+                com.bachld.service.SessionManager.getInstance().getCurrentUser();
+        return currentUser != null
+                && currentUser.getRawPassword() != null
+                && !currentUser.getRawPassword().trim().isEmpty();
     }
 
     private boolean isWindows() {

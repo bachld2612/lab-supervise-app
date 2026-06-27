@@ -19,9 +19,11 @@ import { Eye, EyeSlash } from 'iconsax-reactjs';
 interface ChangePasswordDialogProps {
   open: boolean;
   onClose: () => void;
+  mandatory?: boolean;
+  onSuccess?: () => void | Promise<void>;
 }
 
-export default function ChangePasswordDialog({ open, onClose }: ChangePasswordDialogProps) {
+export default function ChangePasswordDialog({ open, onClose, mandatory = false, onSuccess }: ChangePasswordDialogProps) {
   const { logout } = useAuth();
 
   const [oldPassword, setOldPassword] = useState('');
@@ -98,8 +100,11 @@ export default function ChangePasswordDialog({ open, onClose }: ChangePasswordDi
       const response = await changePasswordApi({ oldPassword, newPassword, confirmPassword });
 
       if (response.statusCode === HttpStatusCode.Ok) {
-        onClose();
         setAlert({ open: true, message: 'Đổi mật khẩu thành công', severity: 'success' });
+        await onSuccess?.();
+        if (!mandatory) {
+          onClose();
+        }
       } else if (response.statusCode === HttpStatusCode.Unauthorized) {
         logout();
       } else if (response.statusCode === HttpStatusCode.UnprocessableEntity) {
@@ -118,9 +123,25 @@ export default function ChangePasswordDialog({ open, onClose }: ChangePasswordDi
     }
   };
 
+  const handleClose = (_event: unknown, reason?: string) => {
+    if (mandatory && (reason === 'backdropClick' || reason === 'escapeKeyDown')) {
+      return;
+    }
+    if (!mandatory) {
+      onClose();
+    }
+  };
+
   return (
     <>
-      <Dialog open={open} onClose={onClose} aria-labelledby="change-password-dialog-title" maxWidth="sm" fullWidth>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        disableEscapeKeyDown={mandatory}
+        aria-labelledby="change-password-dialog-title"
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle id="change-password-dialog-title">Đổi mật khẩu</DialogTitle>
 
         <DialogContent>
@@ -202,9 +223,12 @@ export default function ChangePasswordDialog({ open, onClose }: ChangePasswordDi
         </DialogContent>
 
         <DialogActions>
+          {!mandatory && (
           <Button variant="contained" color="primary" onClick={onClose}>
             Huỷ
           </Button>
+
+          )}
 
           <Button variant="contained" color="success" onClick={handleSubmit} disabled={submitting}>
             Xác nhận

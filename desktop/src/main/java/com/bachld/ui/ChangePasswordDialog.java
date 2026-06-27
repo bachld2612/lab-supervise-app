@@ -1,5 +1,6 @@
 package com.bachld.ui;
 
+import com.bachld.service.SessionManager;
 import com.bachld.service.UserService;
 
 import javax.swing.*;
@@ -29,13 +30,29 @@ public class ChangePasswordDialog extends JDialog {
     private JButton        btnSubmit;
 
     private final UserService userService;
+    private final boolean mandatory;
+    private final Runnable onSuccess;
 
     public ChangePasswordDialog(Window owner, UserService userService) {
         super(owner, "Đổi mật khẩu", ModalityType.APPLICATION_MODAL);
         this.userService = userService;
+        this.mandatory = false;
+        this.onSuccess = null;
         buildUI();
         pack();
         setResizable(false);
+        setLocationRelativeTo(owner);
+    }
+
+    public ChangePasswordDialog(Window owner, UserService userService, boolean mandatory, Runnable onSuccess) {
+        super(owner, "\u0110\u1ed5i m\u1eadt kh\u1ea9u", ModalityType.APPLICATION_MODAL);
+        this.userService = userService;
+        this.mandatory = mandatory;
+        this.onSuccess = onSuccess;
+        buildUI();
+        pack();
+        setResizable(false);
+        setDefaultCloseOperation(mandatory ? DO_NOTHING_ON_CLOSE : DISPOSE_ON_CLOSE);
         setLocationRelativeTo(owner);
     }
 
@@ -83,7 +100,7 @@ public class ChangePasswordDialog extends JDialog {
         root.add(Box.createVerticalStrut(20));
 
         // Buttons row
-        JPanel btnRow = new JPanel(new GridLayout(1, 2, 12, 0));
+        JPanel btnRow = new JPanel(new GridLayout(1, mandatory ? 1 : 2, 12, 0));
         btnRow.setOpaque(false);
         btnRow.setAlignmentX(Component.LEFT_ALIGNMENT);
         btnRow.setMaximumSize(new Dimension(FORM_W, FIELD_H));
@@ -94,7 +111,9 @@ public class ChangePasswordDialog extends JDialog {
         btnSubmit = createButton("Xác nhận", BTN_BLUE, BTN_HOVER, Color.WHITE);
         btnSubmit.addActionListener(e -> handleSubmit());
 
-        btnRow.add(btnCancel);
+        if (!mandatory) {
+            btnRow.add(btnCancel);
+        }
         btnRow.add(btnSubmit);
         root.add(btnRow);
 
@@ -222,6 +241,12 @@ public class ChangePasswordDialog extends JDialog {
                     "Thành công",
                     JOptionPane.INFORMATION_MESSAGE
                 );
+                if (SessionManager.getInstance().getCurrentUser() != null) {
+                    SessionManager.getInstance().getCurrentUser().setRawPassword(null);
+                }
+                if (onSuccess != null) {
+                    onSuccess.run();
+                }
                 dispose();
             }
 

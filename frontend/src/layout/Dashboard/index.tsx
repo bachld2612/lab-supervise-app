@@ -14,10 +14,12 @@ import Footer from './Footer';
 import HorizontalBar from './Drawer/HorizontalBar';
 import Breadcrumbs from 'components/@extended/Breadcrumbs';
 import Loader from 'components/Loader';
+import ChangePasswordDialog from 'components/ChangePasswordDialog';
 
 import { handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
 import { DRAWER_WIDTH, MenuOrientation } from 'config';
 import useConfig from 'hooks/useConfig';
+import useAuth from 'hooks/useAuth';
 import AuthGuard from 'utils/route-guard/AuthGuard';
 
 // assets
@@ -30,8 +32,10 @@ export default function MainLayout() {
   const downLG = useMediaQuery((theme) => theme.breakpoints.down('lg'));
 
   const { container, miniDrawer, menuOrientation } = useConfig();
+  const { isLoggedIn, user, updateProfile } = useAuth();
 
   const isHorizontal = menuOrientation === MenuOrientation.HORIZONTAL && !downLG;
+  const mustChangePassword = isLoggedIn && !!user?.rawPassword?.trim();
 
   // set media wise responsive drawer
   useEffect(() => {
@@ -68,6 +72,7 @@ export default function MainLayout() {
             </Container>
           </Box>
         </Box>
+        <ChangePasswordDialog open={mustChangePassword} onClose={() => {}} mandatory onSuccess={updateProfile} />
       </>
     </AuthGuard>
   );

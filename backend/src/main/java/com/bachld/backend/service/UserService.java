@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -125,6 +126,10 @@ public class UserService {
 
         if (!passwordEncoder.matches(request.getOldPassword(), currentUser.getPassword())) {
             throw new IllegalArgumentException("Mật khẩu cũ không chính xác");
+        }
+
+        if (Objects.equals(currentUser.getRawPassword(), request.getNewPassword())) {
+            throw new IllegalArgumentException("Mật khẩu mới không được giống mật khẩu mặc định");
         }
 
         currentUser.setPassword(passwordEncoder.encode(request.getNewPassword()));

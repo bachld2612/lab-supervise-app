@@ -12,6 +12,8 @@ type UserProfile = {
   avatar?: string;
   image?: string;
   name?: string;
+  fullName?: string;
+  rawPassword?: string | null;
   role?: string;
   roleId?: number;
   roleName?: string;
@@ -41,5 +43,5 @@ export type JWTContextType = {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
-  updateProfile: VoidFunction;
+  updateProfile: () => Promise<void>;
 };

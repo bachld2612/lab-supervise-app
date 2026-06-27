@@ -185,7 +185,12 @@ export default function TeacherClassTrackingPage() {
     classId,
     (message) => setAlert({ open: true, message, severity: 'error' }),
     reload,
-    undefined,
+    (studentName, studentCode) =>
+      setAlert({
+        open: true,
+        message: `Sinh viên ${studentName} có mã sinh viên ${studentCode} đã kết nối với server`,
+        severity: 'success'
+      }),
     (studentName, studentCode) =>
       setAlert({
         open: true,
@@ -487,8 +492,10 @@ export default function TeacherClassTrackingPage() {
     <Stack sx={{ p: 0 }}>
       {/* Ban detection alert */}
       <Snackbar
+        key={alert.message}
         open={alert.open}
         autoHideDuration={3000}
+        disableWindowBlurListener
         onClose={() => setAlert((prev) => ({ ...prev, open: false }))}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
