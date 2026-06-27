@@ -1,5 +1,6 @@
 import {
   Alert,
+  Autocomplete,
   Box,
   Button,
   Card,
@@ -91,6 +92,7 @@ export default function TeacherClassTrackingPage() {
   const [sendFileDialogOpen, setSendFileDialogOpen] = useState(false);
   const [fileToSend, setFileToSend] = useState<File | null>(null);
   const [sendFileLoading, setSendFileLoading] = useState(false);
+  const [pinSearchInput, setPinSearchInput] = useState('');
   const [reload, setReload] = useState(false);
   const [studyStatus, setStudyStatus] = useState<number | undefined>(undefined);
   const [trackingEnabled, setTrackingEnabled] = useState(true);
@@ -111,7 +113,8 @@ export default function TeacherClassTrackingPage() {
     try {
       const raw = sessionStorage.getItem(`class-tracking-pinned:${classId}`);
       const ids = raw ? (JSON.parse(raw) as number[]) : [];
-      setPinnedStudentIds(new Set(ids));
+      const latestPinnedId = ids.at(-1);
+      setPinnedStudentIds(latestPinnedId ? new Set([latestPinnedId]) : new Set());
     } catch {
       setPinnedStudentIds(new Set());
     }
@@ -298,12 +301,18 @@ export default function TeacherClassTrackingPage() {
   const handleTogglePin = (studentId: number) => {
     if (!classId) return;
     setPinnedStudentIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(studentId)) next.delete(studentId);
-      else next.add(studentId);
+      const next = prev.has(studentId) ? new Set<number>() : new Set([studentId]);
       sessionStorage.setItem(`class-tracking-pinned:${classId}`, JSON.stringify(Array.from(next)));
       return next;
     });
+  };
+
+  const handlePinStudent = (student: StudentTrackingState | null) => {
+    if (!classId || !student) return;
+    const next = new Set([student.studentId]);
+    setPinnedStudentIds(next);
+    sessionStorage.setItem(`class-tracking-pinned:${classId}`, JSON.stringify(Array.from(next)));
+    setPinSearchInput('');
   };
 
   const handleDialogClose = () => {
@@ -636,6 +645,21 @@ export default function TeacherClassTrackingPage() {
         <Box sx={{ flex: '1 1 0', minWidth: 0 }}>
           <MainCard content={false}>
             <Box sx={{ p: 2 }}>
+              <Autocomplete
+                size="small"
+                options={students}
+                value={null}
+                inputValue={pinSearchInput}
+                onInputChange={(_, newInputValue, reason) => {
+                  if (reason !== 'reset') setPinSearchInput(newInputValue);
+                }}
+                onChange={(_, student) => handlePinStudent(student)}
+                getOptionLabel={(student) => `${student.code} - ${student.fullName}`}
+                isOptionEqualToValue={(option, value) => option.studentId === value.studentId}
+                noOptionsText="Không tìm thấy sinh viên"
+                renderInput={(params) => <TextField {...params} placeholder="Ghim nhanh theo MSV hoặc họ tên" />}
+                sx={{ width: { xs: '100%', sm: 380 }, mb: 2 }}
+              />
               {students.length === 0 ? (
                 <Box textAlign="center" py={6}>
                   <Typography color="text.secondary" variant="h6">

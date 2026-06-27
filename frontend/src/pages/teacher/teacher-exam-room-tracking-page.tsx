@@ -1,5 +1,6 @@
 import {
   Alert,
+  Autocomplete,
   Box,
   Button,
   Card,
@@ -74,6 +75,7 @@ export default function TeacherExamRoomTrackingPage() {
   const [openWebDialogOpen, setOpenWebDialogOpen] = useState(false);
   const [webUrlInput, setWebUrlInput] = useState('');
   const [webUrlLoading, setWebUrlLoading] = useState(false);
+  const [pinSearchInput, setPinSearchInput] = useState('');
   const [msgDialogOpen, setMsgDialogOpen] = useState(false);
   const [msgInput, setMsgInput] = useState('');
   const [msgLoading, setMsgLoading] = useState(false);
@@ -101,7 +103,8 @@ export default function TeacherExamRoomTrackingPage() {
     try {
       const raw = sessionStorage.getItem(`exam-room-tracking-pinned:${examRoomId}`);
       const ids = raw ? (JSON.parse(raw) as number[]) : [];
-      setPinnedStudentIds(new Set(ids));
+      const latestPinnedId = ids.at(-1);
+      setPinnedStudentIds(latestPinnedId ? new Set([latestPinnedId]) : new Set());
     } catch {
       setPinnedStudentIds(new Set());
     }
@@ -212,12 +215,18 @@ export default function TeacherExamRoomTrackingPage() {
   const handleTogglePin = (studentId: number) => {
     if (!examRoomId) return;
     setPinnedStudentIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(studentId)) next.delete(studentId);
-      else next.add(studentId);
+      const next = prev.has(studentId) ? new Set<number>() : new Set([studentId]);
       sessionStorage.setItem(`exam-room-tracking-pinned:${examRoomId}`, JSON.stringify(Array.from(next)));
       return next;
     });
+  };
+
+  const handlePinStudent = (student: StudentTrackingState | null) => {
+    if (!examRoomId || !student) return;
+    const next = new Set([student.studentId]);
+    setPinnedStudentIds(next);
+    sessionStorage.setItem(`exam-room-tracking-pinned:${examRoomId}`, JSON.stringify(Array.from(next)));
+    setPinSearchInput('');
   };
 
   const { students, loading, connectedStudentIds } = useExamRoomTracking(
@@ -532,6 +541,21 @@ export default function TeacherExamRoomTrackingPage() {
         <Box sx={{ flex: '1 1 0', minWidth: 0 }}>
           <MainCard content={false}>
             <Box sx={{ p: 2 }}>
+              <Autocomplete
+                size="small"
+                options={students}
+                value={null}
+                inputValue={pinSearchInput}
+                onInputChange={(_, newInputValue, reason) => {
+                  if (reason !== 'reset') setPinSearchInput(newInputValue);
+                }}
+                onChange={(_, student) => handlePinStudent(student)}
+                getOptionLabel={(student) => `${student.code} - ${student.fullName}`}
+                isOptionEqualToValue={(option, value) => option.studentId === value.studentId}
+                noOptionsText="Không tìm thấy sinh viên"
+                renderInput={(params) => <TextField {...params} placeholder="Ghim nhanh theo MSV hoặc họ tên" />}
+                sx={{ width: { xs: '100%', sm: 380 }, mb: 2 }}
+              />
               {students.length === 0 ? (
                 <Box textAlign="center" py={6}>
                   <Typography color="text.secondary" variant="h6">
