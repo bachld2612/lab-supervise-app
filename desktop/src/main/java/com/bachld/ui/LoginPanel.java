@@ -409,63 +409,25 @@ public class LoginPanel extends JPanel {
     private void doLogin(String email, String password, String wifiSsid) {
         authService.loginAsync(email, password, wifiSsid, new AuthService.AuthCallback() {
             @Override public void onSuccess(AuthResponse response) {
-                setLoginEnabled(true);
                 SwingUtilities.invokeLater(() -> {
-                    com.bachld.config.RestClient restClient = com.bachld.config.RestClient.getInstance();
+                    setLoginEnabled(false);
+                    new SwingWorker<LoginStartupContext, Void>() {
+                        @Override
+                        protected LoginStartupContext doInBackground() {
+                            return prepareAuthenticatedSession();
+                        }
 
-                    com.bachld.client.PersonalComputerApiClient pcApiClient =
-                            new com.bachld.client.PersonalComputerApiClient(restClient);
-                    com.bachld.service.PersonalComputerService pcService =
-                            new com.bachld.service.PersonalComputerService(pcApiClient);
-
-                    com.bachld.client.ClassApiClient classApiClient =
-                            new com.bachld.client.ClassApiClient(restClient);
-                    com.bachld.service.ClassService classService =
-                            new com.bachld.service.ClassService(classApiClient);
-
-                    com.bachld.service.WebSocketService wsService =
-                            com.bachld.service.WebSocketService.getInstance(com.bachld.service.TokenManager.getInstance());
-                    wsService.setTokenRefresher(authService::refreshAccessToken);
-                    wsService.connect();
-
-                    com.bachld.client.IncidentReportApiClient incidentApiClient =
-                            new com.bachld.client.IncidentReportApiClient(restClient);
-                    com.bachld.service.IncidentReportService incidentService =
-                            new com.bachld.service.IncidentReportService(incidentApiClient);
-
-                    com.bachld.client.ExamRoomApiClient examRoomApiClient =
-                            new com.bachld.client.ExamRoomApiClient(restClient);
-                    com.bachld.service.ExamRoomService examRoomService =
-                            new com.bachld.service.ExamRoomService(examRoomApiClient);
-
-                    com.bachld.client.SemesterApiClient semesterApiClient =
-                            new com.bachld.client.SemesterApiClient(restClient);
-                    com.bachld.service.SemesterService semesterService =
-                            new com.bachld.service.SemesterService(semesterApiClient);
-
-                    com.bachld.client.UserApiClient userApiClient =
-                            new com.bachld.client.UserApiClient(restClient);
-                    com.bachld.service.UserService userService =
-                            new com.bachld.service.UserService(userApiClient);
-
-                    MainFrame mainFrame = new MainFrame(authService, pcService, classService, wsService, incidentService, examRoomService, semesterService, userService);
-                    mainFrame.setVisible(true);
-
-                    Window ancestor = SwingUtilities.getWindowAncestor(LoginPanel.this);
-                    if (ancestor != null) {
-                        ancestor.dispose();
-                    }
-
-                    // Auto-detect VPN IP, update on server, then show IP dialog
-                    String vpnIp = VpnUtil.getActiveVpnIp();
-                    if (vpnIp != null) {
-                        pcService.updateComputerAsync(vpnIp, new com.bachld.service.PersonalComputerService.UpdateCallback() {
-                            @Override public void onSuccess() { mainFrame.checkIpOnStartup(); }
-                            @Override public void onError(String errorMessage) { mainFrame.checkIpOnStartup(); }
-                        });
-                    } else {
-                        mainFrame.checkIpOnStartup();
-                    }
+                        @Override
+                        protected void done() {
+                            try {
+                                openMainFrame(get());
+                            } catch (Exception ex) {
+                                log.error("Could not initialize application after login", ex);
+                                showGeneralError("Không thể khởi tạo ứng dụng. Vui lòng thử lại.");
+                                setLoginEnabled(true);
+                            }
+                        }
+                    }.execute();
                 });
             }
             @Override public void onError(String msg) {
@@ -474,6 +436,126 @@ public class LoginPanel extends JPanel {
                 setLoginEnabled(true);
             }
         });
+    }
+
+    private LoginStartupContext prepareAuthenticatedSession() {
+        com.bachld.config.RestClient restClient = com.bachld.config.RestClient.getInstance();
+
+        com.bachld.client.PersonalComputerApiClient pcApiClient =
+                new com.bachld.client.PersonalComputerApiClient(restClient);
+        com.bachld.service.PersonalComputerService pcService =
+                new com.bachld.service.PersonalComputerService(pcApiClient);
+
+        com.bachld.client.ClassApiClient classApiClient =
+                new com.bachld.client.ClassApiClient(restClient);
+        com.bachld.service.ClassService classService =
+                new com.bachld.service.ClassService(classApiClient);
+
+        com.bachld.service.WebSocketService wsService =
+                com.bachld.service.WebSocketService.getInstance(com.bachld.service.TokenManager.getInstance());
+        wsService.setTokenRefresher(authService::refreshAccessToken);
+
+        if (isWindows()) {
+            boolean vncReady = com.bachld.service.VncService.getInstance().start();
+            if (!vncReady) {
+                log.warn("UltraVNC was not ready before WebSocket connect; teacher viewer will rely on retry/watchdog");
+            }
+        }
+
+        wsService.connect();
+
+        com.bachld.client.IncidentReportApiClient incidentApiClient =
+                new com.bachld.client.IncidentReportApiClient(restClient);
+        com.bachld.service.IncidentReportService incidentService =
+                new com.bachld.service.IncidentReportService(incidentApiClient);
+
+        com.bachld.client.ExamRoomApiClient examRoomApiClient =
+                new com.bachld.client.ExamRoomApiClient(restClient);
+        com.bachld.service.ExamRoomService examRoomService =
+                new com.bachld.service.ExamRoomService(examRoomApiClient);
+
+        com.bachld.client.SemesterApiClient semesterApiClient =
+                new com.bachld.client.SemesterApiClient(restClient);
+        com.bachld.service.SemesterService semesterService =
+                new com.bachld.service.SemesterService(semesterApiClient);
+
+        com.bachld.client.UserApiClient userApiClient =
+                new com.bachld.client.UserApiClient(restClient);
+        com.bachld.service.UserService userService =
+                new com.bachld.service.UserService(userApiClient);
+
+        return new LoginStartupContext(
+                pcService,
+                classService,
+                wsService,
+                incidentService,
+                examRoomService,
+                semesterService,
+                userService
+        );
+    }
+
+    private void openMainFrame(LoginStartupContext context) {
+        setLoginEnabled(true);
+        MainFrame mainFrame = new MainFrame(
+                authService,
+                context.pcService,
+                context.classService,
+                context.wsService,
+                context.incidentService,
+                context.examRoomService,
+                context.semesterService,
+                context.userService
+        );
+        mainFrame.setVisible(true);
+
+        Window ancestor = SwingUtilities.getWindowAncestor(LoginPanel.this);
+        if (ancestor != null) {
+            ancestor.dispose();
+        }
+
+        // Auto-detect VPN IP, update on server, then show IP dialog
+        String vpnIp = VpnUtil.getActiveVpnIp();
+        if (vpnIp != null) {
+            context.pcService.updateComputerAsync(vpnIp, new com.bachld.service.PersonalComputerService.UpdateCallback() {
+                @Override public void onSuccess() { mainFrame.checkIpOnStartup(); }
+                @Override public void onError(String errorMessage) { mainFrame.checkIpOnStartup(); }
+            });
+        } else {
+            mainFrame.checkIpOnStartup();
+        }
+    }
+
+    private boolean isWindows() {
+        return System.getProperty("os.name", "").toLowerCase().contains("win");
+    }
+
+    private static class LoginStartupContext {
+        private final com.bachld.service.PersonalComputerService pcService;
+        private final com.bachld.service.ClassService classService;
+        private final com.bachld.service.WebSocketService wsService;
+        private final com.bachld.service.IncidentReportService incidentService;
+        private final com.bachld.service.ExamRoomService examRoomService;
+        private final com.bachld.service.SemesterService semesterService;
+        private final com.bachld.service.UserService userService;
+
+        private LoginStartupContext(
+                com.bachld.service.PersonalComputerService pcService,
+                com.bachld.service.ClassService classService,
+                com.bachld.service.WebSocketService wsService,
+                com.bachld.service.IncidentReportService incidentService,
+                com.bachld.service.ExamRoomService examRoomService,
+                com.bachld.service.SemesterService semesterService,
+                com.bachld.service.UserService userService
+        ) {
+            this.pcService = pcService;
+            this.classService = classService;
+            this.wsService = wsService;
+            this.incidentService = incidentService;
+            this.examRoomService = examRoomService;
+            this.semesterService = semesterService;
+            this.userService = userService;
+        }
     }
 
     // ── Public API ────────────────────────────────────────────────────────────

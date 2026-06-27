@@ -29,7 +29,7 @@ public class VncWatchdog {
 
     public void start() {
         scheduler.scheduleAtFixedRate(this::checkHealth,
-                CHECK_INTERVAL_SECONDS, CHECK_INTERVAL_SECONDS, TimeUnit.SECONDS);
+                0, CHECK_INTERVAL_SECONDS, TimeUnit.SECONDS);
         log.info("VNC watchdog started (interval={}s)", CHECK_INTERVAL_SECONDS);
     }
 

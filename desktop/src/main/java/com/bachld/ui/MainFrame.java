@@ -180,12 +180,12 @@ public class MainFrame extends JFrame {
     private void exitApplication() {
         setEnabled(false);
         lifecycleExecutor.submit(() -> {
-            cleanupSession();
+            cleanupSession(true);
             System.exit(0);
         });
     }
 
-    private void cleanupSession() {
+    private void cleanupSession(boolean stopVnc) {
         stopScheduleRefreshTimer();
         if (trackingService != null) {
             trackingService.stop();
@@ -197,7 +197,9 @@ public class MainFrame extends JFrame {
             webSocketService.disconnect();
         }
         if (vncWatchdog != null) vncWatchdog.stop();
-        vncService.stop();
+        if (stopVnc) {
+            vncService.stop();
+        }
         // Revoke server-side (delete refresh token + blacklist access token), then
         // clear local token + refresh cookie.
         if (authService != null) {
@@ -294,7 +296,7 @@ public class MainFrame extends JFrame {
         if (confirm == JOptionPane.YES_OPTION) {
             setEnabled(false);
             lifecycleExecutor.submit(() -> {
-                cleanupSession();
+                cleanupSession(false);
                 SwingUtilities.invokeLater(() -> {
                     dispose();
                     lifecycleExecutor.shutdownNow();

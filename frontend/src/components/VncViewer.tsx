@@ -9,7 +9,7 @@ interface VncViewerProps {
   mode?: 'class' | 'exam-room';
 }
 
-type Status = 'idle' | 'connecting' | 'connected' | 'error';
+type Status = 'idle' | 'connecting' | 'connected' | 'waiting' | 'error';
 
 const WS_BASE = (() => {
   const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
@@ -19,6 +19,7 @@ const WS_BASE = (() => {
 
 const MAX_RETRIES = 5;
 const RETRY_DELAY_MS = 3000;
+const SLOW_RETRY_DELAY_MS = 10000;
 
 export default function VncViewer({ classId, studentUserId, isOnline, mode = 'class' }: VncViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -47,11 +48,14 @@ export default function VncViewer({ classId, studentUserId, isOnline, mode = 'cl
 
       const scheduleRetry = () => {
         if (cancelled) return;
+        if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+
         if (retryCountRef.current < MAX_RETRIES) {
           retryCountRef.current += 1;
           retryTimerRef.current = setTimeout(connect, RETRY_DELAY_MS);
         } else {
-          setStatus('error');
+          setStatus('waiting');
+          retryTimerRef.current = setTimeout(connect, SLOW_RETRY_DELAY_MS);
         }
       };
 
@@ -107,6 +111,16 @@ export default function VncViewer({ classId, studentUserId, isOnline, mode = 'cl
       {status === 'connecting' && (
         <Overlay>
           <CircularProgress size={18} thickness={4} />
+        </Overlay>
+      )}
+      {status === 'waiting' && (
+        <Overlay>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <CircularProgress size={18} thickness={4} />
+            <Typography variant="caption" color="text.secondary">
+              Đang chờ màn hình sẵn sàng...
+            </Typography>
+          </Box>
         </Overlay>
       )}
       {status === 'error' && (

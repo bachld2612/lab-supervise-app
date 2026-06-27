@@ -21,6 +21,11 @@ public class VncService {
     }
 
     public synchronized boolean start() {
+        if (isPortListening()) {
+            log.info("VncService.start - UltraVNC already listening on port {}", VNC_PORT);
+            return true;
+        }
+
         log.info("VncService.start - ensuring UltraVNC is ready");
         try {
             new VncBootstrapService().ensureReady();
