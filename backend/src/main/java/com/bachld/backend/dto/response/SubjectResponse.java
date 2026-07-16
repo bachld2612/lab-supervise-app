@@ -10,17 +10,17 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SubjectResponse {
 
-    Integer id;
+  Integer id;
 
-    String name;
+  String name;
 
-    String code;
+  String code;
 
-    Integer creditNumber;
+  Integer creditNumber;
 
-    Integer status;
+  Integer status;
 
-    String sectionName;
+  String sectionName;
 
-    Integer sectionId;
+  Integer sectionId;
 }

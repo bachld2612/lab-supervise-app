@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ScreenshotCaptureResponse {
 
-    Integer id;
+  Integer id;
 
-    String imageUrl;
+  String imageUrl;
 }

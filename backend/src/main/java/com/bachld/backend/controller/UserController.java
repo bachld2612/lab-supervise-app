@@ -22,62 +22,65 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
 
-    UserService userService;
+  UserService userService;
 
-    @GetMapping("/v1/profile")
-    public ResponseEntity<?> getProfile() {
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), userService.getProfile()));
-    }
+  @GetMapping("/v1/profile")
+  public ResponseEntity<?> getProfile() {
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), userService.getProfile()));
+  }
 
-    @GetMapping("/v1")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> getList(
-            @PageableDefault Pageable pageable,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Integer status,
-            @RequestParam(required = false) Integer roleType,
-            @RequestParam(required = false) Integer roleId
-    ) {
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), userService.getList(pageable, keyword, status, roleType, roleId)));
-    }
+  @GetMapping("/v1")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> getList(
+      @PageableDefault Pageable pageable,
+      @RequestParam(required = false) String keyword,
+      @RequestParam(required = false) Integer status,
+      @RequestParam(required = false) Integer roleType,
+      @RequestParam(required = false) Integer roleId) {
+    return ResponseEntity.ok(
+        new BaseResponse<>(
+            HttpStatus.OK.value(),
+            userService.getList(pageable, keyword, status, roleType, roleId)));
+  }
 
-    @GetMapping("/v1/{id}")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> getById(@PathVariable int id) {
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), userService.getById(id)));
-    }
+  @GetMapping("/v1/{id}")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> getById(@PathVariable int id) {
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), userService.getById(id)));
+  }
 
-    @PostMapping("/v1")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> create(@RequestBody @Valid UserCreateRequest request) {
-        userService.create(request);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @PostMapping("/v1")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> create(@RequestBody @Valid UserCreateRequest request) {
+    userService.create(request);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 
-    @PutMapping("/v1/{id}")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> update(@PathVariable int id, @RequestBody @Valid UserUpdateRequest request) {
-        userService.update(request, id);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @PutMapping("/v1/{id}")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> update(
+      @PathVariable int id, @RequestBody @Valid UserUpdateRequest request) {
+    userService.update(request, id);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 
-    @DeleteMapping("v1/{id}")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> deleteById(@PathVariable int id) {
-        userService.deleteById(id);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @DeleteMapping("v1/{id}")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> deleteById(@PathVariable int id) {
+    userService.deleteById(id);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 
-    @PutMapping("/v1/change-password")
-    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
-        userService.changePassword(request);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @PutMapping("/v1/change-password")
+  public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
+    userService.changePassword(request);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 
-    @PostMapping("/v1/{id}/reset-password")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> resetPassword(@PathVariable int id) {
-        userService.resetPassword(id);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @PostMapping("/v1/{id}/reset-password")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> resetPassword(@PathVariable int id) {
+    userService.resetPassword(id);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 }

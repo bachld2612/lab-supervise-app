@@ -15,14 +15,14 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "manage_class")
 public class ManageClass extends BaseEntity {
 
-    String name;
+  String name;
 
-    @Column(name = "max_student")
-    Integer maxStudent;
+  @Column(name = "max_student")
+  Integer maxStudent;
 
-    @Column(name = "teacher_id")
-    Integer teacherId;
+  @Column(name = "teacher_id")
+  Integer teacherId;
 
-    @Column(name = "major_id")
-    Integer majorId;
+  @Column(name = "major_id")
+  Integer majorId;
 }

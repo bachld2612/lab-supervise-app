@@ -1,13 +1,12 @@
 package com.bachld.backend.dto.websocket;
 
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-import java.util.Map;
 
 @Data
 @Builder
@@ -16,9 +15,9 @@ import java.util.Map;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RemoteCommandMessage {
 
-    String commandId;
+  String commandId;
 
-    String type;
+  String type;
 
-    Map<String, Object> arguments;
+  Map<String, Object> arguments;
 }

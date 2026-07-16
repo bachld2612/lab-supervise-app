@@ -11,9 +11,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LoginResponse {
 
-    String token;
+  String token;
 
-    User user;
+  User user;
 
-    RoleResponse role;
+  RoleResponse role;
 }

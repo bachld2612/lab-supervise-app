@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ScreenshotContextOptionResponse {
 
-    Integer id;
+  Integer id;
 
-    String label;
+  String label;
 }

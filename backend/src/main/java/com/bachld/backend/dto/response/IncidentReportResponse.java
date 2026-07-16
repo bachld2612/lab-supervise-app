@@ -1,9 +1,8 @@
 package com.bachld.backend.dto.response;
 
+import java.time.LocalDateTime;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -12,25 +11,25 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class IncidentReportResponse {
 
-    Integer id;
+  Integer id;
 
-    String title;
+  String title;
 
-    Integer status; // 0=chờ xử lý, 1=đã xử lý, 2=từ chố
+  Integer status; // 0=chờ xử lý, 1=đã xử lý, 2=từ chố
 
-    Integer roomId;
+  Integer roomId;
 
-    String roomName;
+  String roomName;
 
-    Integer reporterId;
+  Integer reporterId;
 
-    String reporterName;
+  String reporterName;
 
-    String reporterRole;
+  String reporterRole;
 
-    Integer handlerId;
+  Integer handlerId;
 
-    String handlerName;
+  String handlerName;
 
-    LocalDateTime createdAt;
+  LocalDateTime createdAt;
 }

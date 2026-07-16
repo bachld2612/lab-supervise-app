@@ -1,9 +1,8 @@
 package com.bachld.backend.dto.response;
 
+import java.time.LocalTime;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalTime;
 
 @Data
 @AllArgsConstructor
@@ -12,17 +11,17 @@ import java.time.LocalTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ScheduleResponse {
 
-    Integer id;
+  Integer id;
 
-    String name;
+  String name;
 
-    String daysOfWeek;
+  String daysOfWeek;
 
-    String periods;
+  String periods;
 
-    LocalTime startTime;
+  LocalTime startTime;
 
-    LocalTime endTime;
+  LocalTime endTime;
 
-    Integer status;
+  Integer status;
 }

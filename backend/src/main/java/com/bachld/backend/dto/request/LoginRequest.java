@@ -14,15 +14,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LoginRequest {
 
-    @NotEmpty(message = "Email không được phép bỏ trống")
-    @Email(message = "Email phải đúng định dạng")
-    String email;
+  @NotEmpty(message = "Email không được phép bỏ trống") @Email(message = "Email phải đúng định dạng") String email;
 
-    @NotEmpty(message = "Mật khẩu không được phép bỏ trống")
-    String password;
+  @NotEmpty(message = "Mật khẩu không được phép bỏ trống") String password;
 
-    @NotEmpty(message = "Nền tảng không được phép bỏ trống")
-    String device;
+  @NotEmpty(message = "Nền tảng không được phép bỏ trống") String device;
 
-    String wifiSsid;
+  String wifiSsid;
 }

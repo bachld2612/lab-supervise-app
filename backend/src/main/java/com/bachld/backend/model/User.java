@@ -4,10 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
 
 @AllArgsConstructor
 @Getter
@@ -18,25 +17,24 @@ import java.time.LocalDate;
 @Table(name = "users")
 public class User extends BaseEntity {
 
-    String email;
+  String email;
 
-    @JsonIgnore
-    String password;
+  @JsonIgnore String password;
 
-    @Column(name = "raw_password")
-    String rawPassword;
+  @Column(name = "raw_password")
+  String rawPassword;
 
-    @Column(name = "full_name")
-    String fullName;
+  @Column(name = "full_name")
+  String fullName;
 
-    String phone;
+  String phone;
 
-    @Column(name = "hometown")
-    String hometown;
+  @Column(name = "hometown")
+  String hometown;
 
-    @Column(name = "birthday")
-    LocalDate birthday;
+  @Column(name = "birthday")
+  LocalDate birthday;
 
-    @Column(name = "role_id")
-    Integer roleId;
+  @Column(name = "role_id")
+  Integer roleId;
 }

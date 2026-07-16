@@ -1,10 +1,9 @@
 package com.bachld.backend.dto.response;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 /** Projection of a class's study period + weekly schedule, for conflict checks. */
 @Data
@@ -14,13 +13,13 @@ import java.time.LocalTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ClassScheduleView {
 
-    LocalDate startDate;
+  LocalDate startDate;
 
-    LocalDate endDate;
+  LocalDate endDate;
 
-    String daysOfWeek;
+  String daysOfWeek;
 
-    LocalTime startTime;
+  LocalTime startTime;
 
-    LocalTime endTime;
+  LocalTime endTime;
 }

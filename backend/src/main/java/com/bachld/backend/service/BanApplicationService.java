@@ -24,75 +24,85 @@ import org.springframework.web.server.ResponseStatusException;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BanApplicationService {
 
-    BanApplicationRepository banApplicationRepository;
+  BanApplicationRepository banApplicationRepository;
 
-    TeacherRepository teacherRepository;
+  TeacherRepository teacherRepository;
 
-    Util util;
+  Util util;
 
-    public Page<BanApplicationResponse> getList(Pageable pageable, String keyword, Integer status) {
-        Teacher teacher = getCurrentTeacher();
-        if (keyword != null) {
-            keyword = "%" + keyword.trim().toLowerCase() + "%";
-        } else {
-            keyword = "%%";
-        }
-        return banApplicationRepository.findByKeywordAndTeacherId(pageable, keyword, teacher.getId(), status);
+  public Page<BanApplicationResponse> getList(Pageable pageable, String keyword, Integer status) {
+    Teacher teacher = getCurrentTeacher();
+    if (keyword != null) {
+      keyword = "%" + keyword.trim().toLowerCase() + "%";
+    } else {
+      keyword = "%%";
+    }
+    return banApplicationRepository.findByKeywordAndTeacherId(
+        pageable, keyword, teacher.getId(), status);
+  }
+
+  public BanApplicationResponse getById(int id) {
+    Teacher teacher = getCurrentTeacher();
+    BanApplicationResponse response =
+        banApplicationRepository.findByIdAndTeacherId(id, teacher.getId());
+    if (response == null) {
+      throw new IllegalArgumentException("Không tìm thấy ứng dụng cấm có id: " + id);
+    }
+    return response;
+  }
+
+  public void create(BanApplicationCreateRequest request) {
+    Teacher teacher = getCurrentTeacher();
+    BanApplication entity = new BanApplication();
+    entity.setTeacherId(teacher.getId());
+    entity.setApplicationName(request.getApplicationName());
+    entity.setImageUrl(request.getImageUrl());
+    entity.setStatus(Status.ACTIVE.getValue());
+    banApplicationRepository.save(entity);
+  }
+
+  public void update(BanApplicationUpdateRequest request, int id) {
+    Teacher teacher = getCurrentTeacher();
+    BanApplication entity =
+        banApplicationRepository
+            .findById(id)
+            .orElseThrow(
+                () -> new IllegalArgumentException("Không tìm thấy ứng dụng cấm có id: " + id));
+
+    if (!entity.getTeacherId().equals(teacher.getId())) {
+      throw new ResponseStatusException(
+          HttpStatus.FORBIDDEN, "Bạn không có quyền chỉnh sửa ứng dụng này");
     }
 
-    public BanApplicationResponse getById(int id) {
-        Teacher teacher = getCurrentTeacher();
-        BanApplicationResponse response = banApplicationRepository.findByIdAndTeacherId(id, teacher.getId());
-        if (response == null) {
-            throw new IllegalArgumentException("Không tìm thấy ứng dụng cấm có id: " + id);
-        }
-        return response;
+    if (request.getApplicationName() != null && !request.getApplicationName().isEmpty()) {
+      entity.setApplicationName(request.getApplicationName());
+    }
+    if (request.getImageUrl() != null) {
+      entity.setImageUrl(request.getImageUrl());
+    }
+    banApplicationRepository.save(entity);
+  }
+
+  public void delete(int id) {
+    Teacher teacher = getCurrentTeacher();
+    BanApplication entity =
+        banApplicationRepository
+            .findById(id)
+            .orElseThrow(
+                () -> new IllegalArgumentException("Không tìm thấy ứng dụng cấm có id: " + id));
+
+    if (!entity.getTeacherId().equals(teacher.getId())) {
+      throw new IllegalArgumentException("Bạn không có quyền xoá ứng dụng này");
     }
 
-    public void create(BanApplicationCreateRequest request) {
-        Teacher teacher = getCurrentTeacher();
-        BanApplication entity = new BanApplication();
-        entity.setTeacherId(teacher.getId());
-        entity.setApplicationName(request.getApplicationName());
-        entity.setImageUrl(request.getImageUrl());
-        entity.setStatus(Status.ACTIVE.getValue());
-        banApplicationRepository.save(entity);
-    }
+    entity.setStatus(Status.INACTIVE.getValue());
+    banApplicationRepository.save(entity);
+  }
 
-    public void update(BanApplicationUpdateRequest request, int id) {
-        Teacher teacher = getCurrentTeacher();
-        BanApplication entity = banApplicationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy ứng dụng cấm có id: " + id));
-
-        if (!entity.getTeacherId().equals(teacher.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền chỉnh sửa ứng dụng này");
-        }
-
-        if (request.getApplicationName() != null && !request.getApplicationName().isEmpty()) {
-            entity.setApplicationName(request.getApplicationName());
-        }
-        if (request.getImageUrl() != null) {
-            entity.setImageUrl(request.getImageUrl());
-        }
-        banApplicationRepository.save(entity);
-    }
-
-    public void delete(int id) {
-        Teacher teacher = getCurrentTeacher();
-        BanApplication entity = banApplicationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy ứng dụng cấm có id: " + id));
-
-        if (!entity.getTeacherId().equals(teacher.getId())) {
-            throw new IllegalArgumentException("Bạn không có quyền xoá ứng dụng này");
-        }
-
-        entity.setStatus(Status.INACTIVE.getValue());
-        banApplicationRepository.save(entity);
-    }
-
-    private Teacher getCurrentTeacher() {
-        User currentUser = util.getCurrentUser();
-        return teacherRepository.findByUserId(currentUser.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thông tin giảng viên"));
-    }
+  private Teacher getCurrentTeacher() {
+    User currentUser = util.getCurrentUser();
+    return teacherRepository
+        .findByUserId(currentUser.getId())
+        .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thông tin giảng viên"));
+  }
 }

@@ -6,6 +6,7 @@ import com.bachld.backend.dto.response.BaseResponse;
 import com.bachld.backend.service.StudentService;
 import com.bachld.backend.util.auth.AuthFilter;
 import jakarta.validation.Valid;
+import java.io.IOException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -17,64 +18,66 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
 @RestController
 @RequestMapping("/api/student")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StudentController {
 
-    StudentService studentService;
+  StudentService studentService;
 
-    @GetMapping("/v1")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> getList(
-            @PageableDefault Pageable pageable,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Integer status,
-            @RequestParam(required = false) Integer manageClassId
-    ) {
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), studentService.getList(pageable, keyword, status, manageClassId)));
-    }
+  @GetMapping("/v1")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> getList(
+      @PageableDefault Pageable pageable,
+      @RequestParam(required = false) String keyword,
+      @RequestParam(required = false) Integer status,
+      @RequestParam(required = false) Integer manageClassId) {
+    return ResponseEntity.ok(
+        new BaseResponse<>(
+            HttpStatus.OK.value(),
+            studentService.getList(pageable, keyword, status, manageClassId)));
+  }
 
-    @GetMapping("/v1/{id}")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> getById(@PathVariable int id) {
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), studentService.getById(id)));
-    }
+  @GetMapping("/v1/{id}")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> getById(@PathVariable int id) {
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), studentService.getById(id)));
+  }
 
-    @PostMapping("/v1")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> create(@RequestBody @Valid StudentCreateRequest request) {
-        studentService.create(request);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @PostMapping("/v1")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> create(@RequestBody @Valid StudentCreateRequest request) {
+    studentService.create(request);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 
-    @PutMapping("/v1/{id}")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> update(@PathVariable int id, @RequestBody @Valid StudentUpdateRequest request) {
-        studentService.update(request, id);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @PutMapping("/v1/{id}")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> update(
+      @PathVariable int id, @RequestBody @Valid StudentUpdateRequest request) {
+    studentService.update(request, id);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 
-    @DeleteMapping("/v1/{id}")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> delete(@PathVariable int id) {
-        studentService.delete(id);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @DeleteMapping("/v1/{id}")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> delete(@PathVariable int id) {
+    studentService.delete(id);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 
-    @GetMapping("v1/template/download")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<InputStreamResource> downloadStudentImportTemplate() throws IOException {
-        return studentService.downloadStudentImportTemplate();
-    }
+  @GetMapping("v1/template/download")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<InputStreamResource> downloadStudentImportTemplate() throws IOException {
+    return studentService.downloadStudentImportTemplate();
+  }
 
-    @PostMapping("/v1/import")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> importStudents(@RequestParam("file") MultipartFile file) throws IOException {
-        studentService.importStudents(file);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @PostMapping("/v1/import")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> importStudents(@RequestParam("file") MultipartFile file)
+      throws IOException {
+    studentService.importStudents(file);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 }

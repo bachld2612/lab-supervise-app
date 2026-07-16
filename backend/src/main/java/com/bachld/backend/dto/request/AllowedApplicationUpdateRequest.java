@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AllowedApplicationUpdateRequest {
 
-    String applicationName;
+  String applicationName;
 
-    String imageUrl;
+  String imageUrl;
 }

@@ -15,16 +15,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SubjectCreateRequest {
 
-    @NotEmpty(message = "Tên môn học không được phép bỏ trống")
-    String name;
+  @NotEmpty(message = "Tên môn học không được phép bỏ trống") String name;
 
-    @NotEmpty(message = "Mã môn học không được phép bỏ trống")
-    String code;
+  @NotEmpty(message = "Mã môn học không được phép bỏ trống") String code;
 
-    @NotNull(message = "Số tín chỉ không được phép bỏ trống")
-    @Min(value = 1, message = "Số tín chỉ phải lớn hơn 1")
-    Integer creditNumber;
+  @NotNull(message = "Số tín chỉ không được phép bỏ trống") @Min(value = 1, message = "Số tín chỉ phải lớn hơn 1") Integer creditNumber;
 
-    @NotNull(message = "Bộ môn không được phép bỏ trống")
-    Integer sectionId;
+  @NotNull(message = "Bộ môn không được phép bỏ trống") Integer sectionId;
 }

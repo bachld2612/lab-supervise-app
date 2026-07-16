@@ -13,8 +13,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoomUpdateRequest {
 
-    String name;
+  String name;
 
-    @Min(value = 1, message = "Số lượng chỗ ngồi phải lớn hơn 0")
-    Integer capacity;
+  @Min(value = 1, message = "Số lượng chỗ ngồi phải lớn hơn 0") Integer capacity;
 }

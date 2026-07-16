@@ -13,15 +13,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StudentImportRequest {
 
-    @NotEmpty(message = "STT không được phép bỏ trống")
-    String ordinal;
+  @NotEmpty(message = "STT không được phép bỏ trống") String ordinal;
 
-    @NotEmpty(message = "Mã sinh viên không được phép bỏ trống")
-    String code;
+  @NotEmpty(message = "Mã sinh viên không được phép bỏ trống") String code;
 
-    @NotEmpty(message = "Tên không được phép bỏ trống")
-    String fullName;
+  @NotEmpty(message = "Tên không được phép bỏ trống") String fullName;
 
-    @NotEmpty(message = "Lớp quản lý không được phép bỏ trống")
-    String manageClassName;
+  @NotEmpty(message = "Lớp quản lý không được phép bỏ trống") String manageClassName;
 }

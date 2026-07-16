@@ -1,9 +1,8 @@
 package com.bachld.backend.dto.response;
 
+import java.util.List;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -12,9 +11,9 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WhitelistUpdateMessage {
 
-    String type = "WHITELIST_UPDATE";
+  String type = "WHITELIST_UPDATE";
 
-    Integer examRoomId;
+  Integer examRoomId;
 
-    List<AllowedApplicationResponse> allowedApplications;
+  List<AllowedApplicationResponse> allowedApplications;
 }

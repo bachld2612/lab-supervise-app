@@ -10,9 +10,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DepartmentResponse {
 
-    Integer id;
+  Integer id;
 
-    String name;
+  String name;
 
-    Integer status;
+  Integer status;
 }

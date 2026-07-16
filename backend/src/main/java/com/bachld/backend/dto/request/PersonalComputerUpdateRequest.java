@@ -13,6 +13,5 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PersonalComputerUpdateRequest {
 
-    @NotEmpty(message = "Địa chỉ IP không được phép bỏ trống")
-    String ipAddress;
+  @NotEmpty(message = "Địa chỉ IP không được phép bỏ trống") String ipAddress;
 }

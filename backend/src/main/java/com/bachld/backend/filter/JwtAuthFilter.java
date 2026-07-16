@@ -1,6 +1,5 @@
 package com.bachld.backend.filter;
 
-
 import com.bachld.backend.service.JwtService;
 import com.bachld.backend.service.TokenBlacklistService;
 import io.jsonwebtoken.JwtException;
@@ -8,6 +7,10 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,75 +22,70 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import java.io.IOException;
-
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
-
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    UserDetailsService userDetailsService;
+  UserDetailsService userDetailsService;
 
-    JwtService jwtService;
+  JwtService jwtService;
 
-    TokenBlacklistService tokenBlacklistService;
+  TokenBlacklistService tokenBlacklistService;
 
-    @Autowired
-    @Qualifier("handlerExceptionResolver")
-    @NonFinal
-    HandlerExceptionResolver resolver;
+  @Autowired
+  @Qualifier("handlerExceptionResolver") @NonFinal
+  HandlerExceptionResolver resolver;
 
-    @Autowired
-    public JwtAuthFilter(UserDetailsService userDetailsService, JwtService jwtService,
-                         TokenBlacklistService tokenBlacklistService) {
-        this.userDetailsService = userDetailsService;
-        this.jwtService = jwtService;
-        this.tokenBlacklistService = tokenBlacklistService;
-    }
+  @Autowired
+  public JwtAuthFilter(
+      UserDetailsService userDetailsService,
+      JwtService jwtService,
+      TokenBlacklistService tokenBlacklistService) {
+    this.userDetailsService = userDetailsService;
+    this.jwtService = jwtService;
+    this.tokenBlacklistService = tokenBlacklistService;
+  }
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        return request.getServletPath().startsWith("/api/auth/");
-    }
+  @Override
+  protected boolean shouldNotFilter(HttpServletRequest request) {
+    return request.getServletPath().startsWith("/api/auth/");
+  }
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
-        String token = null;
-        String id = null;
+  @Override
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
+    String authHeader = request.getHeader("Authorization");
+    String token = null;
+    String id = null;
 
-        try {
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                token = authHeader.substring(7);
-                id = jwtService.extractId(token);
-            }
+    try {
+      if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        token = authHeader.substring(7);
+        id = jwtService.extractId(token);
+      }
 
-            if (token != null && tokenBlacklistService.isBlacklisted(jwtService.extractJti(token))) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
-            }
+      if (token != null && tokenBlacklistService.isBlacklisted(jwtService.extractJti(token))) {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        return;
+      }
 
-            if (id != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(id);
+      if (id != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(id);
 
-                if (jwtService.validateToken(token, userDetails)) {
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities());
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                }
-            }
+        if (jwtService.validateToken(token, userDetails)) {
+          UsernamePasswordAuthenticationToken authToken =
+              new UsernamePasswordAuthenticationToken(
+                  userDetails, null, userDetails.getAuthorities());
+          authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+          SecurityContextHolder.getContext().setAuthentication(authToken);
         }
-        catch (JwtException jwtException) {
-            resolver.resolveException(request, response, null, jwtException);
-            return;
-        }
-
-        filterChain.doFilter(request, response);
+      }
+    } catch (JwtException jwtException) {
+      resolver.resolveException(request, response, null, jwtException);
+      return;
     }
+
+    filterChain.doFilter(request, response);
+  }
 }

@@ -10,9 +10,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ScreenshotStudentOptionResponse {
 
-    Integer studentId;
+  Integer studentId;
 
-    String fullName;
+  String fullName;
 
-    String code;
+  String code;
 }

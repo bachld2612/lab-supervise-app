@@ -15,13 +15,13 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "subjects")
 public class Subject extends BaseEntity {
 
-    String name;
+  String name;
 
-    String code;
+  String code;
 
-    @Column(name = "credit_number")
-    Integer creditNumber;
+  @Column(name = "credit_number")
+  Integer creditNumber;
 
-    @Column(name = "section_id")
-    Integer sectionId;
+  @Column(name = "section_id")
+  Integer sectionId;
 }

@@ -1,9 +1,8 @@
 package com.bachld.backend.dto.response;
 
+import java.time.LocalDateTime;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -12,15 +11,15 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AppUsageItem {
 
-    String applicationName;
+  String applicationName;
 
-    Integer action;
+  Integer action;
 
-    String clipboardText;
+  String clipboardText;
 
-    LocalDateTime createdAt;
+  LocalDateTime createdAt;
 
-    boolean isBanApplication;
+  boolean isBanApplication;
 
-    String connectionType;
+  String connectionType;
 }

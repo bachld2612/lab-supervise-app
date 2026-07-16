@@ -1,13 +1,12 @@
 package com.bachld.backend.dto.websocket;
 
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -16,15 +15,15 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ScreenshotReadyMessage {
 
-    String type;
+  String type;
 
-    Integer screenshotId;
+  Integer screenshotId;
 
-    Integer studentId;
+  Integer studentId;
 
-    Integer studentUserId;
+  Integer studentUserId;
 
-    String imageUrl;
+  String imageUrl;
 
-    LocalDateTime createdAt;
+  LocalDateTime createdAt;
 }

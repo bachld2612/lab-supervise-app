@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "rooms")
 public class Room extends BaseEntity {
 
-    String name;
+  String name;
 
-    int capacity;
+  int capacity;
 }

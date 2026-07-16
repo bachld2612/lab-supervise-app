@@ -7,6 +7,18 @@ import com.bachld.backend.model.*;
 import com.bachld.backend.repository.*;
 import com.bachld.backend.util.Util;
 import com.bachld.backend.util.enums.Status;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,594 +36,669 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ClassService {
 
-    ClassRepository classRepository;
+  ClassRepository classRepository;
 
-    SubjectRepository subjectRepository;
+  SubjectRepository subjectRepository;
 
-    TeacherRepository teacherRepository;
+  TeacherRepository teacherRepository;
 
-    ScheduleRepository scheduleRepository;
+  ScheduleRepository scheduleRepository;
 
-    SemesterRepository semesterRepository;
+  SemesterRepository semesterRepository;
 
-    StudentRepository studentRepository;
+  StudentRepository studentRepository;
 
-    StudentClassInfoRepository studentClassInfoRepository;
+  StudentClassInfoRepository studentClassInfoRepository;
 
-    StudentClassRepository studentClassRepository;
+  StudentClassRepository studentClassRepository;
 
-    ExamRoomRepository examRoomRepository;
+  ExamRoomRepository examRoomRepository;
 
-    ClipboardTextCryptoService clipboardTextCryptoService;
+  ClipboardTextCryptoService clipboardTextCryptoService;
 
-    Util util;
+  Util util;
 
-    public Page<ClassResponse> getList(Pageable pageable, String keyword, Integer status) {
-        if (keyword != null) {
-            keyword = "%" + keyword.trim().toLowerCase() + "%";
+  public Page<ClassResponse> getList(Pageable pageable, String keyword, Integer status) {
+    if (keyword != null) {
+      keyword = "%" + keyword.trim().toLowerCase() + "%";
+    } else {
+      keyword = "%%";
+    }
+
+    return classRepository.findByKeyword(pageable, keyword, status);
+  }
+
+  public ClassResponse getById(Integer id) {
+    return classRepository.findByIdAndStatus(id, Status.ACTIVE.getValue());
+  }
+
+  @Transactional
+  public void create(ClassCreateRequest request) {
+    SubjectResponse subject =
+        subjectRepository.findByIdAndStatus(request.getSubjectId(), Status.ACTIVE.getValue());
+    if (subject == null) {
+      throw new IllegalArgumentException("Không tìm thấy môn học có id: " + request.getSubjectId());
+    }
+
+    TeacherResponse teacher =
+        teacherRepository.findTeacherByIdAndStatus(
+            request.getTeacherId(), Status.ACTIVE.getValue());
+    if (teacher == null) {
+      throw new IllegalArgumentException(
+          "Không tìm thấy giảng viên có id: " + request.getTeacherId());
+    }
+
+    ScheduleResponse schedule =
+        scheduleRepository.findByIdAndStatus(request.getScheduleId(), Status.ACTIVE.getValue());
+    if (schedule == null) {
+      throw new IllegalArgumentException(
+          "Không tìm thấy lịch học có id: " + request.getScheduleId());
+    }
+
+    SemesterResponse semester =
+        semesterRepository.findByIdAndStatus(request.getSemesterId(), Status.ACTIVE.getValue());
+    if (semester == null) {
+      throw new IllegalArgumentException("Không tìm thấy học kì có id: " + request.getSemesterId());
+    }
+
+    LocalDate startDate = LocalDate.parse(request.getStartDate());
+    LocalDate endDate = LocalDate.parse(request.getEndDate());
+
+    if (startDate.isAfter(endDate)) {
+      throw new IllegalArgumentException("Ngày bắt đầu phải nhỏ hơn ngày kết thúc");
+    }
+
+    util.validateRoom(request.getRoomId(), request.getScheduleId(), startDate, endDate, null);
+
+    Classes classes = new Classes();
+    classes.setName(request.getName());
+    classes.setMaxStudent(request.getMaxStudent());
+    classes.setSubjectId(request.getSubjectId());
+    classes.setTeacherId(request.getTeacherId());
+    classes.setScheduleId(request.getScheduleId());
+    classes.setStartDate(startDate);
+    classes.setEndDate(endDate);
+    classes.setSemesterId(request.getSemesterId());
+    classes.setStatus(Status.ACTIVE.getValue());
+    classes.setRoomId(request.getRoomId());
+
+    int sessionCount = schedule.getPeriods().split(",").length;
+    int sessionNumber = (subject.getCreditNumber() * 15) / sessionCount;
+    classes.setSessionNumber(sessionNumber);
+
+    classRepository.save(classes);
+  }
+
+  public List<ClassResponse> getListByStudentUserId() {
+    User currentUser = util.getCurrentUser();
+    LocalDate today = LocalDate.now();
+    List<ClassResponse> response =
+        classRepository.findActiveClassByStudentUserId(currentUser.getId(), today);
+
+    List<Schedule> schedules = scheduleRepository.findAll();
+    Map<Integer, Schedule> scheduleMap =
+        schedules.stream().collect(Collectors.toMap(BaseEntity::getId, s -> s));
+
+    LocalTime nowTime = LocalTime.now();
+    int dayOfWeek = today.getDayOfWeek().getValue();
+
+    // studyStatus = 1 --> ongoing, 0 --> upcoming, 2 --> ended
+    for (ClassResponse clazz : response) {
+      Schedule schedule = scheduleMap.get(clazz.getScheduleId());
+      if (schedule != null && schedule.getDaysOfWeek() != null) {
+        boolean isToday =
+            Arrays.asList(schedule.getDaysOfWeek().split(",")).contains(String.valueOf(dayOfWeek));
+        boolean isActiveTime =
+            !nowTime.isBefore(schedule.getStartTime()) && !nowTime.isAfter(schedule.getEndTime());
+        boolean isEnded = isToday && nowTime.isAfter(schedule.getEndTime());
+        if (isToday && isActiveTime) {
+          clazz.setStudyStatus(1);
+        } else if (isEnded) {
+          clazz.setStudyStatus(2);
         } else {
-            keyword = "%%";
+          clazz.setStudyStatus(0);
         }
-
-        return classRepository.findByKeyword(pageable, keyword, status);
+      } else {
+        clazz.setStudyStatus(0);
+      }
     }
 
-    public ClassResponse getById(Integer id) {
-        return classRepository.findByIdAndStatus(id, Status.ACTIVE.getValue());
-    }
-
-    @Transactional
-    public void create(ClassCreateRequest request) {
-        SubjectResponse subject = subjectRepository.findByIdAndStatus(request.getSubjectId(), Status.ACTIVE.getValue());
-        if (subject == null) {
-            throw new IllegalArgumentException("Không tìm thấy môn học có id: " + request.getSubjectId());
-        }
-
-        TeacherResponse teacher = teacherRepository.findTeacherByIdAndStatus(request.getTeacherId(), Status.ACTIVE.getValue());
-        if (teacher == null) {
-            throw new IllegalArgumentException("Không tìm thấy giảng viên có id: " + request.getTeacherId());
-        }
-
-        ScheduleResponse schedule = scheduleRepository.findByIdAndStatus(request.getScheduleId(), Status.ACTIVE.getValue());
-        if (schedule == null) {
-            throw new IllegalArgumentException("Không tìm thấy lịch học có id: " + request.getScheduleId());
-        }
-
-        SemesterResponse semester = semesterRepository.findByIdAndStatus(request.getSemesterId(), Status.ACTIVE.getValue());
-        if (semester == null) {
-            throw new IllegalArgumentException("Không tìm thấy học kì có id: " +  request.getSemesterId());
-        }
-
-        LocalDate startDate = LocalDate.parse(request.getStartDate());
-        LocalDate endDate = LocalDate.parse(request.getEndDate());
-
-        if (startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("Ngày bắt đầu phải nhỏ hơn ngày kết thúc");
-        }
-
-        util.validateRoom(request.getRoomId(), request.getScheduleId(), startDate, endDate, null);
-
-        Classes classes = new Classes();
-        classes.setName(request.getName());
-        classes.setMaxStudent(request.getMaxStudent());
-        classes.setSubjectId(request.getSubjectId());
-        classes.setTeacherId(request.getTeacherId());
-        classes.setScheduleId(request.getScheduleId());
-        classes.setStartDate(startDate);
-        classes.setEndDate(endDate);
-        classes.setSemesterId(request.getSemesterId());
-        classes.setStatus(Status.ACTIVE.getValue());
-        classes.setRoomId(request.getRoomId());
-
-        int sessionCount = schedule.getPeriods().split(",").length;
-        int sessionNumber = (subject.getCreditNumber() * 15) / sessionCount;
-        classes.setSessionNumber(sessionNumber);
-
-        classRepository.save(classes);
-    }
-
-    public List<ClassResponse> getListByStudentUserId() {
-        User currentUser = util.getCurrentUser();
-        LocalDate today = LocalDate.now();
-        List<ClassResponse> response = classRepository.findActiveClassByStudentUserId(currentUser.getId(),  today);
-
-        List<Schedule> schedules = scheduleRepository.findAll();
-        Map<Integer, Schedule> scheduleMap = schedules.stream()
-                .collect(Collectors.toMap(BaseEntity::getId, s -> s));
-
-        LocalTime nowTime = LocalTime.now();
-        int dayOfWeek = today.getDayOfWeek().getValue();
-
-        // studyStatus = 1 --> ongoing, 0 --> upcoming, 2 --> ended
-        for (ClassResponse clazz : response) {
-            Schedule schedule = scheduleMap.get(clazz.getScheduleId());
-            if (schedule != null && schedule.getDaysOfWeek() != null) {
-                boolean isToday = Arrays.asList(schedule.getDaysOfWeek().split(","))
-                        .contains(String.valueOf(dayOfWeek));
-                boolean isActiveTime = !nowTime.isBefore(schedule.getStartTime()) && !nowTime.isAfter(schedule.getEndTime());
-                boolean isEnded = isToday && nowTime.isAfter(schedule.getEndTime());
-                if (isToday && isActiveTime) {
-                    clazz.setStudyStatus(1);
-                } else if (isEnded) {
-                    clazz.setStudyStatus(2);
-                } else {
-                    clazz.setStudyStatus(0);
-                }
-            } else {
-                clazz.setStudyStatus(0);
-            }
-        }
-
-        return response.stream()
-                .sorted(Comparator.comparingInt((ClassResponse c) -> {
-                    int s = c.getStudyStatus() == null ? 0 : c.getStudyStatus();
-                    return s == 1 ? 0 : s == 0 ? 1 : 2;
+    return response.stream()
+        .sorted(
+            Comparator.comparingInt(
+                (ClassResponse c) -> {
+                  int s = c.getStudyStatus() == null ? 0 : c.getStudyStatus();
+                  return s == 1 ? 0 : s == 0 ? 1 : 2;
                 }))
-                .collect(Collectors.toList());
+        .collect(Collectors.toList());
+  }
+
+  @Transactional
+  public void update(ClassUpdateRequest request, int id) {
+    Classes classes =
+        classRepository
+            .findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp học có id: " + id));
+
+    if (request.getName() != null && !request.getName().isEmpty()) {
+      classes.setName(request.getName());
     }
 
-    @Transactional
-    public void update(ClassUpdateRequest request, int id) {
-        Classes classes = classRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp học có id: " + id));
-
-        if (request.getName() != null && !request.getName().isEmpty()) {
-            classes.setName(request.getName());
-        }
-
-        if (request.getMaxStudent() != null) {
-            classes.setMaxStudent(request.getMaxStudent());
-        }
-
-        if (request.getTeacherId() != null) {
-            TeacherResponse teacher = teacherRepository.findTeacherByIdAndStatus(request.getTeacherId(), Status.ACTIVE.getValue());
-            if (teacher == null) {
-                throw new IllegalArgumentException("Không tìm thấy giảng viên có id: " + request.getTeacherId());
-            }
-            classes.setTeacherId(request.getTeacherId());
-        }
-
-        if (request.getSubjectId() != null) {
-            SubjectResponse subject = subjectRepository.findByIdAndStatus(request.getSubjectId(), Status.ACTIVE.getValue());
-            if (subject == null) {
-                throw new IllegalArgumentException("Không tìm thấy môn học có id: " + request.getSubjectId());
-            }
-            classes.setSubjectId(request.getSubjectId());
-        }
-
-        if (request.getScheduleId() != null) {
-            ScheduleResponse schedule = scheduleRepository.findByIdAndStatus(request.getScheduleId(), Status.ACTIVE.getValue());
-            if (schedule == null) {
-                throw new IllegalArgumentException("Không tìm thấy lịch học có id: " + request.getScheduleId());
-            }
-            classes.setScheduleId(request.getScheduleId());
-        }
-
-        if (request.getSemesterId() != null) {
-            SemesterResponse semester = semesterRepository.findByIdAndStatus(request.getSemesterId(), Status.ACTIVE.getValue());
-            if (semester == null) {
-                throw new IllegalArgumentException("Không tìm thấy học kì có id: " +  request.getSemesterId());
-            }
-            classes.setSemesterId(request.getSemesterId());
-        }
-
-        if (request.getStartDate() != null && !request.getStartDate().isEmpty()) {
-            classes.setStartDate(LocalDate.parse(request.getStartDate()));
-        }
-
-        if (request.getEndDate() != null && !request.getEndDate().isEmpty()) {
-            classes.setEndDate(LocalDate.parse(request.getEndDate()));
-        }
-
-        if (classes.getStartDate().isAfter(classes.getEndDate())) {
-            throw new IllegalArgumentException("Ngày bắt đầu phải sớm hơn ngày kết thúc");
-        }
-
-        if (request.getRoomId() != null) {
-            classes.setRoomId(request.getRoomId());
-        }
-        util.validateRoom(classes.getRoomId(), classes.getScheduleId(), classes.getStartDate(), classes.getEndDate(), id);
-
-        SubjectResponse currentSubject = subjectRepository.findByIdAndStatus(classes.getSubjectId(), Status.ACTIVE.getValue());
-        ScheduleResponse currentSchedule = scheduleRepository.findByIdAndStatus(classes.getScheduleId(), Status.ACTIVE.getValue());
-        
-        if (currentSubject != null && currentSchedule != null) {
-            int currentSessionCount = currentSchedule.getPeriods().split(",").length;
-            int newSessionNumber = (currentSubject.getCreditNumber() * 15) / currentSessionCount;
-            classes.setSessionNumber(newSessionNumber);
-        }
-
-        classRepository.save(classes);
+    if (request.getMaxStudent() != null) {
+      classes.setMaxStudent(request.getMaxStudent());
     }
 
-    public List<ClassResponse> getListByTeacherUserId() {
-        User currentUser = util.getCurrentUser();
-        if (com.bachld.backend.util.enums.Role.IT_CENTER.getValue() == currentUser.getRoleId()) {
-            return classRepository.findAllActiveClasses();
+    if (request.getTeacherId() != null) {
+      TeacherResponse teacher =
+          teacherRepository.findTeacherByIdAndStatus(
+              request.getTeacherId(), Status.ACTIVE.getValue());
+      if (teacher == null) {
+        throw new IllegalArgumentException(
+            "Không tìm thấy giảng viên có id: " + request.getTeacherId());
+      }
+      classes.setTeacherId(request.getTeacherId());
+    }
+
+    if (request.getSubjectId() != null) {
+      SubjectResponse subject =
+          subjectRepository.findByIdAndStatus(request.getSubjectId(), Status.ACTIVE.getValue());
+      if (subject == null) {
+        throw new IllegalArgumentException(
+            "Không tìm thấy môn học có id: " + request.getSubjectId());
+      }
+      classes.setSubjectId(request.getSubjectId());
+    }
+
+    if (request.getScheduleId() != null) {
+      ScheduleResponse schedule =
+          scheduleRepository.findByIdAndStatus(request.getScheduleId(), Status.ACTIVE.getValue());
+      if (schedule == null) {
+        throw new IllegalArgumentException(
+            "Không tìm thấy lịch học có id: " + request.getScheduleId());
+      }
+      classes.setScheduleId(request.getScheduleId());
+    }
+
+    if (request.getSemesterId() != null) {
+      SemesterResponse semester =
+          semesterRepository.findByIdAndStatus(request.getSemesterId(), Status.ACTIVE.getValue());
+      if (semester == null) {
+        throw new IllegalArgumentException(
+            "Không tìm thấy học kì có id: " + request.getSemesterId());
+      }
+      classes.setSemesterId(request.getSemesterId());
+    }
+
+    if (request.getStartDate() != null && !request.getStartDate().isEmpty()) {
+      classes.setStartDate(LocalDate.parse(request.getStartDate()));
+    }
+
+    if (request.getEndDate() != null && !request.getEndDate().isEmpty()) {
+      classes.setEndDate(LocalDate.parse(request.getEndDate()));
+    }
+
+    if (classes.getStartDate().isAfter(classes.getEndDate())) {
+      throw new IllegalArgumentException("Ngày bắt đầu phải sớm hơn ngày kết thúc");
+    }
+
+    if (request.getRoomId() != null) {
+      classes.setRoomId(request.getRoomId());
+    }
+    util.validateRoom(
+        classes.getRoomId(),
+        classes.getScheduleId(),
+        classes.getStartDate(),
+        classes.getEndDate(),
+        id);
+
+    SubjectResponse currentSubject =
+        subjectRepository.findByIdAndStatus(classes.getSubjectId(), Status.ACTIVE.getValue());
+    ScheduleResponse currentSchedule =
+        scheduleRepository.findByIdAndStatus(classes.getScheduleId(), Status.ACTIVE.getValue());
+
+    if (currentSubject != null && currentSchedule != null) {
+      int currentSessionCount = currentSchedule.getPeriods().split(",").length;
+      int newSessionNumber = (currentSubject.getCreditNumber() * 15) / currentSessionCount;
+      classes.setSessionNumber(newSessionNumber);
+    }
+
+    classRepository.save(classes);
+  }
+
+  public List<ClassResponse> getListByTeacherUserId() {
+    User currentUser = util.getCurrentUser();
+    if (com.bachld.backend.util.enums.Role.IT_CENTER.getValue() == currentUser.getRoleId()) {
+      return classRepository.findAllActiveClasses();
+    }
+    LocalDate today = LocalDate.now();
+    List<ClassResponse> response =
+        classRepository.findActiveClassByTeacherUserId(currentUser.getId(), today);
+
+    List<Schedule> schedules = scheduleRepository.findAll();
+    Map<Integer, Schedule> scheduleMap =
+        schedules.stream().collect(Collectors.toMap(BaseEntity::getId, s -> s));
+
+    LocalTime nowTime = LocalTime.now();
+    int dayOfWeek = today.getDayOfWeek().getValue();
+
+    for (ClassResponse clazz : response) {
+      Schedule schedule = scheduleMap.get(clazz.getScheduleId());
+      if (schedule != null && schedule.getDaysOfWeek() != null) {
+        boolean isToday =
+            Arrays.asList(schedule.getDaysOfWeek().split(",")).contains(String.valueOf(dayOfWeek));
+        boolean isActiveTime =
+            !nowTime.isBefore(schedule.getStartTime()) && !nowTime.isAfter(schedule.getEndTime());
+        boolean isEnded = isToday && nowTime.isAfter(schedule.getEndTime());
+        if (isToday && isActiveTime) {
+          clazz.setStudyStatus(1);
+        } else if (isEnded) {
+          clazz.setStudyStatus(2);
+        } else {
+          clazz.setStudyStatus(0);
         }
-        LocalDate today = LocalDate.now();
-        List<ClassResponse> response = classRepository.findActiveClassByTeacherUserId(currentUser.getId(), today);
+      } else {
+        clazz.setStudyStatus(0);
+      }
+    }
 
-        List<Schedule> schedules = scheduleRepository.findAll();
-        Map<Integer, Schedule> scheduleMap = schedules.stream()
-                .collect(Collectors.toMap(BaseEntity::getId, s -> s));
-
-        LocalTime nowTime = LocalTime.now();
-        int dayOfWeek = today.getDayOfWeek().getValue();
-
-        for (ClassResponse clazz : response) {
-            Schedule schedule = scheduleMap.get(clazz.getScheduleId());
-            if (schedule != null && schedule.getDaysOfWeek() != null) {
-                boolean isToday = Arrays.asList(schedule.getDaysOfWeek().split(","))
-                        .contains(String.valueOf(dayOfWeek));
-                boolean isActiveTime = !nowTime.isBefore(schedule.getStartTime()) && !nowTime.isAfter(schedule.getEndTime());
-                boolean isEnded = isToday && nowTime.isAfter(schedule.getEndTime());
-                if (isToday && isActiveTime) {
-                    clazz.setStudyStatus(1);
-                } else if (isEnded) {
-                    clazz.setStudyStatus(2);
-                } else {
-                    clazz.setStudyStatus(0);
-                }
-            } else {
-                clazz.setStudyStatus(0);
-            }
-        }
-
-        return response.stream()
-                .sorted(Comparator.comparingInt((ClassResponse c) -> {
-                    int s = c.getStudyStatus() == null ? 0 : c.getStudyStatus();
-                    return s == 1 ? 0 : s == 0 ? 1 : 2;
+    return response.stream()
+        .sorted(
+            Comparator.comparingInt(
+                (ClassResponse c) -> {
+                  int s = c.getStudyStatus() == null ? 0 : c.getStudyStatus();
+                  return s == 1 ? 0 : s == 0 ? 1 : 2;
                 }))
-                .collect(Collectors.toList());
+        .collect(Collectors.toList());
+  }
+
+  public List<ClassStudentTrackingResponse> getTrackingByClassId(Integer classId, LocalDate date) {
+    List<ClassStudentTrackingResponse> students =
+        studentClassInfoRepository.findStudentsWithLatestTracking(classId);
+
+    List<StudentAppUsageRaw> rawUsage =
+        studentClassInfoRepository.findAppUsageByClassIdAndDate(classId, date);
+
+    Map<Integer, List<AppUsageItem>> usageByStudent =
+        rawUsage.stream()
+            .collect(
+                Collectors.groupingBy(
+                    StudentAppUsageRaw::getStudentId,
+                    Collectors.mapping(
+                        r ->
+                            AppUsageItem.builder()
+                                .applicationName(r.getApplicationName())
+                                .action(r.getAction() == null ? 0 : r.getAction().getValue())
+                                .clipboardText(decryptClipboardText(r))
+                                .createdAt(r.getCreatedAt())
+                                .isBanApplication(r.isBanApplication())
+                                .connectionType(r.getConnectionType())
+                                .build(),
+                        Collectors.toList())));
+
+    students.forEach(
+        s -> s.setApplicationsToday(usageByStudent.getOrDefault(s.getStudentId(), List.of())));
+
+    return students;
+  }
+
+  private String decryptClipboardText(StudentAppUsageRaw raw) {
+    if (raw.getAction() == null || raw.getAction().getValue() == 0) {
+      return null;
+    }
+    return clipboardTextCryptoService.decrypt(
+        raw.getClipboardTextEncrypted(), raw.getClipboardKeyEncrypted(), raw.getClipboardIv());
+  }
+
+  public int getStudyStatus(Integer classId) {
+    Classes clazz = classRepository.findById(classId).orElse(null);
+    if (clazz == null) return 0;
+
+    LocalDate today = LocalDate.now();
+    if (today.isBefore(clazz.getStartDate()) || today.isAfter(clazz.getEndDate())) return 0;
+
+    Schedule schedule = scheduleRepository.findById(clazz.getScheduleId()).orElse(null);
+    if (schedule == null || schedule.getDaysOfWeek() == null) return 0;
+
+    boolean isToday =
+        Arrays.asList(schedule.getDaysOfWeek().split(","))
+            .contains(String.valueOf(today.getDayOfWeek().getValue()));
+    if (!isToday) return 0;
+
+    LocalTime now = LocalTime.now();
+    boolean isActiveTime =
+        !now.isBefore(schedule.getStartTime()) && !now.isAfter(schedule.getEndTime());
+    if (isActiveTime) return 1;
+    if (now.isAfter(schedule.getEndTime())) return 2;
+    return 0;
+  }
+
+  public Page<StudentResponse> getStudentsByClassId(
+      Integer classId, Pageable pageable, String keyword) {
+    if (keyword != null) {
+      keyword = "%" + keyword.trim().toLowerCase() + "%";
+    } else {
+      keyword = "%%";
+    }
+    return studentRepository.findByClassId(pageable, classId, keyword);
+  }
+
+  public Page<StudentResponse> getStudentsNotInClass(
+      Integer classId, Pageable pageable, String keyword) {
+    if (keyword != null) {
+      keyword = "%" + keyword.trim().toLowerCase() + "%";
+    } else {
+      keyword = "%%";
+    }
+    return studentRepository.findStudentsNotInClass(
+        pageable, classId, keyword, Status.ACTIVE.getValue());
+  }
+
+  @Transactional
+  public void addStudentsToClass(Integer classId, List<Integer> studentIds) {
+    if (studentIds == null || studentIds.isEmpty()) {
+      throw new IllegalArgumentException("Vui lòng chọn ít nhất một sinh viên");
     }
 
-    public List<ClassStudentTrackingResponse> getTrackingByClassId(Integer classId, LocalDate date) {
-        List<ClassStudentTrackingResponse> students = studentClassInfoRepository.findStudentsWithLatestTracking(classId);
+    Classes classes =
+        classRepository
+            .findById(classId)
+            .orElseThrow(
+                () ->
+                    new IllegalArgumentException("Không tìm thấy lớp học phần có id: " + classId));
 
-        List<StudentAppUsageRaw> rawUsage = studentClassInfoRepository.findAppUsageByClassIdAndDate(classId, date);
-
-        Map<Integer, List<AppUsageItem>> usageByStudent = rawUsage.stream()
-                .collect(Collectors.groupingBy(
-                        StudentAppUsageRaw::getStudentId,
-                        Collectors.mapping(
-                                r -> AppUsageItem.builder()
-                                        .applicationName(r.getApplicationName())
-                                        .action(r.getAction() == null ? 0 : r.getAction().getValue())
-                                        .clipboardText(decryptClipboardText(r))
-                                        .createdAt(r.getCreatedAt())
-                                        .isBanApplication(r.isBanApplication())
-                                        .connectionType(r.getConnectionType())
-                                        .build(),
-                                Collectors.toList()
-                        )
-                ));
-
-        students.forEach(s -> s.setApplicationsToday(usageByStudent.getOrDefault(s.getStudentId(), List.of())));
-
-        return students;
+    if (classes.getStatus() != Status.ACTIVE.getValue()) {
+      throw new IllegalArgumentException("Lớp học phần không còn hoạt động");
     }
 
-    private String decryptClipboardText(StudentAppUsageRaw raw) {
-        if (raw.getAction() == null || raw.getAction().getValue() == 0) {
-            return null;
-        }
-        return clipboardTextCryptoService.decrypt(
-                raw.getClipboardTextEncrypted(),
-                raw.getClipboardKeyEncrypted(),
-                raw.getClipboardIv()
-        );
+    // Skip students already enrolled
+    List<Integer> toAdd = new ArrayList<>();
+    for (Integer studentId : studentIds) {
+      if (studentClassRepository.findByStudentIdAndClassId(studentId, classId).isEmpty()) {
+        toAdd.add(studentId);
+      }
     }
 
-    public int getStudyStatus(Integer classId) {
-        Classes clazz = classRepository.findById(classId).orElse(null);
-        if (clazz == null) return 0;
+    // Schedule conflict: a student must not study two classes at the same weekly
+    // slot, nor study and sit an exam at the same time, during this class's period.
+    validateNoScheduleConflict(classes, toAdd);
 
-        LocalDate today = LocalDate.now();
-        if (today.isBefore(clazz.getStartDate()) || today.isAfter(clazz.getEndDate())) return 0;
-
-        Schedule schedule = scheduleRepository.findById(clazz.getScheduleId()).orElse(null);
-        if (schedule == null || schedule.getDaysOfWeek() == null) return 0;
-
-        boolean isToday = Arrays.asList(schedule.getDaysOfWeek().split(","))
-                .contains(String.valueOf(today.getDayOfWeek().getValue()));
-        if (!isToday) return 0;
-
-        LocalTime now = LocalTime.now();
-        boolean isActiveTime = !now.isBefore(schedule.getStartTime()) && !now.isAfter(schedule.getEndTime());
-        if (isActiveTime) return 1;
-        if (now.isAfter(schedule.getEndTime())) return 2;
-        return 0;
+    long currentCount = studentClassRepository.countByClassId(classId);
+    if (currentCount + toAdd.size() > classes.getMaxStudent()) {
+      throw new IllegalArgumentException(
+          "Vượt quá sĩ số tối đa. Hiện tại: "
+              + currentCount
+              + ", thêm mới: "
+              + toAdd.size()
+              + ", tối đa: "
+              + classes.getMaxStudent());
     }
 
-    public Page<StudentResponse> getStudentsByClassId(Integer classId, Pageable pageable, String keyword) {
-        if (keyword != null) {
-            keyword = "%" + keyword.trim().toLowerCase() + "%";
-        } else {
-            keyword = "%%";
-        }
-        return studentRepository.findByClassId(pageable, classId, keyword);
+    for (Integer studentId : toAdd) {
+      StudentClass studentClass = new StudentClass();
+      studentClass.setClassId(classId);
+      studentClass.setStudentId(studentId);
+      studentClassRepository.save(studentClass);
+    }
+  }
+
+  @Transactional
+  public void removeStudentsFromClass(Integer classId, List<Integer> studentIds) {
+    if (studentIds == null || studentIds.isEmpty()) {
+      throw new IllegalArgumentException("Vui lòng chọn ít nhất một sinh viên");
+    }
+    studentClassRepository.deleteByClassIdAndStudentIdIn(classId, studentIds);
+  }
+
+  /**
+   * Rejects adding a student whose existing enrollment clashes with this class's schedule over its
+   * study period: - another class meeting at an overlapping weekly slot (shared day-of-week +
+   * overlapping time) during overlapping date ranges, or - an exam falling on a class session day
+   * (within the date range, on a scheduled weekday, at an overlapping time).
+   */
+  private void validateNoScheduleConflict(Classes target, List<Integer> studentIds) {
+    if (studentIds.isEmpty()) {
+      return;
     }
 
-    public Page<StudentResponse> getStudentsNotInClass(Integer classId, Pageable pageable, String keyword) {
-        if (keyword != null) {
-            keyword = "%" + keyword.trim().toLowerCase() + "%";
-        } else {
-            keyword = "%%";
+    Schedule schedule =
+        scheduleRepository
+            .findById(target.getScheduleId())
+            .orElseThrow(
+                () -> new IllegalArgumentException("Lớp học phần chưa có lịch học hợp lệ"));
+
+    Set<Integer> targetDays = parseDays(schedule.getDaysOfWeek());
+    LocalTime targetStartTime = schedule.getStartTime();
+    LocalTime targetEndTime = schedule.getEndTime();
+    LocalDate targetStartDate = target.getStartDate();
+    LocalDate targetEndDate = target.getEndDate();
+
+    for (Integer studentId : studentIds) {
+      // Conflict with another class
+      for (ClassScheduleView other :
+          studentClassRepository.findOtherClassSchedulesByStudentId(studentId, target.getId())) {
+        if (dateRangesOverlap(
+                targetStartDate, targetEndDate, other.getStartDate(), other.getEndDate())
+            && daysIntersect(targetDays, parseDays(other.getDaysOfWeek()))
+            && timeOverlap(
+                targetStartTime, targetEndTime, other.getStartTime(), other.getEndTime())) {
+          throw scheduleConflict(studentId);
         }
-        return studentRepository.findStudentsNotInClass(pageable, classId, keyword, Status.ACTIVE.getValue());
+      }
+
+      // Conflict with an exam during this class's study period
+      for (ExamScheduleView exam : examRoomRepository.findExamSchedulesByStudentId(studentId)) {
+        LocalDate examDate = exam.getExamDate();
+        if (examDate != null
+            && !examDate.isBefore(targetStartDate)
+            && !examDate.isAfter(targetEndDate)
+            && targetDays.contains(examDate.getDayOfWeek().getValue())
+            && timeOverlap(
+                targetStartTime, targetEndTime, exam.getStartTime(), exam.getEndTime())) {
+          throw scheduleConflict(studentId);
+        }
+      }
     }
+  }
 
-    @Transactional
-    public void addStudentsToClass(Integer classId, List<Integer> studentIds) {
-        if (studentIds == null || studentIds.isEmpty()) {
-            throw new IllegalArgumentException("Vui lòng chọn ít nhất một sinh viên");
-        }
+  private IllegalArgumentException scheduleConflict(Integer studentId) {
+    String code =
+        studentRepository
+            .findById(studentId)
+            .map(Student::getCode)
+            .orElse(String.valueOf(studentId));
+    return new IllegalArgumentException(
+        "Sinh viên "
+            + code
+            + " đã có lớp học phần hoặc kỳ thi trùng lịch trong thời gian học của lớp");
+  }
 
-        Classes classes = classRepository.findById(classId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp học phần có id: " + classId));
-
-        if (classes.getStatus() != Status.ACTIVE.getValue()) {
-            throw new IllegalArgumentException("Lớp học phần không còn hoạt động");
-        }
-
-        // Skip students already enrolled
-        List<Integer> toAdd = new ArrayList<>();
-        for (Integer studentId : studentIds) {
-            if (studentClassRepository.findByStudentIdAndClassId(studentId, classId).isEmpty()) {
-                toAdd.add(studentId);
-            }
-        }
-
-        // Schedule conflict: a student must not study two classes at the same weekly
-        // slot, nor study and sit an exam at the same time, during this class's period.
-        validateNoScheduleConflict(classes, toAdd);
-
-        long currentCount = studentClassRepository.countByClassId(classId);
-        if (currentCount + toAdd.size() > classes.getMaxStudent()) {
-            throw new IllegalArgumentException(
-                    "Vượt quá sĩ số tối đa. Hiện tại: " + currentCount
-                    + ", thêm mới: " + toAdd.size()
-                    + ", tối đa: " + classes.getMaxStudent());
-        }
-
-        for (Integer studentId : toAdd) {
-            StudentClass studentClass = new StudentClass();
-            studentClass.setClassId(classId);
-            studentClass.setStudentId(studentId);
-            studentClassRepository.save(studentClass);
-        }
+  private Set<Integer> parseDays(String csv) {
+    Set<Integer> days = new HashSet<>();
+    if (csv == null || csv.isBlank()) {
+      return days;
     }
-
-    @Transactional
-    public void removeStudentsFromClass(Integer classId, List<Integer> studentIds) {
-        if (studentIds == null || studentIds.isEmpty()) {
-            throw new IllegalArgumentException("Vui lòng chọn ít nhất một sinh viên");
+    for (String part : csv.split(",")) {
+      String value = part.trim();
+      if (!value.isEmpty()) {
+        try {
+          days.add(Integer.parseInt(value));
+        } catch (NumberFormatException ignored) {
         }
-        studentClassRepository.deleteByClassIdAndStudentIdIn(classId, studentIds);
+      }
     }
+    return days;
+  }
 
-    /**
-     * Rejects adding a student whose existing enrollment clashes with this class's
-     * schedule over its study period:
-     *  - another class meeting at an overlapping weekly slot (shared day-of-week +
-     *    overlapping time) during overlapping date ranges, or
-     *  - an exam falling on a class session day (within the date range, on a scheduled
-     *    weekday, at an overlapping time).
-     */
-    private void validateNoScheduleConflict(Classes target, List<Integer> studentIds) {
-        if (studentIds.isEmpty()) {
-            return;
-        }
-
-        Schedule schedule = scheduleRepository.findById(target.getScheduleId())
-                .orElseThrow(() -> new IllegalArgumentException("Lớp học phần chưa có lịch học hợp lệ"));
-
-        Set<Integer> targetDays = parseDays(schedule.getDaysOfWeek());
-        LocalTime targetStartTime = schedule.getStartTime();
-        LocalTime targetEndTime = schedule.getEndTime();
-        LocalDate targetStartDate = target.getStartDate();
-        LocalDate targetEndDate = target.getEndDate();
-
-        for (Integer studentId : studentIds) {
-            // Conflict with another class
-            for (ClassScheduleView other : studentClassRepository.findOtherClassSchedulesByStudentId(studentId, target.getId())) {
-                if (dateRangesOverlap(targetStartDate, targetEndDate, other.getStartDate(), other.getEndDate())
-                        && daysIntersect(targetDays, parseDays(other.getDaysOfWeek()))
-                        && timeOverlap(targetStartTime, targetEndTime, other.getStartTime(), other.getEndTime())) {
-                    throw scheduleConflict(studentId);
-                }
-            }
-
-            // Conflict with an exam during this class's study period
-            for (ExamScheduleView exam : examRoomRepository.findExamSchedulesByStudentId(studentId)) {
-                LocalDate examDate = exam.getExamDate();
-                if (examDate != null
-                        && !examDate.isBefore(targetStartDate) && !examDate.isAfter(targetEndDate)
-                        && targetDays.contains(examDate.getDayOfWeek().getValue())
-                        && timeOverlap(targetStartTime, targetEndTime, exam.getStartTime(), exam.getEndTime())) {
-                    throw scheduleConflict(studentId);
-                }
-            }
-        }
-    }
-
-    private IllegalArgumentException scheduleConflict(Integer studentId) {
-        String code = studentRepository.findById(studentId)
-                .map(Student::getCode)
-                .orElse(String.valueOf(studentId));
-        return new IllegalArgumentException(
-                "Sinh viên " + code + " đã có lớp học phần hoặc kỳ thi trùng lịch trong thời gian học của lớp");
-    }
-
-    private Set<Integer> parseDays(String csv) {
-        Set<Integer> days = new HashSet<>();
-        if (csv == null || csv.isBlank()) {
-            return days;
-        }
-        for (String part : csv.split(",")) {
-            String value = part.trim();
-            if (!value.isEmpty()) {
-                try {
-                    days.add(Integer.parseInt(value));
-                } catch (NumberFormatException ignored) {
-                }
-            }
-        }
-        return days;
-    }
-
-    private boolean daysIntersect(Set<Integer> a, Set<Integer> b) {
-        for (Integer day : a) {
-            if (b.contains(day)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean dateRangesOverlap(LocalDate aStart, LocalDate aEnd, LocalDate bStart, LocalDate bEnd) {
-        if (aStart == null || aEnd == null || bStart == null || bEnd == null) {
-            return false;
-        }
-        return !aStart.isAfter(bEnd) && !bStart.isAfter(aEnd);
-    }
-
-    private boolean timeOverlap(LocalTime aStart, LocalTime aEnd, LocalTime bStart, LocalTime bEnd) {
-        if (aStart == null || aEnd == null || bStart == null || bEnd == null) {
-            return false;
-        }
-        return aStart.isBefore(bEnd) && bStart.isBefore(aEnd);
-    }
-
-    @Transactional
-    public void updateWifiSsid(int id, String wifiSsid) {
-        Classes classes = classRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp học có id: " + id));
-        classes.setWifiSsid(wifiSsid);
-        classRepository.save(classes);
-    }
-
-    @Transactional
-    public void setTrackingEnabled(Integer classId, boolean enabled) {
-        Classes classes = classRepository.findById(classId)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃ´ng tÃ¬m tháº¥y lá»›p há»c cÃ³ id: " + classId));
-        classes.setTrackingEnabled(enabled);
-        classRepository.save(classes);
-    }
-
-    @Transactional
-    public String generateWifiSsid(int id) {
-        Classes classes = classRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp học có id: " + id));
-        String ssid = UUID.randomUUID().toString().replace("-", "");
-        classes.setWifiSsid(ssid);
-        classRepository.save(classes);
-        return ssid;
-    }
-
-    public void delete(Integer id) {
-        Classes cs = classRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp học phần có id: " + id));
-
-        cs.setStatus(Status.INACTIVE.getValue());
-        classRepository.save(cs);
-    }
-
-    public ResponseEntity<InputStreamResource> downloadClassStudentImportTemplate() throws IOException {
-        org.springframework.core.io.ClassPathResource file =
-                new org.springframework.core.io.ClassPathResource("templates/download/checkin_import_student_template.xlsx");
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=checkin_import_student_template.xlsx")
-                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-                .body(new InputStreamResource(file.getInputStream()));
-    }
-
-    @Transactional
-    public void importStudentsToClass(Integer classId, MultipartFile file) throws IOException {
-        if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("File import không được để trống");
-        }
-
-        Classes classes = classRepository.findById(classId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp học phần có id: " + classId));
-
-        if (classes.getStatus() != Status.ACTIVE.getValue()) {
-            throw new IllegalArgumentException("Lớp học phần không còn hoạt động");
-        }
-
-        try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
-            Sheet sheet = workbook.getSheetAt(0);
-
-            List<Student> studentsToEnroll = new ArrayList<>();
-
-            // Template bắt đầu từ dòng 10 (index 9), cột 1 (index 0) là mã sinh viên
-            for (int i = 9; i <= sheet.getLastRowNum(); i++) {
-                Row row = sheet.getRow(i);
-                if (row == null || !isValidDataRow(row, 5)) {
-                    continue;
-                }
-
-                int rowNum = i + 1;
-                String studentCode = util.getCellStringValue(row.getCell(1));
-                if (studentCode == null || studentCode.isBlank()) {
-                    continue;
-                }
-
-                Student student = studentRepository.findByCodeAndStatus(studentCode, Status.ACTIVE.getValue())
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                "Dòng " + rowNum + ": Không tìm thấy sinh viên với mã: " + studentCode));
-
-                boolean alreadyEnrolled = studentClassRepository
-                        .findByStudentIdAndClassId(student.getId(), classId)
-                        .isPresent();
-
-                if (!alreadyEnrolled) {
-                    studentsToEnroll.add(student);
-                }
-            }
-
-            long currentCount = studentClassRepository.countByClassId(classId);
-            if (currentCount + studentsToEnroll.size() > classes.getMaxStudent()) {
-                throw new IllegalArgumentException(
-                        "Vượt quá sĩ số tối đa. Hiện tại: " + currentCount
-                        + ", thêm mới: " + studentsToEnroll.size()
-                        + ", tối đa: " + classes.getMaxStudent());
-            }
-
-            for (Student student : studentsToEnroll) {
-                StudentClass studentClass = new StudentClass();
-                studentClass.setClassId(classId);
-                studentClass.setStudentId(student.getId());
-                studentClassRepository.save(studentClass);
-            }
-        }
-    }
-
-    private boolean isValidDataRow(Row row, int requiredColumnCount) {
-        for (int c = 0; c < requiredColumnCount; c++) {
-            String val = util.getCellStringValue(row.getCell(c));
-            if (val == null || val.isBlank()) return false;
-        }
+  private boolean daysIntersect(Set<Integer> a, Set<Integer> b) {
+    for (Integer day : a) {
+      if (b.contains(day)) {
         return true;
+      }
     }
+    return false;
+  }
+
+  private boolean dateRangesOverlap(
+      LocalDate aStart, LocalDate aEnd, LocalDate bStart, LocalDate bEnd) {
+    if (aStart == null || aEnd == null || bStart == null || bEnd == null) {
+      return false;
+    }
+    return !aStart.isAfter(bEnd) && !bStart.isAfter(aEnd);
+  }
+
+  private boolean timeOverlap(LocalTime aStart, LocalTime aEnd, LocalTime bStart, LocalTime bEnd) {
+    if (aStart == null || aEnd == null || bStart == null || bEnd == null) {
+      return false;
+    }
+    return aStart.isBefore(bEnd) && bStart.isBefore(aEnd);
+  }
+
+  @Transactional
+  public void updateWifiSsid(int id, String wifiSsid) {
+    Classes classes =
+        classRepository
+            .findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp học có id: " + id));
+    classes.setWifiSsid(wifiSsid);
+    classRepository.save(classes);
+  }
+
+  @Transactional
+  public void setTrackingEnabled(Integer classId, boolean enabled) {
+    Classes classes =
+        classRepository
+            .findById(classId)
+            .orElseThrow(
+                () ->
+                    new IllegalArgumentException(
+                        "KhÃ´ng tÃ¬m tháº¥y lá»›p há»c cÃ³ id: " + classId));
+    classes.setTrackingEnabled(enabled);
+    classRepository.save(classes);
+  }
+
+  @Transactional
+  public String generateWifiSsid(int id) {
+    Classes classes =
+        classRepository
+            .findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp học có id: " + id));
+    String ssid = UUID.randomUUID().toString().replace("-", "");
+    classes.setWifiSsid(ssid);
+    classRepository.save(classes);
+    return ssid;
+  }
+
+  public void delete(Integer id) {
+    Classes cs =
+        classRepository
+            .findById(id)
+            .orElseThrow(
+                () -> new IllegalArgumentException("Không tìm thấy lớp học phần có id: " + id));
+
+    cs.setStatus(Status.INACTIVE.getValue());
+    classRepository.save(cs);
+  }
+
+  public ResponseEntity<InputStreamResource> downloadClassStudentImportTemplate()
+      throws IOException {
+    org.springframework.core.io.ClassPathResource file =
+        new org.springframework.core.io.ClassPathResource(
+            "templates/download/checkin_import_student_template.xlsx");
+
+    return ResponseEntity.ok()
+        .header(
+            HttpHeaders.CONTENT_DISPOSITION,
+            "attachment; filename=checkin_import_student_template.xlsx")
+        .contentType(
+            MediaType.parseMediaType(
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+        .body(new InputStreamResource(file.getInputStream()));
+  }
+
+  @Transactional
+  public void importStudentsToClass(Integer classId, MultipartFile file) throws IOException {
+    if (file == null || file.isEmpty()) {
+      throw new IllegalArgumentException("File import không được để trống");
+    }
+
+    Classes classes =
+        classRepository
+            .findById(classId)
+            .orElseThrow(
+                () ->
+                    new IllegalArgumentException("Không tìm thấy lớp học phần có id: " + classId));
+
+    if (classes.getStatus() != Status.ACTIVE.getValue()) {
+      throw new IllegalArgumentException("Lớp học phần không còn hoạt động");
+    }
+
+    try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
+      Sheet sheet = workbook.getSheetAt(0);
+
+      List<Student> studentsToEnroll = new ArrayList<>();
+
+      // Template bắt đầu từ dòng 10 (index 9), cột 1 (index 0) là mã sinh viên
+      for (int i = 9; i <= sheet.getLastRowNum(); i++) {
+        Row row = sheet.getRow(i);
+        if (row == null || !isValidDataRow(row, 5)) {
+          continue;
+        }
+
+        int rowNum = i + 1;
+        String studentCode = util.getCellStringValue(row.getCell(1));
+        if (studentCode == null || studentCode.isBlank()) {
+          continue;
+        }
+
+        Student student =
+            studentRepository
+                .findByCodeAndStatus(studentCode, Status.ACTIVE.getValue())
+                .orElseThrow(
+                    () ->
+                        new IllegalArgumentException(
+                            "Dòng "
+                                + rowNum
+                                + ": Không tìm thấy sinh viên với mã: "
+                                + studentCode));
+
+        boolean alreadyEnrolled =
+            studentClassRepository.findByStudentIdAndClassId(student.getId(), classId).isPresent();
+
+        if (!alreadyEnrolled) {
+          studentsToEnroll.add(student);
+        }
+      }
+
+      long currentCount = studentClassRepository.countByClassId(classId);
+      if (currentCount + studentsToEnroll.size() > classes.getMaxStudent()) {
+        throw new IllegalArgumentException(
+            "Vượt quá sĩ số tối đa. Hiện tại: "
+                + currentCount
+                + ", thêm mới: "
+                + studentsToEnroll.size()
+                + ", tối đa: "
+                + classes.getMaxStudent());
+      }
+
+      for (Student student : studentsToEnroll) {
+        StudentClass studentClass = new StudentClass();
+        studentClass.setClassId(classId);
+        studentClass.setStudentId(student.getId());
+        studentClassRepository.save(studentClass);
+      }
+    }
+  }
+
+  private boolean isValidDataRow(Row row, int requiredColumnCount) {
+    for (int c = 0; c < requiredColumnCount; c++) {
+      String val = util.getCellStringValue(row.getCell(c));
+      if (val == null || val.isBlank()) return false;
+    }
+    return true;
+  }
 }

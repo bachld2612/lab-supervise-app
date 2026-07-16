@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface AuthFilter {
 
-    String role() default "";
+  String role() default "";
 }

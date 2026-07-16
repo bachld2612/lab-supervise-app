@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MajorUpdateRequest {
 
-    String name;
+  String name;
 
-    Integer departmentId;
+  Integer departmentId;
 }

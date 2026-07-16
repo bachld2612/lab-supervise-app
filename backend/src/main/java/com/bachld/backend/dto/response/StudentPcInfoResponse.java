@@ -10,13 +10,13 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StudentPcInfoResponse {
 
-    private Integer studentId;
+  private Integer studentId;
 
-    private Integer userId;
+  private Integer userId;
 
-    private String fullName;
+  private String fullName;
 
-    private String code;
+  private String code;
 
-    private String ipAddress;
+  private String ipAddress;
 }

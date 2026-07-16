@@ -1,9 +1,8 @@
 package com.bachld.backend.dto.response;
 
+import java.time.LocalDate;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
@@ -12,27 +11,27 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TeacherResponse {
 
-    Integer id;
+  Integer id;
 
-    String email;
+  String email;
 
-    String phone;
+  String phone;
 
-    String fullName;
+  String fullName;
 
-    String code;
+  String code;
 
-    String hometown;
+  String hometown;
 
-    Integer sectionId;
+  Integer sectionId;
 
-    String sectionName;
+  String sectionName;
 
-    LocalDate birthday;
+  LocalDate birthday;
 
-    Integer userId;
+  Integer userId;
 
-    String rawPassword;
+  String rawPassword;
 
-    Integer status;
+  Integer status;
 }

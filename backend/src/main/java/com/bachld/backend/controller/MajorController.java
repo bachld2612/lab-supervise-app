@@ -21,42 +21,43 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MajorController {
 
-    MajorService majorService;
+  MajorService majorService;
 
-    @GetMapping("/v1")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> getList(
-            @PageableDefault Pageable pageable,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Integer status
-    ) {
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), majorService.getList(pageable, keyword, status)));
-    }
+  @GetMapping("/v1")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> getList(
+      @PageableDefault Pageable pageable,
+      @RequestParam(required = false) String keyword,
+      @RequestParam(required = false) Integer status) {
+    return ResponseEntity.ok(
+        new BaseResponse<>(HttpStatus.OK.value(), majorService.getList(pageable, keyword, status)));
+  }
 
-    @GetMapping("/v1/{id}")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> getById(@PathVariable int id) {
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), majorService.getById(id)));
-    }
+  @GetMapping("/v1/{id}")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> getById(@PathVariable int id) {
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), majorService.getById(id)));
+  }
 
-    @PostMapping("/v1")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> create(@RequestBody @Valid MajorCreateRequest request) {
-        majorService.create(request);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @PostMapping("/v1")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> create(@RequestBody @Valid MajorCreateRequest request) {
+    majorService.create(request);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 
-    @PutMapping("/v1/{id}")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> update(@RequestBody @Valid MajorUpdateRequest request, @PathVariable int id) {
-        majorService.update(request, id);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @PutMapping("/v1/{id}")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> update(
+      @RequestBody @Valid MajorUpdateRequest request, @PathVariable int id) {
+    majorService.update(request, id);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 
-    @DeleteMapping("/v1/{id}")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> delete(@PathVariable int id) {
-        majorService.deleteById(id);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @DeleteMapping("/v1/{id}")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> delete(@PathVariable int id) {
+    majorService.deleteById(id);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 }

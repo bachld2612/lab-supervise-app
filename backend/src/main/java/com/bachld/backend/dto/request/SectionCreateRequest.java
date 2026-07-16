@@ -14,9 +14,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SectionCreateRequest {
 
-    @NotEmpty(message = "Bộ môn không được phép bỏ trống")
-    String name;
+  @NotEmpty(message = "Bộ môn không được phép bỏ trống") String name;
 
-    @NotNull(message = "Khoa không được phép bỏ trống")
-    Integer departmentId;
+  @NotNull(message = "Khoa không được phép bỏ trống") Integer departmentId;
 }

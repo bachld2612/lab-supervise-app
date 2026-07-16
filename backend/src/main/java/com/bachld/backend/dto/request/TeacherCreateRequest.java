@@ -16,29 +16,17 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TeacherCreateRequest {
 
-    @NotEmpty(message = "Email không được phép bỏ trống")
-    @Email(message = "Email không hợp lệ")
-    String email;
+  @NotEmpty(message = "Email không được phép bỏ trống") @Email(message = "Email không hợp lệ") String email;
 
-    @NotEmpty(message = "Mã giảng viên không được phép bỏ trống")
-    String code;
+  @NotEmpty(message = "Mã giảng viên không được phép bỏ trống") String code;
 
-    @NotEmpty(message = "Tên không được phép bỏ trống")
-    String fullName;
+  @NotEmpty(message = "Tên không được phép bỏ trống") String fullName;
 
-    @NotEmpty(message = "Quê nhà không được phép bỏ trống")
-    String hometown;
+  @NotEmpty(message = "Quê nhà không được phép bỏ trống") String hometown;
 
-    @NotEmpty(message = "Số điện thoại không được phép bỏ trống")
-    String phone;
+  @NotEmpty(message = "Số điện thoại không được phép bỏ trống") String phone;
 
-    @NotNull(message = "Bộ môn không được phép bỏ trống")
-    Integer sectionId;
+  @NotNull(message = "Bộ môn không được phép bỏ trống") Integer sectionId;
 
-    @NotEmpty(message = "Ngày sinh không được phép bỏ trống")
-    @Pattern(
-            regexp = "^$|^\\d{4}-\\d{2}-\\d{2}$",
-            message = "Ngày sinh phải có định dạng yyyy-MM-dd"
-    )
-    String birthday;
+  @NotEmpty(message = "Ngày sinh không được phép bỏ trống") @Pattern(regexp = "^$|^\\d{4}-\\d{2}-\\d{2}$", message = "Ngày sinh phải có định dạng yyyy-MM-dd") String birthday;
 }

@@ -15,17 +15,17 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "incident_reports")
 public class IncidentReport extends BaseEntity {
 
-    String title;
+  String title;
 
-    @Column(name = "room_id")
-    Integer roomId;
+  @Column(name = "room_id")
+  Integer roomId;
 
-    @Column(name = "reporter_id")
-    Integer reporterId;
+  @Column(name = "reporter_id")
+  Integer reporterId;
 
-    @Column(name = "reporter_role", length = 20)
-    String reporterRole;
+  @Column(name = "reporter_role", length = 20)
+  String reporterRole;
 
-    @Column(name = "handler_id")
-    Integer handlerId;
+  @Column(name = "handler_id")
+  Integer handlerId;
 }

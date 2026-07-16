@@ -1,4 +1,5 @@
 /frontend/node_modules
+/landing-page/app
 desktop/CLAUDE.md
 .gitignore
 desktop/logs/lab-monitor.log

@@ -15,9 +15,9 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "personal_computer")
 public class PersonalComputer extends BaseEntity {
 
-    @Column(name = "ip_address")
-    String ipAddress;
+  @Column(name = "ip_address")
+  String ipAddress;
 
-    @Column(name = "user_id")
-    Integer userId;
+  @Column(name = "user_id")
+  Integer userId;
 }

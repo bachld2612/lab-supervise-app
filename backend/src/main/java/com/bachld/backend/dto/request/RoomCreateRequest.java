@@ -15,10 +15,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoomCreateRequest {
 
-    @NotEmpty(message = "Tên phòng không được phép bỏ trống")
-    String name;
+  @NotEmpty(message = "Tên phòng không được phép bỏ trống") String name;
 
-    @NotNull(message = "Số lượng chỗ ngồi không được phép bỏ trống")
-    @Min(value = 1, message = "Số lượng chỗ ngồi phải lớn hơn 0")
-    Integer capacity;
+  @NotNull(message = "Số lượng chỗ ngồi không được phép bỏ trống") @Min(value = 1, message = "Số lượng chỗ ngồi phải lớn hơn 0") Integer capacity;
 }

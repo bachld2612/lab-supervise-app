@@ -1,9 +1,8 @@
 package com.bachld.backend.dto.request;
 
+import java.util.List;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 /** Body for bulk add/remove of students to/from a class. */
 @Data
@@ -12,5 +11,5 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StudentClassRequest {
 
-    List<Integer> studentIds;
+  List<Integer> studentIds;
 }

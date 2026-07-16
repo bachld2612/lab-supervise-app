@@ -14,11 +14,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AllowedApplicationCreateRequest {
 
-    @NotNull(message = "Phòng thi không được để trống")
-    Integer examRoomId;
+  @NotNull(message = "Phòng thi không được để trống") Integer examRoomId;
 
-    @NotBlank(message = "Tên ứng dụng không được để trống")
-    String applicationName;
+  @NotBlank(message = "Tên ứng dụng không được để trống") String applicationName;
 
-    String imageUrl;
+  String imageUrl;
 }

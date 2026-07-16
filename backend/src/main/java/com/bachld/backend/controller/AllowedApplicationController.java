@@ -21,37 +21,39 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AllowedApplicationController {
 
-    AllowedApplicationService allowedApplicationService;
+  AllowedApplicationService allowedApplicationService;
 
-    @GetMapping("/v1")
-    @AuthFilter(role = "TEACHER")
-    public ResponseEntity<?> getList(
-            @RequestParam Integer examRoomId,
-            @PageableDefault Pageable pageable,
-            @RequestParam(required = false) String keyword
-    ) {
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(),
-                allowedApplicationService.getList(examRoomId, pageable, keyword)));
-    }
+  @GetMapping("/v1")
+  @AuthFilter(role = "TEACHER")
+  public ResponseEntity<?> getList(
+      @RequestParam Integer examRoomId,
+      @PageableDefault Pageable pageable,
+      @RequestParam(required = false) String keyword) {
+    return ResponseEntity.ok(
+        new BaseResponse<>(
+            HttpStatus.OK.value(),
+            allowedApplicationService.getList(examRoomId, pageable, keyword)));
+  }
 
-    @PostMapping("/v1")
-    @AuthFilter(role = "TEACHER")
-    public ResponseEntity<?> create(@RequestBody @Valid AllowedApplicationCreateRequest request) {
-        allowedApplicationService.create(request);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @PostMapping("/v1")
+  @AuthFilter(role = "TEACHER")
+  public ResponseEntity<?> create(@RequestBody @Valid AllowedApplicationCreateRequest request) {
+    allowedApplicationService.create(request);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 
-    @PutMapping("/v1/{id}")
-    @AuthFilter(role = "TEACHER")
-    public ResponseEntity<?> update(@RequestBody AllowedApplicationUpdateRequest request, @PathVariable int id) {
-        allowedApplicationService.update(request, id);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @PutMapping("/v1/{id}")
+  @AuthFilter(role = "TEACHER")
+  public ResponseEntity<?> update(
+      @RequestBody AllowedApplicationUpdateRequest request, @PathVariable int id) {
+    allowedApplicationService.update(request, id);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 
-    @DeleteMapping("/v1/{id}")
-    @AuthFilter(role = "TEACHER")
-    public ResponseEntity<?> delete(@PathVariable int id) {
-        allowedApplicationService.delete(id);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @DeleteMapping("/v1/{id}")
+  @AuthFilter(role = "TEACHER")
+  public ResponseEntity<?> delete(@PathVariable int id) {
+    allowedApplicationService.delete(id);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 }
