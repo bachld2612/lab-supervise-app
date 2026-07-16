@@ -21,42 +21,45 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SemesterController {
 
-    SemesterService semesterService;
+  SemesterService semesterService;
 
-    @GetMapping("/v1")
-    @AuthFilter(role = "ADMIN,TEACHER,STUDENT")
-    public ResponseEntity<?> getList(
-            @PageableDefault Pageable pageable,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Integer status
-    ) {
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), semesterService.getList(pageable, keyword, status)));
-    }
+  @GetMapping("/v1")
+  @AuthFilter(role = "ADMIN,TEACHER,STUDENT")
+  public ResponseEntity<?> getList(
+      @PageableDefault Pageable pageable,
+      @RequestParam(required = false) String keyword,
+      @RequestParam(required = false) Integer status) {
+    return ResponseEntity.ok(
+        new BaseResponse<>(
+            HttpStatus.OK.value(), semesterService.getList(pageable, keyword, status)));
+  }
 
-    @GetMapping("/v1/{id}")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> getById(@PathVariable int id) {
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), semesterService.getById(id)));
-    }
+  @GetMapping("/v1/{id}")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> getById(@PathVariable int id) {
+    return ResponseEntity.ok(
+        new BaseResponse<>(HttpStatus.OK.value(), semesterService.getById(id)));
+  }
 
-    @PostMapping("/v1")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> create(@RequestBody @Valid SemesterCreateRequest request) {
-        semesterService.create(request);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @PostMapping("/v1")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> create(@RequestBody @Valid SemesterCreateRequest request) {
+    semesterService.create(request);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 
-    @PutMapping("/v1/{id}")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> update(@RequestBody @Valid SemesterUpdateRequest request, @PathVariable int id) {
-        semesterService.update(request, id);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @PutMapping("/v1/{id}")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> update(
+      @RequestBody @Valid SemesterUpdateRequest request, @PathVariable int id) {
+    semesterService.update(request, id);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 
-    @DeleteMapping("/v1/{id}")
-    @AuthFilter(role = "ADMIN")
-    public ResponseEntity<?> delete(@PathVariable int id) {
-        semesterService.deleteById(id);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @DeleteMapping("/v1/{id}")
+  @AuthFilter(role = "ADMIN")
+  public ResponseEntity<?> delete(@PathVariable int id) {
+    semesterService.deleteById(id);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 }

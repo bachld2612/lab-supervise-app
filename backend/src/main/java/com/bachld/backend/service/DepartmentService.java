@@ -18,48 +18,51 @@ import org.springframework.stereotype.Service;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DepartmentService {
 
-    DepartmentRepository departmentRepository;
+  DepartmentRepository departmentRepository;
 
-    public Page<DepartmentResponse> getList(Pageable pageable, String keyword, Integer status) {
-        if (keyword != null) {
-            keyword = "%" + keyword.trim().toLowerCase() + "%";
-        }
-        else {
-            keyword = "%%";
-        }
-
-        return departmentRepository.findByKeyword(pageable, keyword, status);
+  public Page<DepartmentResponse> getList(Pageable pageable, String keyword, Integer status) {
+    if (keyword != null) {
+      keyword = "%" + keyword.trim().toLowerCase() + "%";
+    } else {
+      keyword = "%%";
     }
 
-    public DepartmentResponse getById(Integer id) {
-        return departmentRepository.findByIdAndStatus(id, Status.ACTIVE.getValue());
+    return departmentRepository.findByKeyword(pageable, keyword, status);
+  }
+
+  public DepartmentResponse getById(Integer id) {
+    return departmentRepository.findByIdAndStatus(id, Status.ACTIVE.getValue());
+  }
+
+  public void create(DepartmentCreateRequest request) {
+    Department department = new Department();
+
+    department.setName(request.getName());
+    department.setStatus(Status.ACTIVE.getValue());
+
+    departmentRepository.save(department);
+  }
+
+  public void update(DepartmentUpdateRequest request, int id) {
+    Department department =
+        departmentRepository
+            .findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy khoa có id: " + id));
+
+    if (request.getName() != null && !request.getName().isEmpty()) {
+      department.setName(request.getName());
     }
 
-    public void create(DepartmentCreateRequest request) {
-        Department department = new Department();
+    departmentRepository.save(department);
+  }
 
-        department.setName(request.getName());
-        department.setStatus(Status.ACTIVE.getValue());
+  public void deleteById(Integer id) {
+    Department department =
+        departmentRepository
+            .findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy khoá có id: " + id));
 
-        departmentRepository.save(department);
-    }
-
-    public void update(DepartmentUpdateRequest request, int id) {
-        Department department = departmentRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy khoa có id: " + id));
-
-        if (request.getName() != null && !request.getName().isEmpty()) {
-            department.setName(request.getName());
-        }
-
-        departmentRepository.save(department);
-    }
-
-    public void deleteById(Integer id) {
-        Department department = departmentRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy khoá có id: " + id));
-
-        department.setStatus(Status.INACTIVE.getValue());
-        departmentRepository.save(department);
-    }
+    department.setStatus(Status.INACTIVE.getValue());
+    departmentRepository.save(department);
+  }
 }

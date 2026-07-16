@@ -14,22 +14,17 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StudentUpdateRequest {
 
-    @Email(message = "Email không hợp lệ")
-    String email;
+  @Email(message = "Email không hợp lệ") String email;
 
-    Integer manageClassId;
+  Integer manageClassId;
 
-    String code;
+  String code;
 
-    String fullName;
+  String fullName;
 
-    String hometown;
+  String hometown;
 
-    @Pattern(
-            regexp = "^$|^\\d{4}-\\d{2}-\\d{2}$",
-            message = "Ngày sinh phải có định dạng yyyy-MM-dd"
-    )
-    String birthday;
+  @Pattern(regexp = "^$|^\\d{4}-\\d{2}-\\d{2}$", message = "Ngày sinh phải có định dạng yyyy-MM-dd") String birthday;
 
-    String phone;
+  String phone;
 }

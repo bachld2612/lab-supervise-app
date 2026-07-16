@@ -14,13 +14,12 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ScheduleCreateRequest {
 
-    @NotEmpty(message = "Tên lịch học không được phép bỏ trống")
-    String name;
+  @NotEmpty(message = "Tên lịch học không được phép bỏ trống") String name;
 
-    @NotEmpty(message = "Ngày trong tuần không được phép bỏ trống")
-    String daysOfWeek;
+  @NotEmpty(message = "Ngày trong tuần không được phép bỏ trống") String daysOfWeek;
 
-    @NotEmpty(message = "Tiết học không được phép bỏ trống")
-    @Pattern(regexp = "^([1-9]|1[0-2])(,[1-9]|,1[0-2])*$", message = "Định dạng tiết học không hợp lệ.")
-    String periods;
+  @NotEmpty(message = "Tiết học không được phép bỏ trống") @Pattern(
+      regexp = "^([1-9]|1[0-2])(,[1-9]|,1[0-2])*$",
+      message = "Định dạng tiết học không hợp lệ.")
+  String periods;
 }

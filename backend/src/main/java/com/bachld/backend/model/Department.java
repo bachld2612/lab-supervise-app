@@ -14,5 +14,5 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "departments")
 public class Department extends BaseEntity {
 
-    String name;
+  String name;
 }

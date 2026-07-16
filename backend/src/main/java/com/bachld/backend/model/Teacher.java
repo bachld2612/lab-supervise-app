@@ -15,11 +15,11 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "teachers")
 public class Teacher extends BaseEntity {
 
-    String code;
+  String code;
 
-    @Column(name = "section_id")
-    Integer sectionId;
+  @Column(name = "section_id")
+  Integer sectionId;
 
-    @Column(name = "user_id")
-    Integer userId;
+  @Column(name = "user_id")
+  Integer userId;
 }

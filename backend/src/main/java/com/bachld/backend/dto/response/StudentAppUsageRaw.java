@@ -1,10 +1,9 @@
 package com.bachld.backend.dto.response;
 
 import com.bachld.backend.util.enums.TrackingAction;
+import java.time.LocalDateTime;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -13,26 +12,39 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StudentAppUsageRaw {
 
-    Integer studentId;
+  Integer studentId;
 
-    String applicationName;
+  String applicationName;
 
-    TrackingAction action;
+  TrackingAction action;
 
-    String clipboardTextEncrypted;
+  String clipboardTextEncrypted;
 
-    String clipboardKeyEncrypted;
+  String clipboardKeyEncrypted;
 
-    String clipboardIv;
+  String clipboardIv;
 
-    LocalDateTime createdAt;
+  LocalDateTime createdAt;
 
-    boolean isBanApplication;
+  boolean isBanApplication;
 
-    String connectionType;
+  String connectionType;
 
-    public StudentAppUsageRaw(Integer studentId, String applicationName, LocalDateTime createdAt,
-                              boolean isBanApplication, String connectionType) {
-        this(studentId, applicationName, TrackingAction.NORMAL, null, null, null, createdAt, isBanApplication, connectionType);
-    }
+  public StudentAppUsageRaw(
+      Integer studentId,
+      String applicationName,
+      LocalDateTime createdAt,
+      boolean isBanApplication,
+      String connectionType) {
+    this(
+        studentId,
+        applicationName,
+        TrackingAction.NORMAL,
+        null,
+        null,
+        null,
+        createdAt,
+        isBanApplication,
+        connectionType);
+  }
 }

@@ -13,6 +13,5 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class IncidentReportStudentCreateRequest {
 
-    @NotEmpty(message = "Tên sự cố không được phép bỏ trống")
-    String title;
+  @NotEmpty(message = "Tên sự cố không được phép bỏ trống") String title;
 }

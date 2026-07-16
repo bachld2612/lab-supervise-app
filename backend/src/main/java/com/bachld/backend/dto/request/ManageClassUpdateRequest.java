@@ -13,12 +13,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ManageClassUpdateRequest {
 
-    String name;
+  String name;
 
-    @Min(value = 1, message = "Sĩ số tối đa phải lớn hơn 1")
-    Integer maxStudent;
+  @Min(value = 1, message = "Sĩ số tối đa phải lớn hơn 1") Integer maxStudent;
 
-    Integer teacherId;
+  Integer teacherId;
 
-    Integer majorId;
+  Integer majorId;
 }

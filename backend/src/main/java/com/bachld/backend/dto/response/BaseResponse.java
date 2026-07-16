@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BaseResponse<T> {
 
-    int statusCode;
+  int statusCode;
 
-    T data;
+  T data;
 }

@@ -1,9 +1,8 @@
 package com.bachld.backend.dto.response;
 
+import java.time.LocalDate;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
@@ -12,15 +11,15 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SemesterResponse {
 
-    Integer id;
+  Integer id;
 
-    String name;
+  String name;
 
-    String studyYear;
+  String studyYear;
 
-    LocalDate startDate;
+  LocalDate startDate;
 
-    LocalDate endDate;
+  LocalDate endDate;
 
-    Integer status;
+  Integer status;
 }

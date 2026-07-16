@@ -13,8 +13,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ChangePasswordRequest {
 
-    String oldPassword;
+  String oldPassword;
 
-    @Size(min = 6, message = "Mật khẩu phải chứa 6 kí tự trở lên")
-    String newPassword;
+  @Size(min = 6, message = "Mật khẩu phải chứa 6 kí tự trở lên") String newPassword;
 }

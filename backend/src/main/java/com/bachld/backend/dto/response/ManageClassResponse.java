@@ -10,19 +10,19 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ManageClassResponse {
 
-    Integer id;
+  Integer id;
 
-    String name;
+  String name;
 
-    Integer maxStudent;
+  Integer maxStudent;
 
-    Integer status;
+  Integer status;
 
-    String teacherName;
+  String teacherName;
 
-    Integer teacherId;
+  Integer teacherId;
 
-    String majorName;
+  String majorName;
 
-    Integer majorId;
+  Integer majorId;
 }

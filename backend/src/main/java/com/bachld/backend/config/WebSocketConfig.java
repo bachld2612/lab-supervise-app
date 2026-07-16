@@ -6,6 +6,7 @@ import com.bachld.backend.repository.ClassRepository;
 import com.bachld.backend.repository.TeacherRepository;
 import com.bachld.backend.service.JwtService;
 import com.bachld.backend.service.UserPrincipalService;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,8 +27,6 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 
-import java.util.List;
-
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
@@ -35,106 +34,108 @@ import java.util.List;
 @Slf4j
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    JwtService jwtService;
+  JwtService jwtService;
 
-    UserPrincipalService userDetailsService;
+  UserPrincipalService userDetailsService;
 
-    TeacherRepository teacherRepository;
+  TeacherRepository teacherRepository;
 
-    ClassRepository classRepository;
+  ClassRepository classRepository;
 
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
-        config.setApplicationDestinationPrefixes("/app");
-    }
+  @Override
+  public void configureMessageBroker(MessageBrokerRegistry config) {
+    config.enableSimpleBroker("/topic");
+    config.setApplicationDestinationPrefixes("/app");
+  }
 
-    @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*")
-                .withSockJS();
-                
-        registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*");
-    }
+  @Override
+  public void registerStompEndpoints(StompEndpointRegistry registry) {
+    registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS();
 
-    @Override
-    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
-        registration.setMessageSizeLimit(50 * 1024 * 1024);
-        registration.setSendBufferSizeLimit(50 * 1024 * 1024);
-        registration.setSendTimeLimit(30_000);
-    }
+    registry.addEndpoint("/ws").setAllowedOriginPatterns("*");
+  }
 
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(new ChannelInterceptor() {
-            @Override
-            public Message<?> preSend(Message<?> message, MessageChannel channel) {
-                StompHeaderAccessor accessor =
-                        MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+  @Override
+  public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+    registration.setMessageSizeLimit(50 * 1024 * 1024);
+    registration.setSendBufferSizeLimit(50 * 1024 * 1024);
+    registration.setSendTimeLimit(30_000);
+  }
 
-                if (accessor == null) return message;
+  @Override
+  public void configureClientInboundChannel(ChannelRegistration registration) {
+    registration.interceptors(
+        new ChannelInterceptor() {
+          @Override
+          public Message<?> preSend(Message<?> message, MessageChannel channel) {
+            StompHeaderAccessor accessor =
+                MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-                if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                    String token = extractToken(accessor);
-                    if (token != null) {
-                        String userId = jwtService.extractId(token);
-                        if (userId != null) {
-                            UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
-                            if (jwtService.validateToken(token, userDetails)) {
-                                UsernamePasswordAuthenticationToken authentication =
-                                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                                accessor.setUser(authentication);
-                            }
-                        }
-                    }
-                } else if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
-                    String destination = accessor.getDestination();
-                    if (destination == null) return message;
+            if (accessor == null) return message;
 
-                    if (destination.startsWith("/topic/class/")) {
-                        if (accessor.getUser() == null) {
-                            throw new IllegalArgumentException("Unauthorized subscription");
-                        }
-
-                        Integer userId = Integer.valueOf(accessor.getUser().getName());
-                        Integer classId = Integer.valueOf(destination.replace("/topic/class/", ""));
-
-                        // Check if teacher managing this class
-                        Teacher teacher = teacherRepository.findByUserId(userId).orElse(null);
-                        Classes clazz = classRepository.findById(classId).orElse(null);
-
-                        if (teacher == null || clazz == null || !clazz.getTeacherId().equals(teacher.getId())) {
-                            throw new IllegalArgumentException("Bạn không được phép truy cập lớp này");
-                        }
-                    } else if (destination.startsWith("/topic/user/")) {
-                        if (accessor.getUser() == null) {
-                            throw new IllegalArgumentException("Unauthorized subscription");
-                        }
-                        String[] parts = destination.split("/");
-                        // /topic/user/{userId}/file → parts[3]
-                        Integer topicUserId = Integer.valueOf(parts[3]);
-                        Integer authUserId = Integer.valueOf(accessor.getUser().getName());
-                        if (!topicUserId.equals(authUserId)) {
-                            throw new IllegalArgumentException("Không được phép subscribe topic của user khác");
-                        }
-                    }
+            if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+              String token = extractToken(accessor);
+              if (token != null) {
+                String userId = jwtService.extractId(token);
+                if (userId != null) {
+                  UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
+                  if (jwtService.validateToken(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    accessor.setUser(authentication);
+                  }
                 }
-                
-                return message;
+              }
+            } else if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
+              String destination = accessor.getDestination();
+              if (destination == null) return message;
+
+              if (destination.startsWith("/topic/class/")) {
+                if (accessor.getUser() == null) {
+                  throw new IllegalArgumentException("Unauthorized subscription");
+                }
+
+                Integer userId = Integer.valueOf(accessor.getUser().getName());
+                Integer classId = Integer.valueOf(destination.replace("/topic/class/", ""));
+
+                // Check if teacher managing this class
+                Teacher teacher = teacherRepository.findByUserId(userId).orElse(null);
+                Classes clazz = classRepository.findById(classId).orElse(null);
+
+                if (teacher == null
+                    || clazz == null
+                    || !clazz.getTeacherId().equals(teacher.getId())) {
+                  throw new IllegalArgumentException("Bạn không được phép truy cập lớp này");
+                }
+              } else if (destination.startsWith("/topic/user/")) {
+                if (accessor.getUser() == null) {
+                  throw new IllegalArgumentException("Unauthorized subscription");
+                }
+                String[] parts = destination.split("/");
+                // /topic/user/{userId}/file → parts[3]
+                Integer topicUserId = Integer.valueOf(parts[3]);
+                Integer authUserId = Integer.valueOf(accessor.getUser().getName());
+                if (!topicUserId.equals(authUserId)) {
+                  throw new IllegalArgumentException(
+                      "Không được phép subscribe topic của user khác");
+                }
+              }
             }
 
-            private String extractToken(StompHeaderAccessor accessor) {
-                List<String> authorization = accessor.getNativeHeader("Authorization");
-                if (authorization != null && !authorization.isEmpty()) {
-                    String bearerToken = authorization.get(0);
-                    if (bearerToken.startsWith("Bearer ")) {
-                        return bearerToken.substring(7);
-                    }
-                }
-                return null;
+            return message;
+          }
+
+          private String extractToken(StompHeaderAccessor accessor) {
+            List<String> authorization = accessor.getNativeHeader("Authorization");
+            if (authorization != null && !authorization.isEmpty()) {
+              String bearerToken = authorization.get(0);
+              if (bearerToken.startsWith("Bearer ")) {
+                return bearerToken.substring(7);
+              }
             }
+            return null;
+          }
         });
-    }
+  }
 }

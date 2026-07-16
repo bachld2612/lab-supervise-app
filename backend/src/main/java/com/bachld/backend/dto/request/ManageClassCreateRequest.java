@@ -15,16 +15,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ManageClassCreateRequest {
 
-    @NotEmpty(message = "Tên lớp không được phép bỏ trống")
-    String name;
+  @NotEmpty(message = "Tên lớp không được phép bỏ trống") String name;
 
-    @NotNull(message = "Sĩ số tối đa không được phép bỏ trống")
-    @Min(value = 1, message = "Sĩ số tối đa phải lớn hơn 1")
-    Integer maxStudent;
+  @NotNull(message = "Sĩ số tối đa không được phép bỏ trống") @Min(value = 1, message = "Sĩ số tối đa phải lớn hơn 1") Integer maxStudent;
 
-    @NotNull(message = "Giảng viên không được phép bỏ trống")
-    Integer teacherId;
+  @NotNull(message = "Giảng viên không được phép bỏ trống") Integer teacherId;
 
-    @NotNull(message = "Chuyên ngành không được phép bỏ trống")
-    Integer majorId;
+  @NotNull(message = "Chuyên ngành không được phép bỏ trống") Integer majorId;
 }

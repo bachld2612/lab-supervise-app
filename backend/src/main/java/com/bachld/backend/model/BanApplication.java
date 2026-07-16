@@ -15,12 +15,12 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "ban_application")
 public class BanApplication extends BaseEntity {
 
-    @Column(name = "teacher_id")
-    Integer teacherId;
+  @Column(name = "teacher_id")
+  Integer teacherId;
 
-    @Column(name = "application_name", columnDefinition = "TEXT")
-    String applicationName;
+  @Column(name = "application_name", columnDefinition = "TEXT")
+  String applicationName;
 
-    @Column(name = "image_url", columnDefinition = "TEXT")
-    String imageUrl;
+  @Column(name = "image_url", columnDefinition = "TEXT")
+  String imageUrl;
 }

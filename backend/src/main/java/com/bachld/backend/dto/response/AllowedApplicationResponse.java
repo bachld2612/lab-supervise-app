@@ -10,13 +10,13 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AllowedApplicationResponse {
 
-    Integer id;
+  Integer id;
 
-    Integer examRoomId;
+  Integer examRoomId;
 
-    String applicationName;
+  String applicationName;
 
-    String imageUrl;
+  String imageUrl;
 
-    Integer status;
+  Integer status;
 }

@@ -12,13 +12,13 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ClipboardEventRequest {
 
-    String applicationName;
+  String applicationName;
 
-    Integer action;
+  Integer action;
 
-    String clipboardTextEncrypted;
+  String clipboardTextEncrypted;
 
-    String clipboardKeyEncrypted;
+  String clipboardKeyEncrypted;
 
-    String clipboardIv;
+  String clipboardIv;
 }

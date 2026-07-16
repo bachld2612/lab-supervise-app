@@ -14,29 +14,31 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ExamRoomUpdateRequest {
 
-    String code;
+  String code;
 
-    Integer roomId;
+  Integer roomId;
 
-    Integer teacher1Id;
+  Integer teacher1Id;
 
-    Integer teacher2Id;
+  Integer teacher2Id;
 
-    Integer subjectId;
+  Integer subjectId;
 
-    Integer semesterId;
+  Integer semesterId;
 
-    @Min(value = 1, message = "Sĩ số tối đa phải lớn hơn 0")
-    Integer maxStudent;
+  @Min(value = 1, message = "Sĩ số tối đa phải lớn hơn 0") Integer maxStudent;
 
-    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Ngày thi phải có định dạng yyyy-MM-dd")
-    String examDate;
+  @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Ngày thi phải có định dạng yyyy-MM-dd") String examDate;
 
-    String periods;
+  String periods;
 
-    @Pattern(regexp = "^\\d{2}:\\d{2}(:\\d{2})?$", message = "Giờ bắt đầu phải có định dạng HH:mm hoặc HH:mm:ss")
-    String startTime;
+  @Pattern(
+      regexp = "^\\d{2}:\\d{2}(:\\d{2})?$",
+      message = "Giờ bắt đầu phải có định dạng HH:mm hoặc HH:mm:ss")
+  String startTime;
 
-    @Pattern(regexp = "^\\d{2}:\\d{2}(:\\d{2})?$", message = "Giờ kết thúc phải có định dạng HH:mm hoặc HH:mm:ss")
-    String endTime;
+  @Pattern(
+      regexp = "^\\d{2}:\\d{2}(:\\d{2})?$",
+      message = "Giờ kết thúc phải có định dạng HH:mm hoặc HH:mm:ss")
+  String endTime;
 }

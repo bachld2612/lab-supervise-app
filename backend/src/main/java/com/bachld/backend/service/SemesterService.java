@@ -6,6 +6,7 @@ import com.bachld.backend.dto.response.SemesterResponse;
 import com.bachld.backend.model.Semester;
 import com.bachld.backend.repository.SemesterRepository;
 import com.bachld.backend.util.enums.Status;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -14,84 +15,88 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SemesterService {
 
-    SemesterRepository semesterRepository;
+  SemesterRepository semesterRepository;
 
-    public Page<SemesterResponse> getList(Pageable pageable, String keyword, Integer status) {
-        if (keyword != null) {
-            keyword = "%" + keyword.trim().toLowerCase() + "%";
-        } else {
-            keyword = "%%";
-        }
-
-        return semesterRepository.findByKeyword(pageable, keyword, status);
+  public Page<SemesterResponse> getList(Pageable pageable, String keyword, Integer status) {
+    if (keyword != null) {
+      keyword = "%" + keyword.trim().toLowerCase() + "%";
+    } else {
+      keyword = "%%";
     }
 
-    public SemesterResponse getById(Integer id) {
-        return semesterRepository.findByIdAndStatus(id, Status.ACTIVE.getValue());
+    return semesterRepository.findByKeyword(pageable, keyword, status);
+  }
+
+  public SemesterResponse getById(Integer id) {
+    return semesterRepository.findByIdAndStatus(id, Status.ACTIVE.getValue());
+  }
+
+  @Transactional
+  public void create(SemesterCreateRequest request) {
+    LocalDate start = LocalDate.parse(request.getStartDate());
+    LocalDate end = LocalDate.parse(request.getEndDate());
+
+    if (start.isAfter(end)) {
+      throw new IllegalArgumentException("Ngày bắt đầu phải trước ngày kết thúc");
     }
 
-    @Transactional
-    public void create(SemesterCreateRequest request) {
-        LocalDate start = LocalDate.parse(request.getStartDate());
-        LocalDate end = LocalDate.parse(request.getEndDate());
+    Semester semester = new Semester();
+    semester.setName(request.getName());
+    semester.setStudyYear(request.getStudyYear());
+    semester.setStartDate(start);
+    semester.setEndDate(end);
+    semester.setStatus(Status.ACTIVE.getValue());
 
-        if (start.isAfter(end)) {
-            throw new IllegalArgumentException("Ngày bắt đầu phải trước ngày kết thúc");
-        }
+    semesterRepository.save(semester);
+  }
 
-        Semester semester = new Semester();
-        semester.setName(request.getName());
-        semester.setStudyYear(request.getStudyYear());
-        semester.setStartDate(start);
-        semester.setEndDate(end);
-        semester.setStatus(Status.ACTIVE.getValue());
+  @Transactional
+  public void update(SemesterUpdateRequest request, int id) {
+    Semester semester =
+        semesterRepository
+            .findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy học kỳ có id: " + id));
 
-        semesterRepository.save(semester);
+    if (request.getName() != null && !request.getName().isEmpty()) {
+      semester.setName(request.getName());
     }
 
-    @Transactional
-    public void update(SemesterUpdateRequest request, int id) {
-        Semester semester = semesterRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy học kỳ có id: " + id));
+    if (request.getStudyYear() != null && !request.getStudyYear().isEmpty()) {
+      semester.setStudyYear(request.getStudyYear());
+    }
 
-        if (request.getName() != null && !request.getName().isEmpty()) {
-            semester.setName(request.getName());
-        }
-
-        if (request.getStudyYear() != null && !request.getStudyYear().isEmpty()) {
-            semester.setStudyYear(request.getStudyYear());
-        }
-
-        LocalDate newStart = request.getStartDate() != null && !request.getStartDate().isEmpty() 
-            ? LocalDate.parse(request.getStartDate()) 
+    LocalDate newStart =
+        request.getStartDate() != null && !request.getStartDate().isEmpty()
+            ? LocalDate.parse(request.getStartDate())
             : semester.getStartDate();
-            
-        LocalDate newEnd = request.getEndDate() != null && !request.getEndDate().isEmpty() 
-            ? LocalDate.parse(request.getEndDate()) 
+
+    LocalDate newEnd =
+        request.getEndDate() != null && !request.getEndDate().isEmpty()
+            ? LocalDate.parse(request.getEndDate())
             : semester.getEndDate();
 
-        if (newStart != null && newEnd != null && newStart.isAfter(newEnd)) {
-            throw new IllegalArgumentException("Ngày bắt đầu phải trước ngày kết thúc");
-        }
-
-        semester.setStartDate(newStart);
-        semester.setEndDate(newEnd);
-
-        semesterRepository.save(semester);
+    if (newStart != null && newEnd != null && newStart.isAfter(newEnd)) {
+      throw new IllegalArgumentException("Ngày bắt đầu phải trước ngày kết thúc");
     }
 
-    public void deleteById(int id) {
-        Semester semester = semesterRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy học kỳ có id: " + id));
+    semester.setStartDate(newStart);
+    semester.setEndDate(newEnd);
 
-        semester.setStatus(Status.INACTIVE.getValue());
-        semesterRepository.save(semester);
-    }
+    semesterRepository.save(semester);
+  }
+
+  public void deleteById(int id) {
+    Semester semester =
+        semesterRepository
+            .findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy học kỳ có id: " + id));
+
+    semester.setStatus(Status.INACTIVE.getValue());
+    semesterRepository.save(semester);
+  }
 }

@@ -10,11 +10,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoomResponse {
 
-    Integer id;
+  Integer id;
 
-    String name;
+  String name;
 
-    Integer capacity;
+  Integer capacity;
 
-    Integer status;
+  Integer status;
 }

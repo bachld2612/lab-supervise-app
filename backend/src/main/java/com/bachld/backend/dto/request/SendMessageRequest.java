@@ -10,6 +10,5 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SendMessageRequest {
 
-    @NotBlank(message = "Nội dung tin nhắn không được để trống")
-    String text;
+  @NotBlank(message = "Nội dung tin nhắn không được để trống") String text;
 }

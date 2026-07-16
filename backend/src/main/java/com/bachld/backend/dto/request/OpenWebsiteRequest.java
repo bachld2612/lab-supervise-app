@@ -10,6 +10,5 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OpenWebsiteRequest {
 
-    @NotBlank(message = "URL website không được để trống")
-    String websiteUrl;
+  @NotBlank(message = "URL website không được để trống") String websiteUrl;
 }

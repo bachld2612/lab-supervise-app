@@ -22,89 +22,104 @@ import org.springframework.stereotype.Service;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ManageClassService {
 
-    ManageClassRepository manageClassRepository;
+  ManageClassRepository manageClassRepository;
 
-    MajorRepository majorRepository;
+  MajorRepository majorRepository;
 
-    TeacherRepository teacherRepository;
+  TeacherRepository teacherRepository;
 
-    public Page<ManageClassResponse> getList(Pageable pageable, String keyword, Integer status) {
-        if (keyword != null) {
-            keyword = "%" + keyword.trim().toLowerCase() + "%";
-        }
-        else {
-            keyword = "%%";
-        }
-
-        return manageClassRepository.findByKeyword(pageable, keyword, status);
+  public Page<ManageClassResponse> getList(Pageable pageable, String keyword, Integer status) {
+    if (keyword != null) {
+      keyword = "%" + keyword.trim().toLowerCase() + "%";
+    } else {
+      keyword = "%%";
     }
 
-    public ManageClassResponse getById(Integer id) {
-        return manageClassRepository.findByIdAndStatus(id, Status.ACTIVE.getValue());
+    return manageClassRepository.findByKeyword(pageable, keyword, status);
+  }
+
+  public ManageClassResponse getById(Integer id) {
+    return manageClassRepository.findByIdAndStatus(id, Status.ACTIVE.getValue());
+  }
+
+  public void create(ManageClassCreateRequest request) {
+    MajorResponse major =
+        majorRepository.findByIdAndStatus(request.getMajorId(), Status.ACTIVE.getValue());
+    if (major == null) {
+      throw new IllegalArgumentException(
+          "Không tìm thấy chuyên ngành có id: " + request.getMajorId());
     }
 
-    public void create(ManageClassCreateRequest request) {
-        MajorResponse major = majorRepository.findByIdAndStatus(request.getMajorId(), Status.ACTIVE.getValue());
-        if (major == null) {
-            throw new IllegalArgumentException("Không tìm thấy chuyên ngành có id: " + request.getMajorId());
-        }
-
-        TeacherResponse teacher = teacherRepository.findTeacherByIdAndStatus(request.getTeacherId(), Status.ACTIVE.getValue());
-        if (teacher == null) {
-            throw new IllegalArgumentException("Không tìm thấy giảng viên có id: " + request.getTeacherId());
-        }
-
-        ManageClass manageClass = new ManageClass();
-
-        manageClass.setName(request.getName());
-        manageClass.setMaxStudent(request.getMaxStudent());
-        manageClass.setTeacherId(request.getTeacherId());
-        manageClass.setMajorId(request.getMajorId());
-        manageClass.setStatus(Status.ACTIVE.getValue());
-
-        manageClassRepository.save(manageClass);
+    TeacherResponse teacher =
+        teacherRepository.findTeacherByIdAndStatus(
+            request.getTeacherId(), Status.ACTIVE.getValue());
+    if (teacher == null) {
+      throw new IllegalArgumentException(
+          "Không tìm thấy giảng viên có id: " + request.getTeacherId());
     }
 
-    public void update(ManageClassUpdateRequest request, int id) {
-        ManageClass manageClass = manageClassRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp quản lý có id: " + id));
+    ManageClass manageClass = new ManageClass();
 
-        if (request.getName() != null && !request.getName().isEmpty()) {
-            manageClass.setName(request.getName());
-        }
+    manageClass.setName(request.getName());
+    manageClass.setMaxStudent(request.getMaxStudent());
+    manageClass.setTeacherId(request.getTeacherId());
+    manageClass.setMajorId(request.getMajorId());
+    manageClass.setStatus(Status.ACTIVE.getValue());
 
-        if (request.getMaxStudent() != null) {
-            manageClass.setMaxStudent(request.getMaxStudent());
-        }
+    manageClassRepository.save(manageClass);
+  }
 
-        if (request.getTeacherId() != null) {
-            TeacherResponse teacher = teacherRepository.findTeacherByIdAndStatus(request.getTeacherId(), Status.ACTIVE.getValue());
+  public void update(ManageClassUpdateRequest request, int id) {
+    ManageClass manageClass =
+        manageClassRepository
+            .findById(id)
+            .orElseThrow(
+                () -> new IllegalArgumentException("Không tìm thấy lớp quản lý có id: " + id));
 
-            if (teacher == null) {
-                throw new IllegalArgumentException("Không tìm thấy giảng viên có id: " + request.getTeacherId());
-            }
-
-            manageClass.setTeacherId(request.getTeacherId());
-        }
-
-        if (request.getMajorId() != null) {
-            MajorResponse major = majorRepository.findByIdAndStatus(request.getMajorId(), Status.ACTIVE.getValue());
-
-            if (major == null) {
-                throw new IllegalArgumentException("Không tìm thấy chuyên ngành có id: " + request.getMajorId());
-            }
-
-            manageClass.setMajorId(request.getMajorId());
-        }
-
-        manageClassRepository.save(manageClass);
+    if (request.getName() != null && !request.getName().isEmpty()) {
+      manageClass.setName(request.getName());
     }
 
-    public void deleteById(Integer id) {
-        ManageClass manageClass = manageClassRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lớp quản lý có id: " + id));
-
-        manageClass.setStatus(Status.INACTIVE.getValue());
-        manageClassRepository.save(manageClass);
+    if (request.getMaxStudent() != null) {
+      manageClass.setMaxStudent(request.getMaxStudent());
     }
+
+    if (request.getTeacherId() != null) {
+      TeacherResponse teacher =
+          teacherRepository.findTeacherByIdAndStatus(
+              request.getTeacherId(), Status.ACTIVE.getValue());
+
+      if (teacher == null) {
+        throw new IllegalArgumentException(
+            "Không tìm thấy giảng viên có id: " + request.getTeacherId());
+      }
+
+      manageClass.setTeacherId(request.getTeacherId());
+    }
+
+    if (request.getMajorId() != null) {
+      MajorResponse major =
+          majorRepository.findByIdAndStatus(request.getMajorId(), Status.ACTIVE.getValue());
+
+      if (major == null) {
+        throw new IllegalArgumentException(
+            "Không tìm thấy chuyên ngành có id: " + request.getMajorId());
+      }
+
+      manageClass.setMajorId(request.getMajorId());
+    }
+
+    manageClassRepository.save(manageClass);
+  }
+
+  public void deleteById(Integer id) {
+    ManageClass manageClass =
+        manageClassRepository
+            .findById(id)
+            .orElseThrow(
+                () -> new IllegalArgumentException("Không tìm thấy lớp quản lý có id: " + id));
+
+    manageClass.setStatus(Status.INACTIVE.getValue());
+    manageClassRepository.save(manageClass);
+  }
 }

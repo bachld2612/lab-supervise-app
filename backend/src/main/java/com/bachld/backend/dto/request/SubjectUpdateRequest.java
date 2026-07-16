@@ -13,12 +13,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SubjectUpdateRequest {
 
-    String name;
+  String name;
 
-    String code;
+  String code;
 
-    @Min(value = 1, message = "Số tín chỉ phải lớn hơn 1")
-    Integer creditNumber;
+  @Min(value = 1, message = "Số tín chỉ phải lớn hơn 1") Integer creditNumber;
 
-    Integer sectionId;
+  Integer sectionId;
 }

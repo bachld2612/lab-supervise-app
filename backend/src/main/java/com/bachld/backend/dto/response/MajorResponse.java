@@ -10,13 +10,13 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MajorResponse {
 
-    Integer id;
+  Integer id;
 
-    String name;
+  String name;
 
-    Integer status;
+  Integer status;
 
-    String departmentName;
+  String departmentName;
 
-    Integer departmentId;
+  Integer departmentId;
 }

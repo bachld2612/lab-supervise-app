@@ -7,13 +7,13 @@ import jakarta.persistence.Converter;
 @Converter(autoApply = false)
 public class TrackingActionConverter implements AttributeConverter<TrackingAction, Integer> {
 
-    @Override
-    public Integer convertToDatabaseColumn(TrackingAction attribute) {
-        return attribute == null ? TrackingAction.NORMAL.getValue() : attribute.getValue();
-    }
+  @Override
+  public Integer convertToDatabaseColumn(TrackingAction attribute) {
+    return attribute == null ? TrackingAction.NORMAL.getValue() : attribute.getValue();
+  }
 
-    @Override
-    public TrackingAction convertToEntityAttribute(Integer dbData) {
-        return TrackingAction.fromValue(dbData);
-    }
+  @Override
+  public TrackingAction convertToEntityAttribute(Integer dbData) {
+    return TrackingAction.fromValue(dbData);
+  }
 }

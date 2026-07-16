@@ -21,42 +21,45 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BanApplicationController {
 
-    BanApplicationService banApplicationService;
+  BanApplicationService banApplicationService;
 
-    @GetMapping("/v1")
-    @AuthFilter(role = "TEACHER")
-    public ResponseEntity<?> getList(
-            @PageableDefault Pageable pageable,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Integer status
-    ) {
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), banApplicationService.getList(pageable, keyword, status)));
-    }
+  @GetMapping("/v1")
+  @AuthFilter(role = "TEACHER")
+  public ResponseEntity<?> getList(
+      @PageableDefault Pageable pageable,
+      @RequestParam(required = false) String keyword,
+      @RequestParam(required = false) Integer status) {
+    return ResponseEntity.ok(
+        new BaseResponse<>(
+            HttpStatus.OK.value(), banApplicationService.getList(pageable, keyword, status)));
+  }
 
-    @GetMapping("/v1/{id}")
-    @AuthFilter(role = "TEACHER")
-    public ResponseEntity<?> getById(@PathVariable int id) {
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), banApplicationService.getById(id)));
-    }
+  @GetMapping("/v1/{id}")
+  @AuthFilter(role = "TEACHER")
+  public ResponseEntity<?> getById(@PathVariable int id) {
+    return ResponseEntity.ok(
+        new BaseResponse<>(HttpStatus.OK.value(), banApplicationService.getById(id)));
+  }
 
-    @PostMapping("/v1")
-    @AuthFilter(role = "TEACHER")
-    public ResponseEntity<?> create(@RequestBody @Valid BanApplicationCreateRequest request) {
-        banApplicationService.create(request);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @PostMapping("/v1")
+  @AuthFilter(role = "TEACHER")
+  public ResponseEntity<?> create(@RequestBody @Valid BanApplicationCreateRequest request) {
+    banApplicationService.create(request);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 
-    @PutMapping("/v1/{id}")
-    @AuthFilter(role = "TEACHER")
-    public ResponseEntity<?> update(@RequestBody BanApplicationUpdateRequest request, @PathVariable int id) {
-        banApplicationService.update(request, id);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @PutMapping("/v1/{id}")
+  @AuthFilter(role = "TEACHER")
+  public ResponseEntity<?> update(
+      @RequestBody BanApplicationUpdateRequest request, @PathVariable int id) {
+    banApplicationService.update(request, id);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 
-    @DeleteMapping("/v1/{id}")
-    @AuthFilter(role = "TEACHER")
-    public ResponseEntity<?> delete(@PathVariable int id) {
-        banApplicationService.delete(id);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
-    }
+  @DeleteMapping("/v1/{id}")
+  @AuthFilter(role = "TEACHER")
+  public ResponseEntity<?> delete(@PathVariable int id) {
+    banApplicationService.delete(id);
+    return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), null));
+  }
 }

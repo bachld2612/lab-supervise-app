@@ -15,11 +15,10 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class VncWebSocketConfig implements WebSocketConfigurer {
 
-    VncWebSocketHandler vncWebSocketHandler;
+  VncWebSocketHandler vncWebSocketHandler;
 
-    @Override
-    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(vncWebSocketHandler, "/vnc-relay")
-                .setAllowedOriginPatterns("*");
-    }
+  @Override
+  public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+    registry.addHandler(vncWebSocketHandler, "/vnc-relay").setAllowedOriginPatterns("*");
+  }
 }

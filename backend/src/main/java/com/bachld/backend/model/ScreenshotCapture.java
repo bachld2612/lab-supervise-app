@@ -19,12 +19,12 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "screenshot_capture")
 public class ScreenshotCapture extends BaseEntity {
 
-    @Column(name = "student_class_id")
-    Integer studentClassId;
+  @Column(name = "student_class_id")
+  Integer studentClassId;
 
-    @Column(name = "student_exam_room_id")
-    Integer studentExamRoomId;
+  @Column(name = "student_exam_room_id")
+  Integer studentExamRoomId;
 
-    @Column(name = "image_path", columnDefinition = "TEXT")
-    String imagePath;
+  @Column(name = "image_path", columnDefinition = "TEXT")
+  String imagePath;
 }

@@ -20,66 +20,74 @@ import org.springframework.stereotype.Service;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MajorService {
 
-    MajorRepository majorRepository;
+  MajorRepository majorRepository;
 
-    DepartmentRepository departmentRepository;
+  DepartmentRepository departmentRepository;
 
-    public Page<MajorResponse> getList(Pageable pageable, String keyword, Integer status) {
-        if (keyword != null) {
-            keyword = "%" + keyword.trim().toLowerCase() + "%";
-        }
-        else {
-            keyword = "%%";
-        }
-
-        return majorRepository.findByKeyword(pageable, keyword, status);
+  public Page<MajorResponse> getList(Pageable pageable, String keyword, Integer status) {
+    if (keyword != null) {
+      keyword = "%" + keyword.trim().toLowerCase() + "%";
+    } else {
+      keyword = "%%";
     }
 
-    public MajorResponse getById(Integer id) {
-        return majorRepository.findByIdAndStatus(id, Status.ACTIVE.getValue());
+    return majorRepository.findByKeyword(pageable, keyword, status);
+  }
+
+  public MajorResponse getById(Integer id) {
+    return majorRepository.findByIdAndStatus(id, Status.ACTIVE.getValue());
+  }
+
+  public void create(MajorCreateRequest request) {
+    DepartmentResponse department =
+        departmentRepository.findByIdAndStatus(request.getDepartmentId(), Status.ACTIVE.getValue());
+    if (department == null) {
+      throw new IllegalArgumentException("Không tìm thấy khoa có id: " + request.getDepartmentId());
     }
 
-    public void create(MajorCreateRequest request) {
-        DepartmentResponse department = departmentRepository.findByIdAndStatus(request.getDepartmentId(), Status.ACTIVE.getValue());
-        if (department == null) {
-            throw new IllegalArgumentException("Không tìm thấy khoa có id: " + request.getDepartmentId());
-        }
+    Major major = new Major();
 
-        Major major = new Major();
+    major.setName(request.getName());
+    major.setDepartmentId(request.getDepartmentId());
+    major.setStatus(Status.ACTIVE.getValue());
 
-        major.setName(request.getName());
-        major.setDepartmentId(request.getDepartmentId());
-        major.setStatus(Status.ACTIVE.getValue());
+    majorRepository.save(major);
+  }
 
-        majorRepository.save(major);
+  public void update(MajorUpdateRequest request, int id) {
+    Major major =
+        majorRepository
+            .findById(id)
+            .orElseThrow(
+                () -> new IllegalArgumentException("Không tìm thấy chuyên ngành có id: " + id));
+
+    if (request.getName() != null && !request.getName().isEmpty()) {
+      major.setName(request.getName());
     }
 
-    public void update(MajorUpdateRequest request, int id) {
-        Major major = majorRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy chuyên ngành có id: " + id));
+    if (request.getDepartmentId() != null) {
+      DepartmentResponse department =
+          departmentRepository.findByIdAndStatus(
+              request.getDepartmentId(), Status.ACTIVE.getValue());
 
-        if (request.getName() != null && !request.getName().isEmpty()) {
-            major.setName(request.getName());
-        }
+      if (department == null) {
+        throw new IllegalArgumentException(
+            "Không tìm thấy khoa có id: " + request.getDepartmentId());
+      }
 
-        if (request.getDepartmentId() != null) {
-            DepartmentResponse department = departmentRepository.findByIdAndStatus(request.getDepartmentId(), Status.ACTIVE.getValue());
-
-            if (department == null) {
-                throw new IllegalArgumentException("Không tìm thấy khoa có id: " + request.getDepartmentId());
-            }
-
-            major.setDepartmentId(request.getDepartmentId());
-        }
-
-        majorRepository.save(major);
+      major.setDepartmentId(request.getDepartmentId());
     }
 
-    public void deleteById(Integer id) {
-        Major major = majorRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy ngành có id: " + id));
+    majorRepository.save(major);
+  }
 
-        major.setStatus(Status.INACTIVE.getValue());
-        majorRepository.save(major);
-    }
+  public void deleteById(Integer id) {
+    Major major =
+        majorRepository
+            .findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy ngành có id: " + id));
+
+    major.setStatus(Status.INACTIVE.getValue());
+    majorRepository.save(major);
+  }
 }

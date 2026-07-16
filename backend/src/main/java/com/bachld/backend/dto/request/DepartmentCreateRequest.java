@@ -13,6 +13,5 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DepartmentCreateRequest {
 
-    @NotEmpty(message = "Tên khoa không được phép bỏ trống")
-    String name;
+  @NotEmpty(message = "Tên khoa không được phép bỏ trống") String name;
 }

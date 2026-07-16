@@ -15,8 +15,8 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "sections")
 public class Section extends BaseEntity {
 
-    String name;
+  String name;
 
-    @Column(name = "department_id")
-    Integer departmentId;
+  @Column(name = "department_id")
+  Integer departmentId;
 }

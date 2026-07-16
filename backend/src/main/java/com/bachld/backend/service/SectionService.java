@@ -20,66 +20,73 @@ import org.springframework.stereotype.Service;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SectionService {
 
-    SectionRepository sectionRepository;
+  SectionRepository sectionRepository;
 
-    DepartmentRepository departmentRepository;
+  DepartmentRepository departmentRepository;
 
-    public Page<SectionResponse> getList(Pageable pageable, String keyword, Integer status) {
-        if (keyword != null) {
-            keyword = "%" + keyword.trim().toLowerCase() + "%";
-        }
-        else {
-            keyword = "%%";
-        }
-
-        return sectionRepository.findByKeyword(pageable, keyword, status);
+  public Page<SectionResponse> getList(Pageable pageable, String keyword, Integer status) {
+    if (keyword != null) {
+      keyword = "%" + keyword.trim().toLowerCase() + "%";
+    } else {
+      keyword = "%%";
     }
 
-    public SectionResponse getById(Integer id) {
-        return sectionRepository.findByIdAndStatus(id, Status.ACTIVE.getValue());
+    return sectionRepository.findByKeyword(pageable, keyword, status);
+  }
+
+  public SectionResponse getById(Integer id) {
+    return sectionRepository.findByIdAndStatus(id, Status.ACTIVE.getValue());
+  }
+
+  public void create(SectionCreateRequest request) {
+    DepartmentResponse department =
+        departmentRepository.findByIdAndStatus(request.getDepartmentId(), Status.ACTIVE.getValue());
+    if (department == null) {
+      throw new IllegalArgumentException("Không tìm thấy khoa có id: " + request.getDepartmentId());
     }
 
-    public void create(SectionCreateRequest request) {
-        DepartmentResponse department = departmentRepository.findByIdAndStatus(request.getDepartmentId(), Status.ACTIVE.getValue());
-        if (department == null) {
-            throw new IllegalArgumentException("Không tìm thấy khoa có id: " + request.getDepartmentId());
-        }
+    Section section = new Section();
 
-        Section section = new Section();
+    section.setName(request.getName());
+    section.setDepartmentId(request.getDepartmentId());
+    section.setStatus(Status.ACTIVE.getValue());
 
-        section.setName(request.getName());
-        section.setDepartmentId(request.getDepartmentId());
-        section.setStatus(Status.ACTIVE.getValue());
+    sectionRepository.save(section);
+  }
 
-        sectionRepository.save(section);
+  public void update(SectionUpdateRequest request, int id) {
+    Section section =
+        sectionRepository
+            .findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bộ môn có id: " + id));
+
+    if (request.getName() != null && !request.getName().isEmpty()) {
+      section.setName(request.getName());
     }
 
-    public void update(SectionUpdateRequest request, int id) {
-        Section section = sectionRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bộ môn có id: " + id));
+    if (request.getDepartmentId() != null) {
+      DepartmentResponse department =
+          departmentRepository.findByIdAndStatus(
+              request.getDepartmentId(), Status.ACTIVE.getValue());
 
-        if (request.getName() != null && !request.getName().isEmpty()) {
-            section.setName(request.getName());
-        }
+      if (department == null) {
+        throw new IllegalArgumentException(
+            "Không tìm thấy khoa có id: " + request.getDepartmentId());
+      }
 
-        if (request.getDepartmentId() != null) {
-            DepartmentResponse department = departmentRepository.findByIdAndStatus(request.getDepartmentId(), Status.ACTIVE.getValue());
-
-            if (department == null) {
-                throw new IllegalArgumentException("Không tìm thấy khoa có id: " + request.getDepartmentId());
-            }
-
-            section.setDepartmentId(request.getDepartmentId());
-        }
-
-        sectionRepository.save(section);
+      section.setDepartmentId(request.getDepartmentId());
     }
 
-    public void deleteById(Integer id) {
-        Section section = sectionRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bộ môn có id: " + id));
+    sectionRepository.save(section);
+  }
 
-        section.setStatus(Status.INACTIVE.getValue());
-        sectionRepository.save(section);
-    }
+  public void deleteById(Integer id) {
+    Section section =
+        sectionRepository
+            .findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bộ môn có id: " + id));
+
+    section.setStatus(Status.INACTIVE.getValue());
+    sectionRepository.save(section);
+  }
 }

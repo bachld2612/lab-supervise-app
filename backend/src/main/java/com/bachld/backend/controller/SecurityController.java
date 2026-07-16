@@ -17,10 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SecurityController {
 
-    RsaKeyManager rsaKeyManager;
+  RsaKeyManager rsaKeyManager;
 
-    @GetMapping("/v1/public-key")
-    public ResponseEntity<?> getPublicKey() {
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), rsaKeyManager.getPublicKeyBase64()));
-    }
+  @GetMapping("/v1/public-key")
+  public ResponseEntity<?> getPublicKey() {
+    return ResponseEntity.ok(
+        new BaseResponse<>(HttpStatus.OK.value(), rsaKeyManager.getPublicKeyBase64()));
+  }
 }

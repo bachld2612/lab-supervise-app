@@ -1,37 +1,36 @@
 package com.bachld.backend.repository;
 
 import com.bachld.backend.model.StudentExamRoom;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
 public interface StudentExamRoomRepository extends JpaRepository<StudentExamRoom, Integer> {
 
-    Optional<StudentExamRoom> findByStudentIdAndExamRoomId(Integer studentId, Integer examRoomId);
+  Optional<StudentExamRoom> findByStudentIdAndExamRoomId(Integer studentId, Integer examRoomId);
 
-    List<StudentExamRoom> findByExamRoomId(Integer examRoomId);
+  List<StudentExamRoom> findByExamRoomId(Integer examRoomId);
 
-    long countByExamRoomIdAndStatus(Integer examRoomId, int status);
+  long countByExamRoomIdAndStatus(Integer examRoomId, int status);
 
-    @Modifying
-    @Transactional
-    void deleteByExamRoomIdAndStudentIdIn(Integer examRoomId, List<Integer> studentIds);
+  @Modifying
+  @Transactional
+  void deleteByExamRoomIdAndStudentIdIn(Integer examRoomId, List<Integer> studentIds);
 
-    @Query("""
-        SELECT ser FROM StudentExamRoom ser
-            JOIN ExamRoom er ON er.id = ser.examRoomId
-        WHERE ser.studentId = :studentId
-            AND er.examDate = :examDate
-            AND er.status = 1
-            AND ser.status = 1
-    """)
-    List<StudentExamRoom> findByStudentIdAndExamDate(
-            @Param("studentId") Integer studentId,
-            @Param("examDate") LocalDate examDate);
+  @Query(
+      """
+          SELECT ser FROM StudentExamRoom ser
+              JOIN ExamRoom er ON er.id = ser.examRoomId
+          WHERE ser.studentId = :studentId
+              AND er.examDate = :examDate
+              AND er.status = 1
+              AND ser.status = 1
+      """)
+  List<StudentExamRoom> findByStudentIdAndExamDate(
+      @Param("studentId") Integer studentId, @Param("examDate") LocalDate examDate);
 }

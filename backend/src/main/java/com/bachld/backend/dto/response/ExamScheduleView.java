@@ -1,10 +1,9 @@
 package com.bachld.backend.dto.response;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 /** Projection of an exam's date + time window, for schedule conflict checks. */
 @Data
@@ -14,9 +13,9 @@ import java.time.LocalTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ExamScheduleView {
 
-    LocalDate examDate;
+  LocalDate examDate;
 
-    LocalTime startTime;
+  LocalTime startTime;
 
-    LocalTime endTime;
+  LocalTime endTime;
 }

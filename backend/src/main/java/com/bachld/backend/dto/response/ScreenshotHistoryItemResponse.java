@@ -1,9 +1,8 @@
 package com.bachld.backend.dto.response;
 
+import java.time.LocalDateTime;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -12,23 +11,23 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ScreenshotHistoryItemResponse {
 
-    Integer id;
+  Integer id;
 
-    LocalDateTime createdAt;
+  LocalDateTime createdAt;
 
-    Integer studentId;
+  Integer studentId;
 
-    String studentName;
+  String studentName;
 
-    String studentCode;
+  String studentCode;
 
-    String contextType;
+  String contextType;
 
-    Integer contextId;
+  Integer contextId;
 
-    String contextName;
+  String contextName;
 
-    String applicationName;
+  String applicationName;
 
-    String imageUrl;
+  String imageUrl;
 }

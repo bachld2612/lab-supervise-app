@@ -10,13 +10,13 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BanApplicationResponse {
 
-    Integer id;
+  Integer id;
 
-    Integer teacherId;
+  Integer teacherId;
 
-    String applicationName;
+  String applicationName;
 
-    String imageUrl;
+  String imageUrl;
 
-    Integer status;
+  Integer status;
 }

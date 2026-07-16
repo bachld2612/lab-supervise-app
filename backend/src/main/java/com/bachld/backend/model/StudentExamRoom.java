@@ -15,9 +15,9 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "student_exam_room")
 public class StudentExamRoom extends BaseEntity {
 
-    @Column(name = "exam_room_id")
-    Integer examRoomId;
+  @Column(name = "exam_room_id")
+  Integer examRoomId;
 
-    @Column(name = "student_id")
-    Integer studentId;
+  @Column(name = "student_id")
+  Integer studentId;
 }

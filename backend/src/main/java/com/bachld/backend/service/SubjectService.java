@@ -22,81 +22,88 @@ import org.springframework.transaction.annotation.Transactional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SubjectService {
 
-    SubjectRepository subjectRepository;
-    
-    SectionRepository sectionRepository;
-    
-    Util util;
+  SubjectRepository subjectRepository;
 
-    public Page<SubjectResponse> getList(Pageable pageable, String keyword, Integer status) {
-        if (keyword != null) {
-            keyword = "%" + keyword.trim().toLowerCase() + "%";
-        } else {
-            keyword = "%%";
-        }
+  SectionRepository sectionRepository;
 
-        return subjectRepository.findByKeyword(pageable, keyword, status);
+  Util util;
+
+  public Page<SubjectResponse> getList(Pageable pageable, String keyword, Integer status) {
+    if (keyword != null) {
+      keyword = "%" + keyword.trim().toLowerCase() + "%";
+    } else {
+      keyword = "%%";
     }
 
-    public SubjectResponse getById(Integer id) {
-        return subjectRepository.findByIdAndStatus(id, Status.ACTIVE.getValue());
+    return subjectRepository.findByKeyword(pageable, keyword, status);
+  }
+
+  public SubjectResponse getById(Integer id) {
+    return subjectRepository.findByIdAndStatus(id, Status.ACTIVE.getValue());
+  }
+
+  @Transactional
+  public void create(SubjectCreateRequest request) {
+    util.validateSubjectCode(request.getCode(), null);
+
+    SectionResponse section =
+        sectionRepository.findByIdAndStatus(request.getSectionId(), Status.ACTIVE.getValue());
+    if (section == null) {
+      throw new IllegalArgumentException("Không tìm thấy bộ môn có id: " + request.getSectionId());
     }
 
-    @Transactional
-    public void create(SubjectCreateRequest request) {
-        util.validateSubjectCode(request.getCode(), null);
-        
-        SectionResponse section = sectionRepository.findByIdAndStatus(request.getSectionId(), Status.ACTIVE.getValue());
-        if (section == null) {
-            throw new IllegalArgumentException("Không tìm thấy bộ môn có id: " + request.getSectionId());
-        }
+    Subject subject = new Subject();
+    subject.setName(request.getName());
+    subject.setCode(request.getCode());
+    subject.setCreditNumber(request.getCreditNumber());
+    subject.setSectionId(request.getSectionId());
+    subject.setStatus(Status.ACTIVE.getValue());
 
-        Subject subject = new Subject();
-        subject.setName(request.getName());
-        subject.setCode(request.getCode());
-        subject.setCreditNumber(request.getCreditNumber());
-        subject.setSectionId(request.getSectionId());
-        subject.setStatus(Status.ACTIVE.getValue());
+    subjectRepository.save(subject);
+  }
 
-        subjectRepository.save(subject);
+  @Transactional
+  public void update(SubjectUpdateRequest request, int id) {
+    Subject subject =
+        subjectRepository
+            .findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy môn học có id: " + id));
+
+    if (request.getCode() != null && !request.getCode().isEmpty()) {
+      util.validateSubjectCode(request.getCode(), id);
+      subject.setCode(request.getCode());
     }
 
-    @Transactional
-    public void update(SubjectUpdateRequest request, int id) {
-        Subject subject = subjectRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy môn học có id: " + id));
-
-        if (request.getCode() != null && !request.getCode().isEmpty()) {
-            util.validateSubjectCode(request.getCode(), id);
-            subject.setCode(request.getCode());
-        }
-
-        if (request.getName() != null && !request.getName().isEmpty()) {
-            subject.setName(request.getName());
-        }
-
-        if (request.getCreditNumber() != null) {
-            subject.setCreditNumber(request.getCreditNumber());
-        }
-
-        if (request.getSectionId() != null) {
-            SectionResponse section = sectionRepository.findByIdAndStatus(request.getSectionId(), Status.ACTIVE.getValue());
-
-            if (section == null) {
-                throw new IllegalArgumentException("Không tìm thấy bộ môn có id: " + request.getSectionId());
-            }
-
-            subject.setSectionId(request.getSectionId());
-        }
-
-        subjectRepository.save(subject);
+    if (request.getName() != null && !request.getName().isEmpty()) {
+      subject.setName(request.getName());
     }
 
-    public void deleteById(Integer id) {
-        Subject subject = subjectRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy môn học có id: " + id));
-
-        subject.setStatus(Status.INACTIVE.getValue());
-        subjectRepository.save(subject);
+    if (request.getCreditNumber() != null) {
+      subject.setCreditNumber(request.getCreditNumber());
     }
+
+    if (request.getSectionId() != null) {
+      SectionResponse section =
+          sectionRepository.findByIdAndStatus(request.getSectionId(), Status.ACTIVE.getValue());
+
+      if (section == null) {
+        throw new IllegalArgumentException(
+            "Không tìm thấy bộ môn có id: " + request.getSectionId());
+      }
+
+      subject.setSectionId(request.getSectionId());
+    }
+
+    subjectRepository.save(subject);
+  }
+
+  public void deleteById(Integer id) {
+    Subject subject =
+        subjectRepository
+            .findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy môn học có id: " + id));
+
+    subject.setStatus(Status.INACTIVE.getValue());
+    subjectRepository.save(subject);
+  }
 }

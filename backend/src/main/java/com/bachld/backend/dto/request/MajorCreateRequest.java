@@ -14,9 +14,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MajorCreateRequest {
 
-    @NotEmpty(message = "Chuyên ngành không được phép bỏ trống")
-    String name;
+  @NotEmpty(message = "Chuyên ngành không được phép bỏ trống") String name;
 
-    @NotNull(message = "Khoa không được phép bỏ trống")
-    Integer departmentId;
+  @NotNull(message = "Khoa không được phép bỏ trống") Integer departmentId;
 }
